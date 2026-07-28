@@ -1,0 +1,48 @@
+{
+  "products": [
+    { "id": "SKU-0001", "name": "Peak Milk Tin (Large)", "price": 1800, "cost": 1500, "stock": 42, "category": "Dairy" },
+    { "id": "SKU-0002", "name": "Indomie Carton (40pc)", "price": 8500, "cost": 7200, "stock": 18, "category": "Noodles" },
+    { "id": "SKU-0003", "name": "Golden Penny Semovita 1kg", "price": 1450, "cost": 1150, "stock": 30, "category": "Grains" },
+    { "id": "SKU-0004", "name": "Kings Vegetable Oil 1L", "price": 3200, "cost": 2700, "stock": 25, "category": "Oil" },
+    { "id": "SKU-0005", "name": "Coca-Cola 50cl (Pack 12)", "price": 4800, "cost": 3900, "stock": 8, "category": "Drinks" },
+    { "id": "SKU-0006", "name": "Dangote Sugar 1kg", "price": 1600, "cost": 1300, "stock": 3, "category": "Grains" },
+    { "id": "SKU-0007", "name": "Omo Detergent 900g", "price": 2100, "cost": 1750, "stock": 20, "category": "Household" },
+    { "id": "SKU-0008", "name": "Titus Sardine (Tin)", "price": 950, "cost": 750, "stock": 60, "category": "Canned" }
+  ],
+  "employees": [
+    {
+      "id": "E1",
+      "name": "Ada Okafor",
+      "role": "Sales Representative",
+      "pin": "1111",
+      "status": "active",
+      "description": "Frontline sales and customer service only."
+    },
+    {
+      "id": "E2",
+      "name": "Bola Adebayo",
+      "role": "Supervisor",
+      "pin": "2222",
+      "status": "active",
+      "description": "Can assist with stock checks and approvals."
+    },
+    {
+      "id": "E3",
+      "name": "Grace Nwosu",
+      "role": "Manager",
+      "pin": "9999",
+      "status": "active",
+      "description": "Can approve discounts, void sales and review reports."
+    },
+    {
+      "id": "E4",
+      "name": "Kemi Yusuf",
+      "role": "Store Admin",
+      "pin": "4444",
+      "status": "active",
+      "description": "Full administrative access for inventory and staff controls."
+    }
+  ],
+  "sales": [],
+  "auditLog": []
+}
