@@ -227,11 +227,20 @@ export default function App() {
     flash(`${saleId} was voided.`);
   }
 
+  function nextSku(existingProducts) {
+    const max = existingProducts.reduce((highest, product) => {
+      const match = String(product.id || '').match(/(\d+)\s*$/);
+      const value = match ? Number(match[1]) : 0;
+      return value > highest ? value : highest;
+    }, 0);
+    return `SKU-${(max + 1).toString().padStart(4, '0')}`;
+  }
+
   function addProduct() {
     if (!can(role, 'manageInventory')) return flash('Only supervisors, managers and admins can add inventory.');
     if (!newProd.name || !newProd.price || !newProd.stock) return flash('Please complete the name, price and stock fields.');
 
-    const id = `SKU-${(products.length + 1).toString().padStart(4, '0')}`;
+    const id = nextSku(products);
     setProducts([
       ...products,
       {
@@ -246,6 +255,79 @@ export default function App() {
     logActivity(`${session.employee.name} added ${newProd.name} (${id})`, 'stock');
     setNewProd({ name: '', price: '', cost: '', stock: '', category: '' });
     flash('Product added to inventory.');
+  }
+
+  function importProducts(rows) {
+    if (!can(role, 'manageInventory')) {
+      return { ok: false, message: 'Only supervisors, managers and admins can import inventory.' };
+    }
+    if (!rows?.length) {
+      return { ok: false, message: 'No valid products found in the file.' };
+    }
+
+    let nextProducts = [...products];
+    let added = 0;
+    let updated = 0;
+
+    rows.forEach((row) => {
+      const existingIndex = row.id
+        ? nextProducts.findIndex((product) => product.id.toLowerCase() === row.id.toLowerCase())
+        : -1;
+
+      if (existingIndex >= 0) {
+        const current = nextProducts[existingIndex];
+        nextProducts[existingIndex] = {
+          ...current,
+          name: row.name,
+          price: row.price,
+          cost: row.cost,
+          stock: row.stock,
+          category: row.category || current.category || 'General'
+        };
+        updated += 1;
+        return;
+      }
+
+      const id = row.id || nextSku(nextProducts);
+      if (nextProducts.some((product) => product.id.toLowerCase() === id.toLowerCase())) {
+        nextProducts = nextProducts.map((product) =>
+          product.id.toLowerCase() === id.toLowerCase()
+            ? {
+                ...product,
+                name: row.name,
+                price: row.price,
+                cost: row.cost,
+                stock: row.stock,
+                category: row.category || product.category || 'General'
+              }
+            : product
+        );
+        updated += 1;
+        return;
+      }
+
+      nextProducts = [
+        ...nextProducts,
+        {
+          id,
+          name: row.name,
+          price: row.price,
+          cost: row.cost,
+          stock: row.stock,
+          category: row.category || 'General'
+        }
+      ];
+      added += 1;
+    });
+
+    setProducts(nextProducts);
+    logActivity(
+      `${session.employee.name} imported products (${added} added, ${updated} updated)`,
+      'stock'
+    );
+    const message = `Imported ${added + updated} product(s): ${added} added, ${updated} updated.`;
+    flash(message);
+    return { ok: true, message, added, updated };
   }
 
   function requireAdmin() {
@@ -469,6 +551,7 @@ export default function App() {
           newProd={newProd}
           onNewProdChange={setNewProd}
           onAddProduct={addProduct}
+          onImportProducts={importProducts}
         />
       )}
 
