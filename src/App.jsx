@@ -37,6 +37,7 @@ export default function App() {
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [pendingVoidId, setPendingVoidId] = useState(null);
   const [lastReceipt, setLastReceipt] = useState(null);
+  const [heldSales, setHeldSales] = useState([]);
 
   const role = session?.employee?.role;
   const roleMaxDiscount = maxDiscountFor(role);
@@ -74,6 +75,47 @@ export default function App() {
     setCustomerName('Walk-in Customer');
   }
 
+  function resetSale() {
+    if (cart.length === 0 && discountPct === 0 && customerName === 'Walk-in Customer') {
+      return flash('Sale is already empty.');
+    }
+    resetSaleForm();
+    flash('Sale reset.');
+  }
+
+  function holdSale() {
+    if (!session) return;
+    if (cart.length === 0) return flash('Add items before holding a sale.');
+
+    const held = {
+      id: `HOLD-${Date.now().toString(36).toUpperCase()}`,
+      cart,
+      discountPct,
+      paymentMethod,
+      customerName,
+      heldAt: new Date().toISOString()
+    };
+    setHeldSales((current) => [held, ...current]);
+    resetSaleForm();
+    flash(`Sale held for ${held.customerName || 'customer'}.`);
+  }
+
+  function resumeHeldSale(holdId) {
+    const held = heldSales.find((entry) => entry.id === holdId);
+    if (!held) return;
+
+    if (cart.length > 0) {
+      return flash('Complete, hold, or reset the current sale before resuming another.');
+    }
+
+    setCart(held.cart);
+    setDiscountPct(held.discountPct);
+    setPaymentMethod(held.paymentMethod);
+    setCustomerName(held.customerName);
+    setHeldSales((current) => current.filter((entry) => entry.id !== holdId));
+    flash('Held sale resumed.');
+  }
+
   function handleLogin(employee) {
     setSession({ employee, clockIn: new Date() });
     logActivity(`${employee.name} clocked in`, 'shift');
@@ -85,6 +127,7 @@ export default function App() {
     logActivity(`${session.employee.name} clocked out`, 'shift');
     setSession(null);
     resetSaleForm();
+    setHeldSales([]);
     setCategoryFilter('All');
     setPendingVoidId(null);
     setLastReceipt(null);
@@ -411,6 +454,10 @@ export default function App() {
           discountAmount={discountAmount}
           total={total}
           onCheckout={checkout}
+          onResetSale={resetSale}
+          onHoldSale={holdSale}
+          heldSales={heldSales}
+          onResumeHeldSale={resumeHeldSale}
         />
       )}
 
