@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
-import { can, maxDiscount as maxDiscountFor, STAFF_ROLES, staffStatus } from './data/permissions';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { can, canSignIn, maxDiscount as maxDiscountFor, STAFF_ROLES, staffStatus } from './data/permissions';
 import { useAppData } from './hooks/useAppData';
 import { naira } from './lib/format';
+import { clearTillDraft, loadTillDraft, saveTillDraft } from './services/sessionDraft';
 import LoadingScreen from './components/LoadingScreen';
 import LoginScreen from './components/LoginScreen';
 import Header from './components/Header';
@@ -10,6 +11,19 @@ import SalesTab from './components/SalesTab';
 import InventoryTab from './components/InventoryTab';
 import ReportsTab from './components/ReportsTab';
 import AdminTab from './components/AdminTab';
+
+function createInitialTillState() {
+  const draft = loadTillDraft();
+  return {
+    session: null,
+    cart: Array.isArray(draft?.cart) ? draft.cart : [],
+    discountPct: typeof draft?.discountPct === 'number' ? draft.discountPct : 0,
+    paymentMethod: draft?.paymentMethod || 'Cash',
+    customerName: draft?.customerName || 'Walk-in Customer',
+    heldSales: Array.isArray(draft?.heldSales) ? draft.heldSales : [],
+    draftSession: draft?.session || null
+  };
+}
 
 export default function App() {
   const {
@@ -25,19 +39,21 @@ export default function App() {
     logActivity
   } = useAppData();
 
+  const initialTill = useRef(createInitialTillState()).current;
   const [session, setSession] = useState(null);
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useState(initialTill.cart);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('pos');
   const [toast, setToast] = useState(null);
   const [newProd, setNewProd] = useState({ name: '', price: '', cost: '', stock: '', category: '' });
-  const [discountPct, setDiscountPct] = useState(0);
-  const [paymentMethod, setPaymentMethod] = useState('Cash');
-  const [customerName, setCustomerName] = useState('Walk-in Customer');
+  const [discountPct, setDiscountPct] = useState(initialTill.discountPct);
+  const [paymentMethod, setPaymentMethod] = useState(initialTill.paymentMethod);
+  const [customerName, setCustomerName] = useState(initialTill.customerName);
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [pendingVoidId, setPendingVoidId] = useState(null);
   const [lastReceipt, setLastReceipt] = useState(null);
-  const [heldSales, setHeldSales] = useState([]);
+  const [heldSales, setHeldSales] = useState(initialTill.heldSales);
+  const draftRestored = useRef(false);
 
   const role = session?.employee?.role;
   const roleMaxDiscount = maxDiscountFor(role);
@@ -62,10 +78,52 @@ export default function App() {
   const total = Math.max(0, subtotal - discountAmount);
   const lowStock = products.filter((item) => item.stock <= 5);
 
+  useEffect(() => {
+    if (loading || draftRestored.current) return;
+    draftRestored.current = true;
+
+    const draftSession = initialTill.draftSession;
+    if (!draftSession?.employee?.id) return;
+
+    const match = employees.find((employee) => employee.id === draftSession.employee.id);
+    if (!match || !canSignIn(match)) {
+      clearTillDraft();
+      setCart([]);
+      setHeldSales([]);
+      setDiscountPct(0);
+      setPaymentMethod('Cash');
+      setCustomerName('Walk-in Customer');
+      return;
+    }
+
+    setSession({
+      employee: match,
+      clockIn: draftSession.clockIn ? new Date(draftSession.clockIn) : new Date()
+    });
+    if (initialTill.cart.length > 0 || initialTill.heldSales.length > 0) {
+      flash('Restored open sale from this device after reconnect.');
+    }
+  }, [loading, employees, initialTill]);
+
+  useEffect(() => {
+    if (loading || !session) return;
+    saveTillDraft({
+      session: {
+        employee: { id: session.employee.id, name: session.employee.name, role: session.employee.role },
+        clockIn: session.clockIn instanceof Date ? session.clockIn.toISOString() : session.clockIn
+      },
+      cart,
+      discountPct,
+      paymentMethod,
+      customerName,
+      heldSales
+    });
+  }, [loading, session, cart, discountPct, paymentMethod, customerName, heldSales]);
+
   function flash(message) {
     setToast(message);
     window.clearTimeout(flash.timeout);
-    flash.timeout = window.setTimeout(() => setToast(null), 2400);
+    flash.timeout = window.setTimeout(() => setToast(null), 2800);
   }
 
   function resetSaleForm() {
@@ -132,6 +190,7 @@ export default function App() {
     setPendingVoidId(null);
     setLastReceipt(null);
     setTab('pos');
+    clearTillDraft();
   }
 
   function addToCart(product) {
@@ -172,11 +231,18 @@ export default function App() {
     setCart((current) => current.filter((item) => item.id !== id));
   }
 
-  function checkout() {
+  function checkout(details = {}) {
     if (!session) return;
     if (cart.length === 0) return flash('Add at least one item before checkout.');
     if (discountPct > roleMaxDiscount) {
       return flash(`Discount limit is ${roleMaxDiscount}% for ${role}.`);
+    }
+
+    const tendered = typeof details?.amountTendered === 'number' ? details.amountTendered : total;
+    const change = typeof details?.changeDue === 'number' ? details.changeDue : Math.max(0, tendered - total);
+
+    if (paymentMethod === 'Cash' && tendered < total) {
+      return flash(`Amount tendered (${naira(tendered)}) is less than total (${naira(total)}).`);
     }
 
     const nextProducts = products.map((product) => {
@@ -185,23 +251,35 @@ export default function App() {
     });
     setProducts(nextProducts);
 
+    const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
     const sale = {
       id: `TXN-${(sales.length + 1).toString().padStart(4, '0')}`,
       items: cart,
       subtotal,
       discount: discountAmount,
+      discountPct,
       total,
+      amountTendered: tendered,
+      changeDue: change,
       employee: session.employee.name,
       role,
       paymentMethod,
-      customerName,
-      time: new Date().toISOString()
+      customerName: customerName.trim() || 'Walk-in Customer',
+      time: new Date().toISOString(),
+      savedLocally: true,
+      savedOffline: offline
     };
 
     recordSale(sale);
-    logActivity(`${session.employee.name} completed ${sale.id} for ${naira(total)}`, 'sale');
+    logActivity(
+      `${session.employee.name} completed ${sale.id} for ${naira(total)}${offline ? ' (saved offline on this device)' : ''}`,
+      'sale'
+    );
     resetSaleForm();
     setLastReceipt(sale);
+    if (offline) {
+      flash(`${sale.id} saved on this device. Will keep working until network returns.`);
+    }
   }
 
   function requestVoid(saleId) {
@@ -472,13 +550,13 @@ export default function App() {
   function fireStaff(id) {
     const target = employees.find((employee) => employee.id === id);
     if (!target) return;
-    updateEmployee(id, { status: 'fired' }, `${session.employee.name} fired ${target.name}`);
+    updateEmployee(id, { status: 'fired' }, `${session.employee.name} deactivated ${target.name}`);
   }
 
   function reinstateStaff(id) {
     const target = employees.find((employee) => employee.id === id);
     if (!target) return;
-    updateEmployee(id, { status: 'active' }, `${session.employee.name} reinstated ${target.name}`);
+    updateEmployee(id, { status: 'active' }, `${session.employee.name} reactivated ${target.name}`);
   }
 
   function changeTab(nextTab) {

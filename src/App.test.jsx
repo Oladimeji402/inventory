@@ -1,9 +1,18 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import App from './App';
+import { PwaProvider } from './components/PwaProvider';
+
+function renderApp() {
+  return render(
+    <PwaProvider>
+      <App />
+    </PwaProvider>
+  );
+}
 
 describe('Counterpoint POS', () => {
   it('shows a private staff sign-in form without exposing the staff roster or role details', async () => {
-    render(<App />);
+    renderApp();
     expect(await screen.findByLabelText(/^Name$/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/^PIN$/i)).toBeInTheDocument();
     expect(screen.queryByText('Grace Nwosu')).not.toBeInTheDocument();
@@ -11,7 +20,7 @@ describe('Counterpoint POS', () => {
   });
 
   it('rejects an incorrect name/PIN combination', async () => {
-    render(<App />);
+    renderApp();
     fireEvent.change(await screen.findByLabelText(/^Name$/i), { target: { value: 'Grace Nwosu' } });
     fireEvent.change(screen.getByLabelText(/^PIN$/i), { target: { value: '0000' } });
     fireEvent.click(screen.getByRole('button', { name: /Clock in/i }));
@@ -19,15 +28,21 @@ describe('Counterpoint POS', () => {
     expect(screen.getByText(/don't match our records/i)).toBeInTheDocument();
   });
 
-  it('allows a manager to see sale-voiding controls in reports', async () => {
-    render(<App />);
+  it('allows a manager to see sale-voiding controls in reports and processes cash checkout', async () => {
+    renderApp();
 
     fireEvent.change(await screen.findByLabelText(/^Name$/i), { target: { value: 'Grace Nwosu' } });
     fireEvent.change(screen.getByLabelText(/^PIN$/i), { target: { value: '9999' } });
     fireEvent.click(screen.getByRole('button', { name: /Clock in/i }));
 
     fireEvent.click(await screen.findByRole('button', { name: /Peak Milk Tin \(Large\)/i }));
-    fireEvent.click(screen.getByRole('button', { name: /Complete sale/i }));
+
+    const payBtn = screen.getByRole('button', { name: /Pay now/i });
+    expect(payBtn).toBeInTheDocument();
+    fireEvent.click(payBtn);
+
+    expect(await screen.findByRole('button', { name: /Print receipt/i })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Start new sale/i }));
 
     fireEvent.click(screen.getByRole('button', { name: /Reports/i }));
 
@@ -35,8 +50,8 @@ describe('Counterpoint POS', () => {
     expect(screen.queryByRole('button', { name: /^Admin$/i })).not.toBeInTheDocument();
   });
 
-  it('shows the staff admin panel only for store admin', async () => {
-    render(<App />);
+  it('shows the staff admin panel and allows store admin to deactivate/reactivate staff', async () => {
+    renderApp();
 
     fireEvent.change(await screen.findByLabelText(/^Name$/i), { target: { value: 'Kemi Yusuf' } });
     fireEvent.change(screen.getByLabelText(/^PIN$/i), { target: { value: '4444' } });
@@ -52,5 +67,7 @@ describe('Counterpoint POS', () => {
     expect(screen.getByRole('button', { name: /Show PIN/i })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: /Show PIN/i }));
     expect(screen.getByText('1111')).toBeInTheDocument();
+
+    expect(screen.getByRole('button', { name: /^Deactivate$/i })).toBeInTheDocument();
   });
 });

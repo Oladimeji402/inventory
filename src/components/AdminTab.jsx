@@ -18,14 +18,14 @@ const STATUS_FILTERS = [
   { id: 'all', label: 'All' },
   { id: 'active', label: 'Active' },
   { id: 'blocked', label: 'Blocked' },
-  { id: 'fired', label: 'Fired' }
+  { id: 'fired', label: 'Deactivated' }
 ];
 
 const emptyForm = { name: '', pin: '', role: 'Sales Representative' };
 
 function statusLabel(status) {
   if (status === 'blocked') return 'Blocked';
-  if (status === 'fired') return 'Fired';
+  if (status === 'fired' || status === 'deactivated') return 'Deactivated';
   return 'Active';
 }
 
@@ -192,7 +192,7 @@ export default function AdminTab({
           <div><span>Total</span><strong className="mono">{counts.all}</strong></div>
           <div><span>Active</span><strong className="mono">{counts.active}</strong></div>
           <div><span>Blocked</span><strong className="mono">{counts.blocked}</strong></div>
-          <div><span>Fired</span><strong className="mono">{counts.fired}</strong></div>
+          <div><span>Deactivated</span><strong className="mono">{counts.fired}</strong></div>
         </div>
 
         <div className="alert-box admin-note">
@@ -346,7 +346,7 @@ export default function AdminTab({
 
             <section className="panel staff-detail">
               {!selected ? (
-                <div className="empty-state">Select a staff member to view details, check or reset their PIN, promote, block or fire.</div>
+                <div className="empty-state">Select a staff member to view details, check or reset their PIN, promote, block or deactivate.</div>
               ) : (
                 <>
                   <div className="staff-card-head">
@@ -435,7 +435,7 @@ export default function AdminTab({
                     {isSelf ? (
                       <p className="helper">Status actions are locked on your own account. You can still reset your PIN above.</p>
                     ) : isFired ? (
-                      <button className="secondary-btn" onClick={() => onReinstate(selected.id)}>Reinstate</button>
+                      <button className="secondary-btn" onClick={() => onReinstate(selected.id)}>Reactivate staff</button>
                     ) : (
                       <>
                         {isBlocked ? (
@@ -446,7 +446,7 @@ export default function AdminTab({
 
                         {pendingFire ? (
                           <div className="confirm-inline">
-                            <span>Fire this staff member?</span>
+                            <span>Deactivate this staff member?</span>
                             <button
                               className="danger-btn"
                               onClick={() => {
@@ -454,12 +454,12 @@ export default function AdminTab({
                                 setPendingFire(false);
                               }}
                             >
-                              Confirm fire
+                              Confirm deactivation
                             </button>
                             <button className="link-btn" onClick={() => setPendingFire(false)}>Cancel</button>
                           </div>
                         ) : (
-                          <button className="danger-btn" onClick={() => setPendingFire(true)}>Fire</button>
+                          <button className="danger-btn" onClick={() => setPendingFire(true)}>Deactivate</button>
                         )}
                       </>
                     )}

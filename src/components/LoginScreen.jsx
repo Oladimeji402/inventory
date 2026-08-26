@@ -1,12 +1,14 @@
 import { useState } from 'react';
-import { LogIn } from 'lucide-react';
+import { LogIn, Download, WifiOff } from 'lucide-react';
 import { canSignIn } from '../data/permissions';
 import { Wordmark } from './Logo';
+import { usePwa } from '../hooks/usePwa';
 
 export default function LoginScreen({ employees, onLogin }) {
   const [name, setName] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
+  const { isInstallable, isOffline, openInstallModal } = usePwa();
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -37,6 +39,12 @@ export default function LoginScreen({ employees, onLogin }) {
             <h1>Welcome back to the counter.</h1>
             <p>Sign in with the name and PIN your store admin set up for you to start your shift.</p>
           </div>
+          {isInstallable && (
+            <button type="button" className="login-install-banner" onClick={openInstallModal}>
+              <Download size={16} />
+              <span>Install Counterpoint App on this device</span>
+            </button>
+          )}
         </div>
       </div>
 
@@ -44,6 +52,12 @@ export default function LoginScreen({ employees, onLogin }) {
         <div className="section-title">
           <LogIn size={16} />
           <h2>Staff sign-in</h2>
+          {isOffline && (
+            <div className="offline-badge" style={{ marginLeft: 'auto' }} title="Network is down — sign-in and sales still work on this device">
+              <WifiOff size={13} />
+              <span>Offline — sales safe</span>
+            </div>
+          )}
         </div>
         <form className="login-box" onSubmit={handleSubmit}>
           <label className="field-label" htmlFor="staff-name">
