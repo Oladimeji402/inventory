@@ -34,13 +34,29 @@ function isBrowserOnline() {
   return typeof navigator === 'undefined' ? true : navigator.onLine !== false;
 }
 
+function migrateState(state) {
+  if (!state || !Array.isArray(state.products)) return { state, changed: false };
+  const seedImages = new Map(
+    seed.products.filter((product) => product.image).map((product) => [product.id, product.image])
+  );
+  let changed = false;
+  const products = state.products.map((product) => {
+    if (product.image || !seedImages.has(product.id)) return product;
+    changed = true;
+    return { ...product, image: seedImages.get(product.id) };
+  });
+  return { state: changed ? { ...state, products } : state, changed };
+}
+
 function loadState() {
   if (cache) return cache;
   const storage = getLocalStorage();
   const raw = storage?.getItem(STORAGE_KEY);
   if (raw) {
     try {
-      cache = JSON.parse(raw);
+      const { state, changed } = migrateState(JSON.parse(raw));
+      cache = state;
+      if (changed) persist();
       return cache;
     } catch {
       // corrupt local state — fall through and reseed
@@ -284,6 +300,12 @@ export async function addAuditEntry(entry) {
 export async function resetDemoData() {
   getLocalStorage()?.removeItem(STORAGE_KEY);
   getLocalStorage()?.removeItem(QUEUE_KEY);
+  try {
+    getLocalStorage()?.removeItem('counterpoint:till-draft:v1');
+    getLocalStorage()?.removeItem('counterpoint:install-dismissed');
+  } catch {
+    // ignore
+  }
   cache = null;
   notifySyncListeners();
 }

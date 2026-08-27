@@ -28,12 +28,12 @@ that would expose who works at the store and what each role is allowed to do to 
 the till. For local testing, the seeded accounts in `src/data/seed.json` are:
 
 
-| Name         | Role        | PIN                  |      |
-| ------------ | ----------- | -------------------- | ---- |
-| Ada Okafor   |             | Sales Representative | 1111 |
-| Bola Adebayo | Supervisor  | 2222                 |      |
-| Grace Nwosu  | Manager     | 9999                 |      |
-| Kemi Yusuf   | Store Admin | 4444                 |      |
+| Name         | Role                 | PIN  |
+| ------------ | -------------------- | ---- |
+| Ada Okafor   | Sales Representative | 1111 |
+| Bola Adebayo | Supervisor           | 2222 |
+| Grace Nwosu  | Manager              | 9999 |
+| Kemi Yusuf   | Store Admin          | 4444 |
 
 
 Replace these with real staff records (and unique PINs) before handing the app to a store.

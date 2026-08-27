@@ -37,7 +37,13 @@ describe('Counterpoint POS', () => {
 
     fireEvent.click(await screen.findByRole('button', { name: /Peak Milk Tin \(Large\)/i }));
 
-    const payBtn = screen.getByRole('button', { name: /Pay now/i });
+    const confirmOrderBtn = screen.getByRole('button', { name: /Confirm Order/i });
+    expect(confirmOrderBtn).toBeInTheDocument();
+    fireEvent.click(confirmOrderBtn);
+
+    expect(await screen.findByRole('heading', { name: /Select Payment Method/i })).toBeInTheDocument();
+
+    const payBtn = screen.getByRole('button', { name: /^Pay ₦/i });
     expect(payBtn).toBeInTheDocument();
     fireEvent.click(payBtn);
 
@@ -69,5 +75,39 @@ describe('Counterpoint POS', () => {
     expect(screen.getByText('1111')).toBeInTheDocument();
 
     expect(screen.getByRole('button', { name: /^Deactivate$/i })).toBeInTheDocument();
+  });
+
+  it('supports card and transfer checkout and holding sales', async () => {
+    renderApp();
+
+    fireEvent.change(await screen.findByLabelText(/^Name$/i), { target: { value: 'Ada Okafor' } });
+    fireEvent.change(screen.getByLabelText(/^PIN$/i), { target: { value: '1111' } });
+    fireEvent.click(screen.getByRole('button', { name: /Clock in/i }));
+
+    // Add item
+    fireEvent.click(await screen.findByRole('button', { name: /Peak Milk Tin \(Large\)/i }));
+
+    // Hold sale
+    const holdBtn = screen.getByRole('button', { name: /^Hold sale$/i });
+    fireEvent.click(holdBtn);
+
+    // Verify held sale appears in held orders bar
+    expect(await screen.findByRole('button', { name: /Resume held order for/i })).toBeInTheDocument();
+
+    // Resume held sale
+    fireEvent.click(screen.getByRole('button', { name: /Resume held order for/i }));
+
+    // Open payment modal
+    fireEvent.click(screen.getByRole('button', { name: /Confirm Order/i }));
+
+    // Switch to Card tab
+    fireEvent.click(screen.getByRole('tab', { name: /Card/i }));
+    expect(screen.getByText(/Swipe \/ Tap Card on POS Terminal/i)).toBeInTheDocument();
+
+    // Complete payment
+    fireEvent.click(screen.getByRole('button', { name: /^Pay ₦/i }));
+
+    // Verify receipt modal
+    expect(await screen.findByRole('button', { name: /Print receipt/i })).toBeInTheDocument();
   });
 });

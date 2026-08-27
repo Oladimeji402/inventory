@@ -109,31 +109,29 @@ export default function CalculatorPopup({ open, onClose }) {
   ];
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div className="calculator-modal fade-in" onClick={(e) => e.stopPropagation()} role="dialog" aria-label="Calculator">
-        <div className="calculator-head">
-          <h3>Calculator</h3>
-          <button type="button" className="modal-close" onClick={onClose} title="Close">
-            <X size={14} />
-          </button>
-        </div>
-        <div className="calculator-display mono">
-          <span className="calculator-expression">{operator ? `${formatNumber(stored)} ${operator}` : '\u00a0'}</span>
-          <strong>{display}</strong>
-        </div>
-        <div className="calculator-pad">
-          {keys.map((key) => (
-            <button
-              key={key.label}
-              type="button"
-              className={key.className || 'calc-key'}
-              onClick={key.action}
-            >
-              {key.label}
-            </button>
-          ))}
-        </div>
+    <aside className="calculator-dock fade-in" role="complementary" aria-label="Calculator">
+      <div className="calculator-head">
+        <h3>Calculator</h3>
+        <button type="button" className="modal-close" onClick={onClose} title="Close calculator" aria-label="Close calculator">
+          <X size={14} />
+        </button>
       </div>
-    </div>
+      <div className="calculator-display mono">
+        <span className="calculator-expression">{operator ? `${formatNumber(stored)} ${operator}` : '\u00a0'}</span>
+        <strong>{display}</strong>
+      </div>
+      <div className="calculator-pad">
+        {keys.map((key) => (
+          <button
+            key={key.label}
+            type="button"
+            className={key.className || 'calc-key'}
+            onClick={key.action}
+          >
+            {key.label}
+          </button>
+        ))}
+      </div>
+    </aside>
   );
 }

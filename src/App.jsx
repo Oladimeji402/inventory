@@ -618,6 +618,8 @@ export default function App() {
           onHoldSale={holdSale}
           heldSales={heldSales}
           onResumeHeldSale={resumeHeldSale}
+          session={session}
+          onClockOut={clockOut}
         />
       )}
 

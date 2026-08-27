@@ -1,6 +1,8 @@
 import { useState } from 'react';
-import { LogIn, Download, WifiOff } from 'lucide-react';
+import { LogIn, Download, WifiOff, RotateCcw } from 'lucide-react';
 import { canSignIn } from '../data/permissions';
+import { resetDemoData } from '../services/store';
+import { clearTillDraft } from '../services/sessionDraft';
 import { Wordmark } from './Logo';
 import { usePwa } from '../hooks/usePwa';
 
@@ -8,14 +10,16 @@ export default function LoginScreen({ employees, onLogin }) {
   const [name, setName] = useState('');
   const [pin, setPin] = useState('');
   const [error, setError] = useState('');
+  const [resetting, setResetting] = useState(false);
   const { isInstallable, isOffline, openInstallModal } = usePwa();
 
   function handleSubmit(e) {
     e.preventDefault();
     const trimmedName = name.trim().toLowerCase();
+    const enteredPin = String(pin).trim();
     const match = employees.find((employee) => employee.name.trim().toLowerCase() === trimmedName);
 
-    if (!match || match.pin !== pin) {
+    if (!match || String(match.pin) !== enteredPin) {
       setError("That name and PIN don't match our records. Check with your store admin.");
       return;
     }
@@ -28,6 +32,25 @@ export default function LoginScreen({ employees, onLogin }) {
     setError('');
     setPin('');
     onLogin(match);
+  }
+
+  async function handleResetDemo() {
+    if (resetting) return;
+    const confirmed = window.confirm(
+      'Reset this device to the demo staff, products and PINs?\n\nSaved sales on this browser will be cleared.'
+    );
+    if (!confirmed) return;
+
+    setResetting(true);
+    try {
+      clearTillDraft();
+      await resetDemoData();
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      setError('Could not reset demo data. Try clearing site data in the browser.');
+      setResetting(false);
+    }
   }
 
   return (
@@ -98,6 +121,10 @@ export default function LoginScreen({ employees, onLogin }) {
             Clock in
           </button>
           <p className="helper">Forgot your PIN? Ask your store admin to reset it for you.</p>
+          <button type="button" className="reset-demo-btn" onClick={handleResetDemo} disabled={resetting}>
+            <RotateCcw size={14} />
+            {resetting ? 'Resetting…' : 'Reset demo data'}
+          </button>
         </form>
       </section>
     </div>
