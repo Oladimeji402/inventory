@@ -5,16 +5,16 @@ import {
   Store, 
   Bike, 
   ShoppingBag, 
-  CheckCircle2, 
   Clock, 
   Receipt, 
   ShieldCheck,
   Zap,
   MapPin,
-  ChevronRight
+  CheckCircle2,
+  Navigation
 } from 'lucide-react';
 
-export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
+export default function InteractiveLiveDemoWidget() {
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -91,7 +91,7 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
 
   const addLog = (msg, type = 'info') => {
     const time = new Date().toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    setLogs(prev => [{ time, msg, type }, ...prev.slice(0, 7)]);
+    setLogs(prev => [{ time, msg, type }, ...prev.slice(0, 6)]);
   };
 
   const handleStartSimulation = () => {
@@ -99,38 +99,38 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
 
     // Step 1: Ringing Sale
     setDemoState('ringing');
-    addLog(`[Checkout] Order initiated at ${currentStore.subdomain} for ${currentStore.productName}`, 'info');
+    addLog(`[Storefront] Customer initiated checkout at ${currentStore.subdomain}`, 'info');
 
     setTimeout(() => {
       // Step 2: Syncing Inventory
       setDemoState('syncing');
       setCurrentStock(prev => Math.max(0, prev - 1));
-      addLog(`[Inventory] Decremented stock: ${currentStore.initialStock} → ${currentStore.initialStock - 1} units on live catalog`, 'success');
-      addLog(`[Payment] ₦${currentStore.price.replace('₦','')} settled via direct checkout`, 'success');
+      addLog(`[Inventory Sync] Live catalog stock decremented to ${currentStore.initialStock - 1} units in real time`, 'success');
+      addLog(`[Settlement] ${currentStore.price} direct payment confirmed`, 'success');
 
       setTimeout(() => {
         // Step 3: Courier Dispatch & Transit
         setDemoState('in_transit');
-        addLog(`[Radar] Auto-dispatched nearest courier: ${currentStore.riderName} (${currentStore.vehicle})`, 'info');
-        addLog(`[Logistics] Optimized corridor route assigned. Customer ETA ~18 mins`, 'info');
+        addLog(`[Radar] Auto-dispatched nearest verified courier: ${currentStore.riderName}`, 'info');
+        addLog(`[Route Batch] Corridor delivery route optimized (ETA ~18 mins)`, 'info');
 
         // Animate progress
         let progress = 0;
         const interval = setInterval(() => {
-          progress += 20;
+          progress += 25;
           setProgressPct(progress);
-          setEtaTimer(prev => Math.max(1, prev - 3));
+          setEtaTimer(prev => Math.max(1, prev - 4));
 
           if (progress >= 100) {
             clearInterval(interval);
             setDemoState('delivered');
-            addLog(`[Proof of Delivery] Secure OTP verified. Order delivered to ${currentStore.buyerName}`, 'success');
-            addLog(`[Payout] Courier fare automatically credited to wallet`, 'success');
+            addLog(`[Proof of Delivery] OTP verified. Handed over to ${currentStore.buyerName}`, 'success');
+            addLog(`[Payout] 100% courier trip fare & tips deposited to driver wallet`, 'success');
           }
-        }, 800);
+        }, 900);
 
-      }, 1400);
-    }, 1200);
+      }, 1300);
+    }, 1100);
   };
 
   const handleReset = () => {
@@ -175,13 +175,13 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
             <div className="lp-demo-top-left">
               <span className="lp-preview-dot" />
               <span className="font-mono" style={{ fontSize: '12.5px', fontWeight: 600 }}>
-                ACTIVE SIMULATION: {currentStore.subdomain}
+                ACTIVE TENANT: {currentStore.subdomain}
               </span>
             </div>
             {demoState !== 'idle' && (
               <button className="lp-btn-reset" onClick={handleReset}>
                 <RotateCcw size={13} />
-                <span>Reset Simulation</span>
+                <span>Reset Demo</span>
               </button>
             )}
           </div>
@@ -200,8 +200,8 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
                     <span className="lp-demo-col-sub font-mono">{currentStore.subdomain}</span>
                   </div>
                 </div>
-                <span className={`lp-demo-status-pill ${demoState === 'ringing' ? 'active' : ''}`}>
-                  {demoState === 'idle' ? 'Ready' : demoState === 'ringing' ? 'Processing...' : 'Completed'}
+                <span className={`lp-demo-status-pill ${demoState === 'ringing' || demoState === 'syncing' ? 'active' : demoState === 'delivered' ? 'success' : ''}`}>
+                  {demoState === 'idle' ? 'Ready' : demoState === 'ringing' ? 'Checking out...' : demoState === 'syncing' ? 'Syncing...' : 'Synced'}
                 </span>
               </div>
 
@@ -216,23 +216,25 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
 
                 <div className="lp-demo-stock-box">
                   <span style={{ fontSize: '13px', color: 'var(--lp-text-2)' }}>Live Catalog Stock:</span>
-                  <span className="font-mono" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--lp-text)' }}>
-                    {currentStock} units
-                  </span>
-                  {demoState !== 'idle' && (
-                    <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, color: '#27BBAD' }}>(-1 sold)</span>
-                  )}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span className="font-mono" style={{ fontSize: '14px', fontWeight: 700, color: 'var(--lp-text)' }}>
+                      {currentStock} units
+                    </span>
+                    {demoState !== 'idle' && (
+                      <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, color: '#27BBAD' }}>(-1 sold)</span>
+                    )}
+                  </div>
                 </div>
 
                 {demoState !== 'idle' && (
                   <div className="lp-demo-receipt-mini">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#27BBAD', fontWeight: 600, fontSize: '11.5px', marginBottom: '6px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#27BBAD', fontWeight: 600, fontSize: '11.5px', marginBottom: '4px' }}>
                       <Receipt size={13} />
-                      <span className="font-mono">INVOICE #{Math.floor(100000 + Math.random() * 900000)}</span>
+                      <span className="font-mono">DIGITAL RECEIPT #{Math.floor(100000 + Math.random() * 900000)}</span>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '12.5px' }}>
-                      <span style={{ color: 'var(--lp-text-2)' }}>Settled Total</span>
-                      <span className="font-mono" style={{ fontWeight: 700 }}>{currentStore.price}</span>
+                      <span style={{ color: 'var(--lp-text-2)' }}>Amount Paid</span>
+                      <span className="font-mono" style={{ fontWeight: 700, color: 'var(--lp-text)' }}>{currentStore.price}</span>
                     </div>
                   </div>
                 )}
@@ -240,7 +242,7 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
                 {demoState === 'idle' && (
                   <button className="lp-btn-primary" style={{ width: '100%', justifyContent: 'center', marginTop: 'auto' }} onClick={handleStartSimulation}>
                     <Play size={14} />
-                    <span>Trigger Customer Checkout</span>
+                    <span>Trigger Order Checkout</span>
                   </button>
                 )}
               </div>
@@ -254,33 +256,33 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
                     <ShoppingBag size={13} />
                   </div>
                   <div>
-                    <h4 className="lp-demo-col-title">2. Shopper Experience</h4>
+                    <h4 className="lp-demo-col-title">2. Shopper Hub</h4>
                     <span className="lp-demo-col-sub font-mono">shop.subtech.app</span>
                   </div>
                 </div>
-                <span className={`lp-demo-status-pill ${demoState === 'syncing' ? 'active' : ''}`}>
-                  {demoState === 'syncing' ? 'Syncing...' : 'Live Stream'}
+                <span className={`lp-demo-status-pill ${demoState === 'in_transit' ? 'active' : demoState === 'delivered' ? 'success' : ''}`}>
+                  {demoState === 'in_transit' ? 'In Transit' : demoState === 'delivered' ? 'Arrived' : 'Live Stream'}
                 </span>
               </div>
 
               <div className="lp-demo-col-body">
                 <div className="lp-demo-shopper-card">
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
                     <span className="lp-preview-tag">{currentStore.category}</span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: 'var(--lp-text-3)', fontWeight: 600 }}>
                       <Clock size={12} />
                       <span>{demoState === 'in_transit' ? `${etaTimer} mins` : '18 mins'}</span>
                     </span>
                   </div>
-                  <h5 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 8px' }}>{currentStore.productName}</h5>
+                  <h5 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 8px', color: 'var(--lp-text)' }}>{currentStore.productName}</h5>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <span className="font-mono" style={{ fontWeight: 700, color: 'var(--lp-text)' }}>{currentStore.price}</span>
-                    <span style={{ fontSize: '11px', fontWeight: 600, color: '#27BBAD' }}>{currentStock} in stock</span>
+                    <span className="font-mono" style={{ fontWeight: 700, color: 'var(--lp-text)', fontSize: '15px' }}>{currentStore.price}</span>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: '#27BBAD' }}>{currentStock} available</span>
                   </div>
                   <div style={{ marginTop: '12px', padding: '10px', background: '#fafafa', border: '1px solid var(--lp-border)', borderRadius: '6px' }}>
-                    <div style={{ fontSize: '11.5px', color: 'var(--lp-text-3)' }}>Delivery Recipient:</div>
-                    <div style={{ fontSize: '12.5px', fontWeight: 600, color: 'var(--lp-text)', marginTop: '1px' }}>{currentStore.buyerName}</div>
-                    <div style={{ fontSize: '11.5px', color: 'var(--lp-text-2)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
+                    <div style={{ fontSize: '11px', color: 'var(--lp-text-3)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Delivery Destination:</div>
+                    <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--lp-text)', marginTop: '2px' }}>{currentStore.buyerName}</div>
+                    <div style={{ fontSize: '12px', color: 'var(--lp-text-2)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
                       <MapPin size={11} color="#27BBAD" />
                       <span>{currentStore.buyerAddress}</span>
                     </div>
@@ -297,50 +299,65 @@ export default function InteractiveLiveDemoWidget({ onOpenStoreModal }) {
                     <Bike size={13} />
                   </div>
                   <div>
-                    <h4 className="lp-demo-col-title">3. Courier Dispatch</h4>
+                    <h4 className="lp-demo-col-title">3. Courier Radar</h4>
                     <span className="lp-demo-col-sub font-mono">rider.subtech.app</span>
                   </div>
                 </div>
                 <span className={`lp-demo-status-pill ${demoState === 'delivered' ? 'success' : demoState === 'in_transit' ? 'active' : ''}`}>
-                  {demoState === 'idle' ? 'Standby' : demoState === 'delivered' ? 'Delivered!' : demoState === 'in_transit' ? 'In Transit' : 'Matching'}
+                  {demoState === 'idle' ? 'Standby' : demoState === 'delivered' ? 'Delivered' : demoState === 'in_transit' ? 'In Route' : 'Matching'}
                 </span>
               </div>
 
               <div className="lp-demo-col-body">
-                <div className="simulated-map-container" style={{ background: '#fafafa' }}>
-                  <div className="map-grid-lines" />
-                  <div className="map-point store-point">
-                    <Store size={15} color="#27BBAD" />
-                    <span className="point-label">Store</span>
-                  </div>
-                  <div className="map-point customer-point">
-                    <MapPin size={15} color="#27BBAD" />
-                    <span className="point-label">Customer</span>
-                  </div>
-                  {demoState !== 'idle' && (
-                    <div className="map-rider-marker" style={{ left: `${Math.min(85, Math.max(15, 15 + progressPct * 0.7))}%` }}>
-                      <div className="rider-avatar" style={{ background: '#27BBAD' }}>
-                        <Bike size={14} />
+                {/* Modern GPS Simulated Route Card */}
+                <div className="lp-gps-route-card">
+                  <div className="lp-gps-route-nodes">
+                    <div className="lp-gps-node origin">
+                      <div className="lp-gps-node-dot" />
+                      <div>
+                        <div className="lp-gps-node-label">Pickup Origin</div>
+                        <div className="lp-gps-node-name">{currentStore.storeName}</div>
                       </div>
                     </div>
-                  )}
-                  <div className="transit-track-line">
-                    <div className="transit-progress-bar" style={{ width: `${progressPct}%`, background: '#27BBAD' }} />
+
+                    <div className="lp-gps-transit-line-wrap">
+                      <div className="lp-gps-transit-track">
+                        <div className="lp-gps-transit-fill" style={{ width: `${progressPct}%` }} />
+                      </div>
+                      <div 
+                        className="lp-gps-rider-marker" 
+                        style={{ left: `${Math.min(92, Math.max(8, progressPct))}%` }}
+                      >
+                        <Bike size={13} color="#ffffff" />
+                      </div>
+                    </div>
+
+                    <div className="lp-gps-node destination">
+                      <div className="lp-gps-node-dot dest" />
+                      <div>
+                        <div className="lp-gps-node-label">Doorstep Dropoff</div>
+                        <div className="lp-gps-node-name">{currentStore.buyerAddress.split(',')[0]}</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 
-                {demoState !== 'idle' && (
-                  <div style={{ padding: '12px', background: '#fafafa', border: '1px solid var(--lp-border)', borderRadius: '8px', fontSize: '12.5px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <strong>{currentStore.riderName}</strong>
-                      <span className="font-mono" style={{ color: '#27BBAD', fontWeight: 600 }}>{currentStore.vehicle}</span>
+                {/* Telemetry Driver Card */}
+                <div className="lp-gps-driver-card">
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <Navigation size={13} color="#27BBAD" />
+                      <strong style={{ fontSize: '13px', color: 'var(--lp-text)' }}>{currentStore.riderName}</strong>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', color: 'var(--lp-text-2)', marginTop: '4px', fontSize: '12px' }}>
-                      <span>Status: {demoState === 'delivered' ? 'Handed Over' : 'En Route'}</span>
-                      <strong style={{ color: '#27BBAD' }}>{demoState === 'delivered' ? '100% Complete' : `ETA: ~${etaTimer} mins`}</strong>
-                    </div>
+                    <span className="font-mono" style={{ fontSize: '11.5px', color: 'var(--lp-text-3)' }}>{currentStore.vehicle}</span>
                   </div>
-                )}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--lp-border)', fontSize: '12px' }}>
+                    <span style={{ color: 'var(--lp-text-2)' }}>Status:</span>
+                    <strong style={{ color: '#27BBAD' }}>
+                      {demoState === 'delivered' ? '✓ Handover OTP Verified' : demoState === 'in_transit' ? `In Route (ETA ~${etaTimer} mins)` : 'Awaiting Order'}
+                    </strong>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

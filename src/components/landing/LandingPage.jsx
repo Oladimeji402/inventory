@@ -14,7 +14,7 @@ import RegistrationModal from './RegistrationModal';
 import RiderSignupModal from './RiderSignupModal';
 import Footer from './Footer';
 
-export default function LandingPage({ onLaunchPOS }) {
+export default function LandingPage({ onLaunchPOS, onOpenMerchantPortal, onOpenRiderPortal, onOpenMarketplace }) {
   const [storeModalOpen, setStoreModalOpen] = useState(false);
   const [riderModalOpen, setRiderModalOpen] = useState(false);
   const [selectedInitialSlug, setSelectedInitialSlug] = useState('');
@@ -41,14 +41,13 @@ export default function LandingPage({ onLaunchPOS }) {
       <Navbar 
         onOpenStoreModal={() => handleOpenStoreModal()}
         onOpenRiderModal={handleOpenRiderModal}
-        onLaunchPOS={onLaunchPOS}
+        onOpenMarketplace={onOpenMarketplace}
       />
 
       {/* Hero Section with Network Visuals */}
       <HeroSection 
         onOpenStoreModal={handleOpenStoreModal}
         onOpenRiderModal={handleOpenRiderModal}
-        onLaunchPOS={onLaunchPOS}
         onOpenLiveDemo={handleScrollToLiveDemo}
       />
 
@@ -56,14 +55,11 @@ export default function LandingPage({ onLaunchPOS }) {
       <EcosystemPillars 
         onOpenStoreModal={handleOpenStoreModal}
         onOpenRiderModal={handleOpenRiderModal}
-        onLaunchPOS={onLaunchPOS}
+        onOpenMarketplace={onOpenMarketplace}
       />
 
       {/* Interactive Hands-on Sandbox & Live Dispatch Simulator */}
-      <InteractiveLiveDemoWidget 
-        onOpenStoreModal={handleOpenStoreModal}
-        onLaunchPOS={onLaunchPOS}
-      />
+      <InteractiveLiveDemoWidget />
 
       {/* Subdomain Architecture & Edge DNS Resolver */}
       <SubdomainArchitectureSection 
@@ -80,7 +76,6 @@ export default function LandingPage({ onLaunchPOS }) {
       {/* 3-Step Walkthrough */}
       <HowItWorksSteps 
         onOpenStoreModal={handleOpenStoreModal}
-        onLaunchPOS={onLaunchPOS}
       />
 
       {/* Social Proof & Case Studies */}
@@ -99,7 +94,7 @@ export default function LandingPage({ onLaunchPOS }) {
       <Footer 
         onOpenStoreModal={handleOpenStoreModal}
         onOpenRiderModal={handleOpenRiderModal}
-        onLaunchPOS={onLaunchPOS}
+        onOpenMarketplace={onOpenMarketplace}
       />
 
       {/* Interactive Modals */}
@@ -107,12 +102,13 @@ export default function LandingPage({ onLaunchPOS }) {
         isOpen={storeModalOpen}
         onClose={() => setStoreModalOpen(false)}
         initialSlug={selectedInitialSlug}
-        onLaunchPOS={onLaunchPOS}
+        onOpenMerchantPortal={onOpenMerchantPortal}
       />
 
       <RiderSignupModal 
         isOpen={riderModalOpen}
         onClose={() => setRiderModalOpen(false)}
+        onOpenRiderPortal={onOpenRiderPortal}
       />
     </div>
   );

@@ -12,7 +12,7 @@ import {
   Coins
 } from 'lucide-react';
 
-export default function RiderSignupModal({ isOpen, onClose }) {
+export default function RiderSignupModal({ isOpen, onClose, onOpenRiderPortal }) {
   const [formData, setFormData] = useState({
     fullName: '',
     phone: '',
@@ -61,113 +61,91 @@ export default function RiderSignupModal({ isOpen, onClose }) {
 
         {!isSuccess ? (
           <div>
-            {/* Modal Header */}
-            <div className="modal-header-box">
-              <div className="modal-icon-badge bg-amber-50 text-amber-700">
-                <Bike size={26} />
+            <div className="modal-header-block text-center">
+              <div className="modal-step-badge" style={{ background: '#0a0a0a', color: '#ffffff' }}>
+                <span>Subtech Courier Fleet</span>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Join Subtech Ventures Rider Fleet</h3>
-                <p className="text-xs text-slate-500">Receive instant store-to-door dispatch jobs with guaranteed daily payouts.</p>
-              </div>
+              <h3 className="modal-title">Deliver with Subtech Courier</h3>
+              <p className="modal-subtitle">
+                Keep 100% of customer tips, earn guaranteed corridor trip fares, and cash out instantly.
+              </p>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="modal-form-body">
+            <form onSubmit={handleSubmit} className="modal-form-step">
               <div className="form-group">
                 <label className="form-label">Full Name *</label>
-                <input
+                <input 
                   type="text"
                   required
-                  placeholder="e.g. Tunde Oladipo"
+                  placeholder="e.g. Samuel Olawale"
                   value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  onChange={(e) => setFormData(prev => ({ ...prev, fullName: e.target.value }))}
                   className="form-input"
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="form-grid-2">
                 <div className="form-group">
-                  <label className="form-label">Phone / WhatsApp Number *</label>
-                  <input
-                    type="tel"
-                    required
-                    placeholder="+234 801 234 5678"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="form-input"
-                  />
+                  <label className="form-label">WhatsApp Phone Number *</label>
+                  <div className="input-with-icon">
+                    <Phone size={18} className="input-icon" />
+                    <input 
+                      type="tel"
+                      required
+                      placeholder="+234 800 000 0000"
+                      value={formData.phone}
+                      onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                      className="form-input font-mono"
+                    />
+                  </div>
                 </div>
-                <div className="form-group">
-                  <label className="form-label">Email Address *</label>
-                  <input
-                    type="email"
-                    required
-                    placeholder="rider@gmail.com"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="form-input"
-                  />
-                </div>
-              </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="form-group">
-                  <label className="form-label">Vehicle Type *</label>
-                  <select
+                  <label className="form-label">Vehicle Type</label>
+                  <select 
                     value={formData.vehicleType}
-                    onChange={(e) => setFormData({ ...formData, vehicleType: e.target.value })}
+                    onChange={(e) => setFormData(prev => ({ ...prev, vehicleType: e.target.value }))}
                     className="form-select"
                   >
-                    {vehicleOptions.map((v) => (
+                    {vehicleOptions.map(v => (
                       <option key={v} value={v}>{v}</option>
                     ))}
                   </select>
                 </div>
-
-                <div className="form-group">
-                  <label className="form-label">Primary City Zone *</label>
-                  <select
-                    value={formData.primaryZone}
-                    onChange={(e) => setFormData({ ...formData, primaryZone: e.target.value })}
-                    className="form-select"
-                  >
-                    {zones.map((z) => (
-                      <option key={z} value={z}>{z}</option>
-                    ))}
-                  </select>
-                </div>
               </div>
 
               <div className="form-group">
-                <label className="form-label">Driver License / ID Number</label>
-                <input
-                  type="text"
-                  placeholder="e.g. DL-98320492"
-                  value={formData.driversLicenseNumber}
-                  onChange={(e) => setFormData({ ...formData, driversLicenseNumber: e.target.value })}
-                  className="form-input"
-                />
+                <label className="form-label">Primary Delivery Corridor (Zone)</label>
+                <select 
+                  value={formData.primaryZone}
+                  onChange={(e) => setFormData(prev => ({ ...prev, primaryZone: e.target.value }))}
+                  className="form-select"
+                >
+                  {zones.map(z => (
+                    <option key={z} value={z}>{z}</option>
+                  ))}
+                </select>
               </div>
 
-              <div className="rider-perks-box p-3 rounded-lg bg-amber-50 border border-amber-200 text-xs text-slate-700">
-                <div className="flex items-center gap-1.5 text-amber-800 font-bold mb-1">
+              <div className="rider-perks-box p-3 rounded-lg bg-emerald-50 border border-emerald-200 text-xs text-slate-700">
+                <div className="flex items-center gap-1.5 text-emerald-800 font-bold mb-1">
                   <Coins size={15} />
                   <span>Rider Benefits:</span>
                 </div>
-                <div>&bull; Keep 100% of customer tips &bull; Zero monthly fee &bull; Direct bank cashouts daily</div>
+                <div>&bull; Keep 100% of customer tips &bull; Zero commission fee &bull; Direct bank cashouts daily</div>
               </div>
 
               <button 
                 type="submit" 
                 disabled={isSubmitting}
-                className="btn-modal-submit btn-orange-submit w-full mt-4"
+                className="lp-btn-primary w-full mt-4 justify-center"
+                style={{ width: '100%', padding: '14px', background: '#0a0a0a' }}
               >
                 {isSubmitting ? (
-                  <span>Registering Rider Profile...</span>
+                  <span>Registering Courier Profile...</span>
                 ) : (
                   <>
-                    <span>Submit Rider Application</span>
+                    <span>Submit & Open Rider App</span>
                     <Sparkles size={16} />
                   </>
                 )}
@@ -176,17 +154,22 @@ export default function RiderSignupModal({ isOpen, onClose }) {
           </div>
         ) : (
           <div className="modal-success-pane text-center py-4">
-            <CheckCircle2 size={52} className="text-amber-600 mx-auto" />
-            <h3 className="text-xl font-bold text-slate-900 mt-3">Welcome to the Rider Fleet!</h3>
+            <CheckCircle2 size={52} color="#27BBAD" className="mx-auto" />
+            <h3 className="text-xl font-bold text-slate-900 mt-3">Welcome to Subtech Courier!</h3>
             <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-              Your application has been received. Your rider activation SMS and app link for <strong>rider.subtech.app</strong> have been sent to {formData.phone || 'your phone'}.
+              Your courier terminal has been activated for <strong>{formData.primaryZone}</strong>.
             </p>
 
             <button 
-              className="btn-primary-register mt-6"
-              onClick={onClose}
+              className="lp-btn-primary justify-center mt-6"
+              style={{ width: '100%', padding: '14px', background: '#27BBAD' }}
+              onClick={() => {
+                onClose();
+                if (onOpenRiderPortal) onOpenRiderPortal();
+              }}
             >
-              <span>Back to Subtech Ventures Hub</span>
+              <Bike size={16} />
+              <span>Launch Rider Dispatch Portal</span>
             </button>
           </div>
         )}

@@ -1,0 +1,218 @@
+/* ==========================================================================
+   SUBTECH RIDER & COURIER APP STYLES
+   Mobile-First Driver Interface · White + #27BBAD Teal · High Contrast
+   ========================================================================== */
+
+.rider-root {
+  min-height: 100vh;
+  background: #f7f9fa;
+  color: #0a0a0a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 84px; /* Space for bottom driver nav */
+}
+
+/* ── DRIVER TOP BAR ───────────────────────────────────────────────────────── */
+.rider-top-bar {
+  position: sticky;
+  top: 0;
+  background: #ffffff;
+  border-bottom: 1px solid #e5e5e5;
+  padding: 14px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 30;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+}
+
+.rider-duty-toggle {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 100px;
+  border: 1.5px solid #e5e5e5;
+  background: #ffffff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.rider-duty-toggle.online {
+  border-color: #27BBAD;
+  background: rgba(39, 187, 173, 0.08);
+}
+
+.rider-duty-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #a3a3a3;
+  transition: all 0.2s ease;
+}
+
+.rider-duty-toggle.online .rider-duty-dot {
+  background: #27BBAD;
+  box-shadow: 0 0 0 3px rgba(39, 187, 173, 0.3);
+}
+
+/* ── DRIVER BOTTOM NAVIGATION ─────────────────────────────────────────────── */
+.rider-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  border-top: 1px solid #e5e5e5;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 8px 12px;
+  z-index: 40;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.rider-nav-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  background: transparent;
+  border: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #737373;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 8px;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.rider-nav-btn.active {
+  color: #27BBAD;
+}
+
+/* ── RADAR PULSE SCANNER ─────────────────────────────────────────────────── */
+.rider-radar-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.radar-circle-wrap {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.radar-pulse-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px solid #27BBAD;
+  opacity: 0.8;
+  animation: radarPulse 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+.radar-pulse-ring:nth-child(2) {
+  animation-delay: 0.6s;
+}
+
+.radar-pulse-ring:nth-child(3) {
+  animation-delay: 1.2s;
+}
+
+@keyframes radarPulse {
+  0% { transform: scale(0.4); opacity: 0.8; }
+  100% { transform: scale(1.6); opacity: 0; }
+}
+
+.radar-center-bike {
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: #27BBAD;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 16px rgba(39, 187, 173, 0.4);
+  z-index: 2;
+}
+
+/* ── INCOMING TRIP MODAL ──────────────────────────────────────────────────── */
+.rider-incoming-card {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 20px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+  margin: 20px;
+  animation: popIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popIn {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* ── OTP KEYPAD ───────────────────────────────────────────────────────────── */
+.otp-keypad-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  max-width: 280px;
+  margin: 20px auto 0;
+}
+
+.otp-key-btn {
+  height: 58px;
+  border-radius: 14px;
+  border: 1.5px solid #e5e5e5;
+  background: #ffffff;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0a0a0a;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  font-family: inherit;
+}
+
+.otp-key-btn:active {
+  background: #f0f0f0;
+  transform: scale(0.95);
+}
+
+.otp-dots-wrap {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+
+.otp-dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #d4d4d4;
+  background: transparent;
+  transition: all 0.15s ease;
+}
+
+.otp-dot.filled {
+  background: #27BBAD;
+  border-color: #27BBAD;
+  transform: scale(1.15);
+}

@@ -1,0 +1,448 @@
+/* ==========================================================================
+   SUBTECH CUSTOMER STOREFRONT STYLES
+   Mobile-First · White + #27BBAD Teal · Ultra Fast Checkout
+   ========================================================================== */
+
+.storefront-root {
+  min-height: 100vh;
+  background: #fbfcfc;
+  color: #0a0a0a;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding-bottom: 90px; /* Space for sticky cart bar */
+}
+
+/* ── STICKY TOP NAV ───────────────────────────────────────────────────────── */
+.sf-header {
+  position: sticky;
+  top: 0;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid #e5e5e5;
+  z-index: 40;
+  transition: all 0.2s ease;
+}
+
+.sf-header-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.sf-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.sf-brand-logo {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: #27BBAD;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 2px 6px rgba(39, 187, 173, 0.25);
+  flex-shrink: 0;
+}
+
+.sf-brand-title {
+  font-size: 15.5px;
+  font-weight: 800;
+  color: #0a0a0a;
+  margin: 0;
+  letter-spacing: -0.02em;
+}
+
+.sf-brand-badge {
+  font-size: 11.5px;
+  color: #27BBAD;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sf-cart-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: #0a0a0a;
+  color: #ffffff;
+  border: none;
+  border-radius: 100px;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  transition: transform 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+}
+
+.sf-cart-btn:hover {
+  background: #262626;
+  transform: translateY(-1px);
+}
+
+.sf-cart-count {
+  background: #27BBAD;
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 100px;
+}
+
+/* ── STORE HERO BANNER ────────────────────────────────────────────────────── */
+.sf-banner {
+  max-width: 900px;
+  margin: 20px auto;
+  padding: 0 20px;
+}
+
+.sf-banner-card {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+}
+
+.sf-banner-meta {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  font-size: 12.5px;
+  color: #525252;
+}
+
+.sf-banner-meta-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* ── SEARCH & CATEGORY BAR ────────────────────────────────────────────────── */
+.sf-controls {
+  max-width: 900px;
+  margin: 0 auto 20px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sf-search-box {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #ffffff;
+  border: 1.5px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 10px 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+  transition: border-color 0.2s ease;
+}
+
+.sf-search-box:focus-within {
+  border-color: #27BBAD;
+}
+
+.sf-search-input {
+  border: none;
+  outline: none;
+  background: transparent;
+  width: 100%;
+  font-size: 14px;
+  font-family: inherit;
+}
+
+.sf-categories {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: none;
+}
+
+.sf-categories::-webkit-scrollbar {
+  display: none;
+}
+
+.sf-cat-pill {
+  padding: 8px 16px;
+  border-radius: 100px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid #e5e5e5;
+  background: #ffffff;
+  color: #525252;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.sf-cat-pill:hover {
+  border-color: #d4d4d4;
+  color: #0a0a0a;
+}
+
+.sf-cat-pill.active {
+  background: #0a0a0a;
+  border-color: #0a0a0a;
+  color: #ffffff;
+}
+
+/* ── PRODUCT GRID ─────────────────────────────────────────────────────────── */
+.sf-products-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.sf-product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 768px) {
+  .sf-product-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 440px) {
+  .sf-product-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.sf-product-card {
+  background: #ffffff;
+  border: 1px solid #e5e5e5;
+  border-radius: 16px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.sf-product-card:hover {
+  transform: translateY(-2px);
+  border-color: #27BBAD;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+}
+
+.sf-product-thumb {
+  width: 100%;
+  height: 120px;
+  background: #f7fafa;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  margin-bottom: 12px;
+}
+
+.sf-product-title {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #0a0a0a;
+  margin: 0 0 6px;
+  line-height: 1.35;
+}
+
+.sf-product-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.sf-product-price {
+  font-size: 16px;
+  font-weight: 800;
+  color: #0a0a0a;
+}
+
+.sf-add-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px;
+  background: rgba(39, 187, 173, 0.1);
+  color: #27BBAD;
+  border: 1.5px solid rgba(39, 187, 173, 0.3);
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-family: inherit;
+}
+
+.sf-add-btn:hover {
+  background: #27BBAD;
+  color: #ffffff;
+  border-color: #27BBAD;
+}
+
+.sf-qty-adjuster {
+  display: inline-flex;
+  align-items: center;
+  background: #0a0a0a;
+  color: #ffffff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.sf-qty-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.sf-qty-btn:hover {
+  background: #262626;
+}
+
+.sf-qty-val {
+  padding: 0 6px;
+  font-size: 13px;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+/* ── STICKY BOTTOM CART BAR ───────────────────────────────────────────────── */
+.sf-bottom-bar {
+  position: fixed;
+  bottom: 16px;
+  left: 20px;
+  right: 20px;
+  max-width: 600px;
+  margin: 0 auto;
+  background: #0a0a0a;
+  color: #ffffff;
+  border-radius: 100px;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.3);
+  z-index: 30;
+  cursor: pointer;
+  animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+/* ── SLIDE-OVER CART DRAWER ───────────────────────────────────────────────── */
+.sf-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  z-index: 50;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.sf-drawer {
+  width: 100%;
+  max-width: 440px;
+  background: #ffffff;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -10px 0 30px rgba(0,0,0,0.15);
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
+}
+
+.sf-drawer-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid #e5e5e5;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sf-drawer-body {
+  padding: 20px 24px;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.sf-drawer-footer {
+  padding: 20px 24px;
+  border-top: 1px solid #e5e5e5;
+  background: #fafafa;
+}
+
+.sf-toggle-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: #f5f5f5;
+  padding: 3px;
+  border-radius: 8px;
+  gap: 2px;
+}
+
+.sf-toggle-btn {
+  border: none;
+  background: transparent;
+  padding: 8px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #737373;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.sf-toggle-btn.active {
+  background: #ffffff;
+  color: #0a0a0a;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}

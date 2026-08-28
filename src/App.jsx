@@ -12,6 +12,10 @@ import InventoryTab from './components/InventoryTab';
 import ReportsTab from './components/ReportsTab';
 import AdminTab from './components/AdminTab';
 import LandingPage from './components/landing/LandingPage';
+import MerchantApp from './components/merchant/MerchantApp';
+import StorefrontApp from './components/storefront/StorefrontApp';
+import RiderApp from './components/rider/RiderApp';
+import MarketplaceApp from './components/marketplace/MarketplaceApp';
 import { ArrowLeft, Store, Terminal } from 'lucide-react';
 
 function createInitialTillState() {
@@ -32,6 +36,10 @@ export default function App({ initialView }) {
     if (initialView) return initialView;
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      if (params.get('view') === 'marketplace' || params.get('view') === 'shop') return 'marketplace';
+      if (params.get('view') === 'rider') return 'rider';
+      if (params.get('view') === 'storefront') return 'storefront';
+      if (params.get('view') === 'merchant') return 'merchant';
       if (params.get('view') === 'pos') return 'pos';
       if (params.get('view') === 'landing') return 'landing';
       if (process.env.NODE_ENV === 'test') return 'pos';
@@ -582,7 +590,49 @@ export default function App({ initialView }) {
   }
 
   if (viewMode === 'landing') {
-    return <LandingPage onLaunchPOS={() => setViewMode('pos')} />;
+    return (
+      <LandingPage 
+        onLaunchPOS={() => setViewMode('pos')} 
+        onOpenMerchantPortal={() => setViewMode('merchant')}
+        onOpenRiderPortal={() => setViewMode('rider')}
+        onOpenMarketplace={() => setViewMode('marketplace')}
+      />
+    );
+  }
+
+  if (viewMode === 'marketplace') {
+    return (
+      <MarketplaceApp
+        onOpenStorefront={() => setViewMode('storefront')}
+        onExitToLanding={() => setViewMode('landing')}
+      />
+    );
+  }
+
+  if (viewMode === 'merchant') {
+    return (
+      <MerchantApp
+        onLaunchPOS={() => setViewMode('pos')}
+        onOpenStorefront={() => setViewMode('storefront')}
+        onExitToLanding={() => setViewMode('landing')}
+      />
+    );
+  }
+
+  if (viewMode === 'storefront') {
+    return (
+      <StorefrontApp
+        onExitToLanding={() => setViewMode('landing')}
+      />
+    );
+  }
+
+  if (viewMode === 'rider') {
+    return (
+      <RiderApp
+        onExitToLanding={() => setViewMode('landing')}
+      />
+    );
   }
 
   if (loading) {

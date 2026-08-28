@@ -60,15 +60,12 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
 
           {/* Desktop actions */}
           <div className="lp-nav-actions">
-            <button className="lp-btn-ghost" onClick={onOpenRiderModal}>
-              For Riders
-            </button>
             <button
               className="lp-btn-primary"
               style={{ padding: '9px 20px', fontSize: 14 }}
               onClick={() => onOpenStoreModal()}
             >
-              Get Started Free
+              <span>Get Started Free</span>
               <ArrowRight size={14} />
             </button>
           </div>
@@ -77,9 +74,9 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
           <button
             className="lp-mobile-toggle"
             onClick={() => setOpen(v => !v)}
-            aria-label="Menu"
+            aria-label="Toggle navigation menu"
           >
-            {open ? <X size={18} /> : <Menu size={18} />}
+            {open ? <X size={20} /> : <Menu size={20} />}
           </button>
         </nav>
       </div>
@@ -98,14 +95,15 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
               style={{ width: '100%', justifyContent: 'center' }}
               onClick={() => { setOpen(false); onOpenStoreModal(); }}
             >
-              Get Started Free <ArrowRight size={14} />
+              <span>Get Started Free</span>
+              <ArrowRight size={14} />
             </button>
             <button
-              className="lp-btn-ghost"
-              style={{ width: '100%', justifyContent: 'center' }}
+              className="lp-btn-secondary"
+              style={{ width: '100%', justifyContent: 'center', fontSize: '13.5px' }}
               onClick={() => { setOpen(false); onOpenRiderModal(); }}
             >
-              For Riders
+              Join as a Courier
             </button>
           </div>
         </div>

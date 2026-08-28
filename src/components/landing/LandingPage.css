@@ -2463,3 +2463,211 @@ body:has(.landing-page-root) {
   align-items: baseline;
   gap: 10px;
 }
+
+/* Modern GPS Route Simulation Card */
+.lp-gps-route-card {
+  background: #fafafa;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-sm);
+  padding: 16px;
+}
+
+.lp-gps-route-nodes {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lp-gps-node {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.lp-gps-node-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #27BBAD;
+  margin-top: 4px;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 3px rgba(39, 187, 173, 0.2);
+}
+
+.lp-gps-node-dot.dest {
+  background: #0a0a0a;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+}
+
+.lp-gps-node-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--lp-text-3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lp-gps-node-name {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--lp-text);
+}
+
+.lp-gps-transit-line-wrap {
+  position: relative;
+  height: 24px;
+  margin-left: 4px;
+  padding-left: 20px;
+  display: flex;
+  align-items: center;
+}
+
+.lp-gps-transit-track {
+  position: absolute;
+  left: 4px;
+  right: 12px;
+  height: 3px;
+  background: #e5e5e5;
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.lp-gps-transit-fill {
+  height: 100%;
+  background: #27BBAD;
+  border-radius: 2px;
+  transition: width 0.8s ease;
+}
+
+.lp-gps-rider-marker {
+  position: absolute;
+  transform: translate(-50%, 0);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #27BBAD;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(39, 187, 173, 0.4);
+  transition: left 0.8s ease;
+  z-index: 2;
+}
+
+.lp-gps-driver-card {
+  padding: 12px 14px;
+  background: #ffffff;
+  border: 1px solid var(--lp-border);
+  border-radius: var(--lp-radius-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  MOBILE & TOUCH SCREEN OPTIMIZATIONS                                         */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+  .lp-section {
+    padding: 72px 0;
+  }
+
+  .lp-section-header,
+  .lp-section-header-center {
+    margin-bottom: 40px;
+  }
+
+  .lp-h1 {
+    font-size: 38px;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  .lp-h2 {
+    font-size: 28px;
+    letter-spacing: -0.025em;
+    line-height: 1.15;
+  }
+
+  .lp-body {
+    font-size: 15.5px;
+    line-height: 1.6;
+  }
+
+  .lp-segmented-control {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .lp-segment-btn {
+    padding: 8px 12px;
+    font-size: 12.5px;
+  }
+
+  .lp-problem-card,
+  .lp-step-card,
+  .lp-testimonial-card,
+  .lp-pricing-card,
+  .lp-subdomain-node-card {
+    padding: 24px 20px;
+  }
+
+  .lp-showcase-container {
+    padding: 24px 18px;
+    border-radius: var(--lp-radius-lg);
+  }
+
+  .lp-demo-card {
+    margin-top: 24px;
+    border-radius: var(--lp-radius-lg);
+  }
+
+  .lp-demo-col {
+    padding: 20px 16px;
+  }
+
+  .lp-calc-inputs,
+  .lp-calc-results {
+    padding: 24px 18px;
+  }
+
+  .lp-final-cta-box {
+    padding: 44px 20px;
+    border-radius: var(--lp-radius-lg);
+  }
+
+  .lp-hero-claim {
+    flex-direction: column;
+    padding: 8px;
+    gap: 8px;
+    background: #ffffff;
+  }
+
+  .lp-hero-claim-prefix,
+  .lp-hero-claim-suffix {
+    display: none;
+  }
+
+  .lp-hero-claim-input {
+    width: 100%;
+    padding: 8px 10px;
+    font-size: 15px;
+    text-align: center;
+  }
+
+  .lp-hero-claim-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 14px;
+  }
+
+  .lp-hero-ctas {
+    width: 100%;
+  }
+
+  .lp-hero-ctas .lp-btn-primary,
+  .lp-hero-ctas .lp-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+}

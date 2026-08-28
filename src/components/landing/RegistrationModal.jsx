@@ -10,10 +10,10 @@ import {
   Mail, 
   ShoppingBag,
   Sparkles,
-  Terminal
+  LayoutDashboard
 } from 'lucide-react';
 
-export default function RegistrationModal({ isOpen, onClose, initialSlug = '', onLaunchPOS }) {
+export default function RegistrationModal({ isOpen, onClose, initialSlug = '', onOpenMerchantPortal }) {
   const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     businessName: initialSlug ? initialSlug.replace(/-/g, ' ') : '',
@@ -62,67 +62,68 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
   ];
 
   return (
-    <div className="modal-backdrop-overlay" onClick={onClose}>
-      <div className="modal-content-container" onClick={(e) => e.stopPropagation()}>
+    <div className="registration-modal-overlay" onClick={onClose}>
+      <div className="registration-modal-card" onClick={(e) => e.stopPropagation()}>
         {/* Close Button */}
-        <button className="modal-close-btn" onClick={onClose} aria-label="Close modal">
-          <X size={20} />
+        <button className="btn-close-modal" onClick={onClose}>
+          <X size={18} />
         </button>
 
         {!isSuccess ? (
           <div>
             {/* Modal Header */}
-            <div className="modal-header-box">
-              <div className="modal-icon-badge bg-emerald-50 text-emerald-700">
-                <Store size={26} />
+            <div className="modal-header-block text-center">
+              <div className="modal-step-badge">
+                <span>Step {step} of 2</span>
               </div>
-              <div>
-                <h3 className="text-lg font-bold text-slate-900">Register Your Store on Subtech Ventures</h3>
-                <p className="text-xs text-slate-500">Claim your dedicated store subdomain and activate your offline POS till.</p>
-              </div>
+              <h3 className="modal-title">Register Your Store on Subtech</h3>
+              <p className="modal-subtitle">
+                Get your instant digital storefront, order management dashboard, and on-demand courier dispatch.
+              </p>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="modal-form-body">
+            <form onSubmit={handleSubmit}>
               {step === 1 ? (
-                <div className="form-step-pane">
+                <div className="modal-form-step">
                   <div className="form-group">
                     <label className="form-label">Business / Store Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="e.g. Apex Supermarket & Wine"
-                      value={formData.businessName}
-                      onChange={handleNameChange}
-                      className="form-input"
-                    />
+                    <div className="input-with-icon">
+                      <Store size={18} className="input-icon" />
+                      <input 
+                        type="text"
+                        required
+                        placeholder="e.g. Apex Health Pharmacy"
+                        value={formData.businessName}
+                        onChange={handleNameChange}
+                        className="form-input"
+                      />
+                    </div>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Dedicated Store Subdomain *</label>
-                    <div className="subdomain-input-group">
-                      <span className="subdomain-addon">https://</span>
-                      <input
+                    <label className="form-label">Your Live Web Address (Subdomain) *</label>
+                    <div className="subdomain-preview-input">
+                      <span className="subdomain-prefix font-mono">https://</span>
+                      <input 
                         type="text"
                         required
-                        placeholder="apex-supermarket"
+                        placeholder="apex-pharmacy"
                         value={formData.subdomain}
-                        onChange={(e) => setFormData({ ...formData, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') })}
-                        className="subdomain-inner-input font-mono"
+                        onChange={(e) => setFormData(prev => ({ ...prev, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
+                        className="subdomain-slug-input font-mono"
                       />
-                      <span className="subdomain-addon">.subtech.app</span>
+                      <span className="subdomain-suffix font-mono">.subtech.app</span>
                     </div>
-                    <span className="text-xs text-emerald-700 font-medium flex items-center gap-1 mt-1">
-                      <CheckCircle2 size={13} />
-                      <span>URL automatically reserved on Edge DNS</span>
+                    <span className="form-hint">
+                      This will be your live online store link for customer checkouts.
                     </span>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Store Category *</label>
-                    <select
+                    <label className="form-label">Store Category</label>
+                    <select 
                       value={formData.category}
-                      onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                      onChange={(e) => setFormData(prev => ({ ...prev, category: e.target.value }))}
                       className="form-select"
                     >
                       {categories.map((c) => (
@@ -132,70 +133,80 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
                   </div>
 
                   <button 
-                    type="button" 
+                    type="button"
                     className="btn-modal-next"
                     onClick={() => {
-                      if (formData.businessName.trim() && formData.subdomain.trim()) {
-                        setStep(2);
-                      }
+                      if (formData.businessName && formData.subdomain) setStep(2);
                     }}
                   >
-                    <span>Continue to Contact & Location</span>
-                    <ArrowRight size={17} />
+                    <span>Continue to Contact Info</span>
+                    <ArrowRight size={16} />
                   </button>
                 </div>
               ) : (
-                <div className="form-step-pane">
-                  <div className="form-group">
-                    <label className="form-label">Owner / Store Manager Name *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Full Name"
-                      value={formData.ownerName}
-                      onChange={(e) => setFormData({ ...formData, ownerName: e.target.value })}
-                      className="form-input"
-                    />
+                /* Step 2 */
+                <div className="modal-form-step">
+                  <div className="form-grid-2">
+                    <div className="form-group">
+                      <label className="form-label">Owner / Manager Name *</label>
+                      <input 
+                        type="text"
+                        required
+                        placeholder="e.g. Adeola Balogun"
+                        value={formData.ownerName}
+                        onChange={(e) => setFormData(prev => ({ ...prev, ownerName: e.target.value }))}
+                        className="form-input"
+                      />
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label">WhatsApp Number *</label>
+                      <div className="input-with-icon">
+                        <Phone size={18} className="input-icon" />
+                        <input 
+                          type="tel"
+                          required
+                          placeholder="+234 800 000 0000"
+                          value={formData.phone}
+                          onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                          className="form-input"
+                        />
+                      </div>
+                    </div>
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <div className="form-group">
-                      <label className="form-label">Business Email *</label>
-                      <input
+                  <div className="form-group">
+                    <label className="form-label">Business Email *</label>
+                    <div className="input-with-icon">
+                      <Mail size={18} className="input-icon" />
+                      <input 
                         type="email"
                         required
-                        placeholder="owner@store.com"
+                        placeholder="orders@apexpharmacy.com"
                         value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        className="form-input"
-                      />
-                    </div>
-                    <div className="form-group">
-                      <label className="form-label">Phone / WhatsApp *</label>
-                      <input
-                        type="tel"
-                        required
-                        placeholder="+234 800 000 0000"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                        onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                         className="form-input"
                       />
                     </div>
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label">Store Physical Address (for Rider Pickups) *</label>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Shop 14, Commercial Plaza, Admiralty Way, Lekki"
-                      value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                      className="form-input"
-                    />
+                    <label className="form-label">Store / Pickup Address *</label>
+                    <div className="input-with-icon">
+                      <MapPin size={18} className="input-icon" />
+                      <input 
+                        type="text"
+                        required
+                        placeholder="e.g. Plot 14, Admiralty Way, Lekki Phase 1, Lagos"
+                        value={formData.address}
+                        onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                        className="form-input"
+                      />
+                    </div>
+                    <span className="form-hint">Used for 1–3km on-demand courier dispatch radar.</span>
                   </div>
 
-                  <div className="flex gap-3 pt-2">
+                  <div className="modal-actions-row">
                     <button 
                       type="button" 
                       className="btn-modal-back"
@@ -209,10 +220,10 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
                       className="btn-modal-submit flex-1"
                     >
                       {isSubmitting ? (
-                        <span>Provisioning Edge Subdomain...</span>
+                        <span>Provisioning Storefront...</span>
                       ) : (
                         <>
-                          <span>Activate Store & POS</span>
+                          <span>Activate My Store</span>
                           <Sparkles size={16} />
                         </>
                       )}
@@ -226,36 +237,31 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
           /* Success View */
           <div className="modal-success-pane text-center py-4">
             <div className="success-icon-wrapper">
-              <CheckCircle2 size={52} className="text-emerald-600 mx-auto" />
+              <CheckCircle2 size={52} color="#27BBAD" className="mx-auto" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 mt-3">Store Provisioned Successfully!</h3>
             <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
-              Your store profile and live catalog hub have been activated on the network.
+              Your digital storefront and merchant management hub are ready.
             </p>
 
             <div className="provisioned-url-card my-4 p-3 rounded-lg bg-slate-50 border border-emerald-300">
-              <div className="text-xs text-slate-500">Your Live Store Address:</div>
-              <div className="font-mono text-emerald-800 font-bold text-base mt-0.5">
+              <div className="text-xs text-slate-500">Your Live Storefront URL:</div>
+              <div className="font-mono font-bold text-base mt-0.5" style={{ color: '#27BBAD' }}>
                 https://{formData.subdomain || 'my-store'}.subtech.app
               </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3 justify-center mt-6">
               <button 
-                className="btn-till-sandbox justify-center"
+                className="lp-btn-primary justify-center"
+                style={{ width: '100%' }}
                 onClick={() => {
                   onClose();
-                  onLaunchPOS();
+                  if (onOpenMerchantPortal) onOpenMerchantPortal();
                 }}
               >
-                <Terminal size={16} />
-                <span>Open POS Till Register</span>
-              </button>
-              <button 
-                className="btn-primary-register justify-center"
-                onClick={onClose}
-              >
-                <span>Close & Return to Hub</span>
+                <LayoutDashboard size={16} />
+                <span>Open Merchant Dashboard</span>
               </button>
             </div>
           </div>
