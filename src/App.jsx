@@ -11,6 +11,8 @@ import SalesTab from './components/SalesTab';
 import InventoryTab from './components/InventoryTab';
 import ReportsTab from './components/ReportsTab';
 import AdminTab from './components/AdminTab';
+import LandingPage from './components/landing/LandingPage';
+import { ArrowLeft, Store, Terminal } from 'lucide-react';
 
 function createInitialTillState() {
   const draft = loadTillDraft();
@@ -25,7 +27,19 @@ function createInitialTillState() {
   };
 }
 
-export default function App() {
+export default function App({ initialView }) {
+  const getStartingView = () => {
+    if (initialView) return initialView;
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('view') === 'pos') return 'pos';
+      if (params.get('view') === 'landing') return 'landing';
+      if (process.env.NODE_ENV === 'test') return 'pos';
+    }
+    return 'landing';
+  };
+
+  const [viewMode, setViewMode] = useState(getStartingView);
   const {
     loading,
     products,
@@ -567,16 +581,53 @@ export default function App() {
     setTab(nextTab);
   }
 
+  if (viewMode === 'landing') {
+    return <LandingPage onLaunchPOS={() => setViewMode('pos')} />;
+  }
+
   if (loading) {
     return <LoadingScreen />;
   }
 
   if (!session) {
-    return <LoginScreen employees={employees} onLogin={handleLogin} />;
+    return (
+      <div className="pos-login-wrapper">
+        <div className="pos-sandbox-top-banner">
+          <div className="flex items-center gap-2">
+            <span className="dot-live"></span>
+            <span className="text-xs font-semibold text-white">POS Till Sandbox (Retail Node)</span>
+            <span className="text-[11px] text-emerald-400 font-mono hidden sm:inline">&bull; spar-ikeja.counterpoint.app</span>
+          </div>
+          <button 
+            className="btn-back-to-landing"
+            onClick={() => setViewMode('landing')}
+          >
+            <ArrowLeft size={14} />
+            <span>Back to Ecosystem Overview</span>
+          </button>
+        </div>
+        <LoginScreen employees={employees} onLogin={handleLogin} />
+      </div>
+    );
   }
 
   return (
     <div className="page-shell">
+      <div className="pos-sandbox-top-banner mb-3">
+        <div className="flex items-center gap-2">
+          <span className="dot-live"></span>
+          <span className="text-xs font-semibold text-white">Active Store POS Till</span>
+          <span className="text-[11px] text-emerald-400 font-mono hidden sm:inline">&bull; spar-ikeja.counterpoint.app</span>
+        </div>
+        <button 
+          className="btn-back-to-landing"
+          onClick={() => setViewMode('landing')}
+        >
+          <ArrowLeft size={14} />
+          <span>Back to Ecosystem Overview</span>
+        </button>
+      </div>
+
       <Header
         session={session}
         tab={tab}

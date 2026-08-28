@@ -2213,3 +2213,48 @@ tbody tr:hover { background: var(--surface-2); }
     grid-column: span 2;
   }
 }
+
+/* POS Sandbox Top Switcher Bar */
+.pos-login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.pos-sandbox-top-banner {
+  background: #090d16;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  z-index: 50;
+  border-radius: var(--radius-sm, 12px);
+}
+
+.pos-login-wrapper .pos-sandbox-top-banner {
+  border-radius: 0;
+}
+
+.btn-back-to-landing {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  background: rgba(6, 182, 212, 0.15);
+  border: 1px solid rgba(6, 182, 212, 0.35);
+  color: #38bdf8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-back-to-landing:hover {
+  background: rgba(6, 182, 212, 0.28);
+  border-color: #06b6d4;
+  color: #ffffff;
+}
+
