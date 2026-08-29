@@ -26,7 +26,7 @@ const testimonials = [
     location: 'Surulere / Yaba Corridor',
     type: 'rider',
     stat: '₦380k+',
-    statDesc: 'Average monthly earnings',
+    statDesc: 'Monthly earnings (top corridor)',
     quote: 'On Subtech, parcels are already packaged and paid at the counter before I arrive. I batch multiple pickups in the same plaza and spend zero time waiting in queues.',
   }
 ];
@@ -50,10 +50,10 @@ export default function TestimonialsSection() {
     <section id="testimonials" className="lp-section lp-testimonials-section" ref={sectionRef}>
       <div className="lp-container">
         <div className="lp-section-header-center lp-reveal">
-          <span className="lp-eyebrow">Social Proof</span>
-          <h2 className="lp-h2">Trusted by 1,400+ stores and active local couriers.</h2>
+          <span className="lp-eyebrow">From Early Adopters</span>
+          <h2 className="lp-h2">What store owners and couriers are saying.</h2>
           <p className="lp-body" style={{ marginTop: '16px' }}>
-            Hear from pharmacy owners, supermarkets, and delivery drivers powering daily neighborhood commerce.
+            Feedback from the first wave of pharmacy owners, supermarket managers, and delivery riders on the platform.
           </p>
         </div>
 

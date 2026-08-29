@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Store, PlayCircle, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, Store, PlayCircle, CheckCircle2, Wifi, WifiOff, Scan, Receipt } from 'lucide-react';
 
 const stats = [
-  { value: '1,400+', label: 'Active Stores' },
-  { value: '18 min', label: 'Avg. Delivery' },
-  { value: '100%',   label: 'Offline Uptime' },
-  { value: '₦0',     label: 'Setup Cost' },
+  { value: '< 20 min', label: 'Target Delivery' },
+  { value: '100%',     label: 'Offline Uptime' },
+  { value: '₦0',       label: 'Setup Cost' },
+  { value: '3 steps',  label: 'To Go Live' },
 ];
 
 export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaunchPOS, onOpenLiveDemo }) {
@@ -86,7 +86,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
           </button>
           <button className="lp-btn-secondary" onClick={onOpenLiveDemo}>
             <PlayCircle size={16} />
-            Watch Demo
+            Try Live Demo
           </button>
         </div>
 
@@ -98,6 +98,60 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
               <span className="lp-hero-stat-label">{s.label}</span>
             </div>
           ))}
+        </div>
+
+        {/* Product window mockup */}
+        <div className="lp-hero-mockup lp-reveal lp-reveal-d4">
+          {/* Browser chrome */}
+          <div className="lp-hero-mockup-chrome">
+            <div className="lp-hero-mockup-dots">
+              <span /><span /><span />
+            </div>
+            <div className="lp-hero-mockup-url font-mono">spar-ikeja.subtech.app</div>
+            <div className="lp-hero-mockup-status">
+              <Wifi size={11} color="#27BBAD" />
+              <span>Live</span>
+            </div>
+          </div>
+          {/* POS content */}
+          <div className="lp-hero-mockup-body">
+            <div className="lp-hero-mockup-col left">
+              <div className="lp-hero-mockup-section-label">Cart</div>
+              <div className="lp-hero-mockup-item">
+                <div>
+                  <div className="lp-hero-mockup-item-name">Peak Milk 400g</div>
+                  <div className="lp-hero-mockup-item-sku font-mono">× 2 · Qty: 34 left</div>
+                </div>
+                <span className="lp-hero-mockup-item-price font-mono">₦6,400</span>
+              </div>
+              <div className="lp-hero-mockup-item">
+                <div>
+                  <div className="lp-hero-mockup-item-name">Golden Penny Pasta 500g</div>
+                  <div className="lp-hero-mockup-item-sku font-mono">× 1 · Qty: 12 left</div>
+                </div>
+                <span className="lp-hero-mockup-item-price font-mono">₦3,200</span>
+              </div>
+              <div className="lp-hero-mockup-total">
+                <span>Total</span>
+                <span className="font-mono">₦9,600</span>
+              </div>
+            </div>
+            <div className="lp-hero-mockup-col right">
+              <div className="lp-hero-mockup-section-label">Dispatch</div>
+              <div className="lp-hero-mockup-dispatch-pill">
+                <span className="lp-preview-dot" style={{ flexShrink: 0 }} />
+                <span>Tunde B. en route · ETA 4 min</span>
+              </div>
+              <div className="lp-hero-mockup-section-label" style={{ marginTop: 10 }}>Payment</div>
+              <div className="lp-hero-mockup-pay-row active">Transfer</div>
+              <div className="lp-hero-mockup-pay-row">Card</div>
+              <div className="lp-hero-mockup-pay-row">Cash</div>
+              <div className="lp-hero-mockup-receipt-btn">
+                <Receipt size={11} />
+                <span>Print Receipt</span>
+              </div>
+            </div>
+          </div>
         </div>
 
       </div>

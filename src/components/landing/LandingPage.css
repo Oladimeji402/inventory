@@ -389,7 +389,8 @@ body:has(.landing-page-root) {
 
 @media (max-width: 860px) {
   .lp-nav-links { display: none; }
-  .lp-nav-actions .lp-btn-ghost { display: none; }
+  .lp-nav-actions { display: none; }
+  .lp-brand-tag { display: none; }
   .lp-mobile-toggle { display: flex; }
 }
 
@@ -630,6 +631,181 @@ body:has(.landing-page-root) {
   .lp-hero-stat:nth-child(odd) { border-right: 1px solid var(--lp-border); }
   .lp-hero-ctas { flex-direction: column; align-items: stretch; }
   .lp-hero-claim { margin-bottom: 32px; }
+}
+
+/* ── HERO PRODUCT MOCKUP ──────────────────────────────────────────────────── */
+.lp-hero-mockup {
+  margin-top: 52px;
+  width: 100%;
+  max-width: 760px;
+  border-radius: var(--lp-radius-lg);
+  border: 1px solid var(--lp-border);
+  background: #fff;
+  box-shadow: var(--lp-shadow-lg), 0 0 0 1px rgba(39,187,173,0.06);
+  overflow: hidden;
+  text-align: left;
+}
+
+.lp-hero-mockup-chrome {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--lp-bg-subtle);
+  border-bottom: 1px solid var(--lp-border);
+}
+
+.lp-hero-mockup-dots {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.lp-hero-mockup-dots span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lp-border-2);
+  display: block;
+}
+.lp-hero-mockup-dots span:first-child { background: #fc5f57; }
+.lp-hero-mockup-dots span:nth-child(2) { background: #febc2e; }
+.lp-hero-mockup-dots span:last-child { background: #28c840; }
+
+.lp-hero-mockup-url {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lp-text-2);
+  background: #fff;
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+  padding: 3px 10px;
+  text-align: center;
+}
+
+.lp-hero-mockup-status {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--lp-teal);
+  flex-shrink: 0;
+}
+
+.lp-hero-mockup-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+}
+
+.lp-hero-mockup-col {
+  padding: 18px 20px;
+}
+.lp-hero-mockup-col.left {
+  border-right: 1px solid var(--lp-border);
+}
+
+.lp-hero-mockup-section-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--lp-text-3);
+  margin-bottom: 10px;
+}
+
+.lp-hero-mockup-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--lp-border);
+}
+.lp-hero-mockup-item:last-of-type {
+  border-bottom: none;
+}
+
+.lp-hero-mockup-item-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--lp-text);
+  margin-bottom: 2px;
+}
+
+.lp-hero-mockup-item-sku {
+  font-size: 11px;
+  color: var(--lp-text-3);
+}
+
+.lp-hero-mockup-item-price {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--lp-text);
+  white-space: nowrap;
+}
+
+.lp-hero-mockup-total {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--lp-text);
+  padding-top: 10px;
+  border-top: 1.5px solid var(--lp-border-2);
+  margin-top: 4px;
+}
+
+.lp-hero-mockup-dispatch-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--lp-teal);
+  background: var(--lp-teal-light);
+  border: 1px solid var(--lp-teal-border);
+  border-radius: 20px;
+  padding: 5px 10px;
+  margin-bottom: 4px;
+}
+
+.lp-hero-mockup-pay-row {
+  font-size: 12.5px;
+  font-weight: 500;
+  color: var(--lp-text-2);
+  padding: 6px 10px;
+  border-radius: 6px;
+  margin-bottom: 3px;
+  border: 1px solid transparent;
+  cursor: default;
+}
+.lp-hero-mockup-pay-row.active {
+  background: var(--lp-teal-light);
+  border-color: var(--lp-teal-border);
+  color: var(--lp-teal);
+  font-weight: 700;
+}
+
+.lp-hero-mockup-receipt-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--lp-text-2);
+  margin-top: 10px;
+  padding: 6px 10px;
+  border: 1px solid var(--lp-border);
+  border-radius: 6px;
+  background: var(--lp-bg-subtle);
+}
+
+@media (max-width: 540px) {
+  .lp-hero-mockup-body { grid-template-columns: 1fr; }
+  .lp-hero-mockup-col.left { border-right: none; border-bottom: 1px solid var(--lp-border); }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────── */
@@ -1959,6 +2135,8 @@ body:has(.landing-page-root) {
   padding: 14px 24px;
   border-bottom: 1px solid var(--lp-border);
   background: #fafafa;
+  gap: 12px;
+  flex-wrap: wrap;
 }
 
 .lp-subdomain-box-title {
@@ -1969,6 +2147,13 @@ body:has(.landing-page-root) {
   font-weight: 700;
   color: var(--lp-text);
   letter-spacing: 0.04em;
+  min-width: 0;
+}
+
+.lp-subdomain-box-title span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-subdomain-live-tag {
@@ -2296,12 +2481,21 @@ body:has(.landing-page-root) {
   padding: 14px 24px;
   border-bottom: 1px solid var(--lp-border);
   background: #fafafa;
+  gap: 10px;
 }
 
 .lp-demo-top-left {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.lp-demo-top-left span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .lp-btn-reset {
@@ -2669,5 +2863,125 @@ body:has(.landing-page-root) {
   .lp-hero-ctas .lp-btn-secondary {
     width: 100%;
     justify-content: center;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  ADDITIONAL MOBILE POLISH  (≤ 640px)                                        */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+
+  /* Hero mockup – tighter margin on small phones */
+  .lp-hero-mockup {
+    margin-top: 36px;
+  }
+
+  /* Subdomain box header – reduce padding, let items wrap naturally */
+  .lp-subdomain-box-header {
+    padding: 12px 16px;
+  }
+  /* Hide the "Edge DNS Provisioning" live tag so the title has full width */
+  .lp-subdomain-live-tag {
+    display: none;
+  }
+
+  /* Demo top bar – tighter padding */
+  .lp-demo-top-bar {
+    padding: 10px 14px;
+  }
+
+  /* FAQ – smaller padding so text has more horizontal room */
+  .lp-faq-question-btn {
+    padding: 16px 16px;
+    gap: 12px;
+  }
+  .lp-faq-question-text {
+    font-size: 14px;
+  }
+  .lp-faq-answer-content {
+    padding: 0 16px 16px;
+    font-size: 14px;
+  }
+
+  /* Subdomain preview URL – allow text to shrink */
+  .lp-subdomain-preview-url {
+    font-size: 12.5px;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .lp-subdomain-preview-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .lp-subdomain-preview-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  /* Pricing callout banner – stack icon + text + button */
+  .lp-rider-callout {
+    padding: 20px 18px;
+    gap: 14px;
+  }
+
+  /* Footer bottom row */
+  .lp-footer-bottom {
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  /* Final CTA buttons */
+  .lp-final-cta-btns {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .lp-final-cta-btns .lp-btn-primary,
+  .lp-final-cta-btns .lp-btn-secondary {
+    width: 100%;
+    justify-content: center;
+  }
+
+  /* Showcase container – less padding */
+  .lp-showcase-container {
+    gap: 24px;
+  }
+
+  /* Step and testimonial cards – slightly less padding */
+  .lp-step-card,
+  .lp-testimonial-card {
+    padding: 20px 18px;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────── */
+/*  VERY SMALL PHONES  (≤ 390px)                                               */
+/* ─────────────────────────────────────────────────────────────────────────── */
+@media (max-width: 390px) {
+  .lp-hero {
+    padding: 90px 16px 52px;
+  }
+
+  .lp-container {
+    padding: 0 16px;
+  }
+
+  .lp-hero-mockup-chrome {
+    padding: 8px 12px;
+  }
+
+  .lp-hero-mockup-col {
+    padding: 14px 14px;
+  }
+
+  .lp-segment-btn span {
+    display: none;
+  }
+
+  .lp-problem-card {
+    padding: 20px 16px;
   }
 }
