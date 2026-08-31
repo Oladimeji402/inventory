@@ -7,7 +7,7 @@ const steps = [
     badge: 'Quick Setup',
     icon: Store,
     title: 'Claim Your Dedicated Store Subdomain',
-    desc: 'Choose your custom URL (e.g. your-store.subtech.app), configure your store profile, and set cashier access in under 2 minutes.',
+    desc: 'Choose your custom URL (e.g. your-store.stv.com), configure your store profile, and set cashier access in under 2 minutes.',
     actionText: 'Register Store',
   },
   {

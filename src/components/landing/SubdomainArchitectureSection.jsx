@@ -39,7 +39,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
   const subdomainCards = [
     {
       role: 'Merchant Storefront & Backoffice',
-      domain: `${cleanSlug}.subtech.app`,
+      domain: `${cleanSlug}.stv.com`,
       icon: Store,
       badge: 'Auto-Provisioned',
       description: 'Your isolated digital storefront for customer checkout + backoffice dashboard to track inventory and revenue.',
@@ -54,7 +54,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
     },
     {
       role: 'On-Demand Courier Network',
-      domain: 'rider.subtech.app',
+      domain: 'rider.stv.com',
       icon: Bike,
       badge: 'Fleet Hub',
       description: 'The dispatch command center where verified local couriers receive automated pickup and route batching requests.',
@@ -69,7 +69,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
     },
     {
       role: 'Neighborhood Shopper Hub',
-      domain: 'shop.subtech.app',
+      domain: 'shop.stv.com',
       icon: ShoppingBag,
       badge: 'Discovery Hub',
       description: 'Central marketplace for neighborhood residents to discover confirmed in-stock items from all nearby merchants.',
@@ -137,13 +137,13 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
                 <div className="lp-subdomain-preview-url">
                   <Lock size={14} color="#27BBAD" />
                   <span className="font-mono">
-                    https://<strong style={{ color: '#27BBAD' }}>{cleanSlug}</strong>.subtech.app
+                    https://<strong style={{ color: '#27BBAD' }}>{cleanSlug}</strong>.stv.com
                   </span>
                 </div>
                 <div className="lp-subdomain-preview-actions">
                   <button 
                     className="lp-btn-copy"
-                    onClick={() => handleCopy(`https://${cleanSlug}.subtech.app`)}
+                    onClick={() => handleCopy(`https://${cleanSlug}.stv.com`)}
                     title="Copy URL"
                   >
                     {copied ? <Check size={14} color="#27BBAD" /> : <Copy size={14} />}

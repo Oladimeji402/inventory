@@ -30,7 +30,7 @@ export default function MarketplaceHeader({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <span style={{ fontSize: '15px', fontWeight: 800, color: '#0a0a0a' }}>Subtech Hub</span>
-              <span className="font-mono" style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 700 }}>shop.subtech.app</span>
+              <span className="font-mono" style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 700 }}>shop.stv.com</span>
             </div>
 
             {/* Location Corridor Picker */}

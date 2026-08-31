@@ -14,7 +14,7 @@ const plans = [
       '1 Store Branch & Register',
       'Up to 150 live catalog products',
       'Offline-First Checkout Mode',
-      'Custom Subdomain (your-store.subtech.app)',
+      'Custom Subdomain (your-store.stv.com)',
       'Pay-as-you-go Rider Dispatch',
       'Daily Sales Summaries & Receipts',
     ],

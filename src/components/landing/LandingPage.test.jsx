@@ -16,7 +16,7 @@ describe('Subtech Ventures Hyperlocal Landing Page', () => {
     fireEvent.change(input, { target: { value: 'super-mart' } });
     fireEvent.click(screen.getByRole('button', { name: /Claim Store URL/i }));
 
-    expect(screen.getByText(/super-mart.subtech.app/i)).toBeInTheDocument();
+    expect(screen.getByText(/super-mart.stv.com/i)).toBeInTheDocument();
     expect(screen.getByText(/is available to reserve today!/i)).toBeInTheDocument();
   });
 

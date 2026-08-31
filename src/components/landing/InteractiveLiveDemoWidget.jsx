@@ -33,7 +33,7 @@ export default function InteractiveLiveDemoWidget() {
     {
       storeName: 'Apex Health Pharmacy',
       category: 'Pharmacy & Wellness',
-      subdomain: 'apex-pharmacy.subtech.app',
+      subdomain: 'apex-pharmacy.stv.com',
       productName: 'Amoxicillin 500mg (20 Caps)',
       sku: 'SKU-PHARM-102',
       price: '₦3,800',
@@ -46,7 +46,7 @@ export default function InteractiveLiveDemoWidget() {
     {
       storeName: 'GreenGrocer Organic Mart',
       category: 'Supermarket & Food',
-      subdomain: 'greengrocer.subtech.app',
+      subdomain: 'greengrocer.stv.com',
       productName: 'Cold-Pressed Almond Milk (1L)',
       sku: 'SKU-GROC-441',
       price: '₦4,500',
@@ -59,7 +59,7 @@ export default function InteractiveLiveDemoWidget() {
     {
       storeName: 'Volt Electronics & Audio',
       category: 'Consumer Electronics',
-      subdomain: 'volt-tech.subtech.app',
+      subdomain: 'volt-tech.stv.com',
       productName: 'Anker USB-C Power Bank 20k',
       sku: 'SKU-TECH-882',
       price: '₦28,000',
@@ -257,7 +257,7 @@ export default function InteractiveLiveDemoWidget() {
                   </div>
                   <div>
                     <h4 className="lp-demo-col-title">2. Shopper Hub</h4>
-                    <span className="lp-demo-col-sub font-mono">shop.subtech.app</span>
+                    <span className="lp-demo-col-sub font-mono">shop.stv.com</span>
                   </div>
                 </div>
                 <span className={`lp-demo-status-pill ${demoState === 'in_transit' ? 'active' : demoState === 'delivered' ? 'success' : ''}`}>
@@ -300,7 +300,7 @@ export default function InteractiveLiveDemoWidget() {
                   </div>
                   <div>
                     <h4 className="lp-demo-col-title">3. Courier Radar</h4>
-                    <span className="lp-demo-col-sub font-mono">rider.subtech.app</span>
+                    <span className="lp-demo-col-sub font-mono">rider.stv.com</span>
                   </div>
                 </div>
                 <span className={`lp-demo-status-pill ${demoState === 'delivered' ? 'success' : demoState === 'in_transit' ? 'active' : ''}`}>

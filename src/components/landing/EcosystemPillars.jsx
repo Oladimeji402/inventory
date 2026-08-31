@@ -42,7 +42,7 @@ const problems = [
 const pillarsData = {
   merchants: {
     badge: 'Storefront & Operations',
-    urlTag: '<your-store>.subtech.app',
+    urlTag: '<your-store>.stv.com',
     headline: 'Turn your physical counter into an online local flagship.',
     desc: 'Equip your store with an offline-resilient register and broadcast your live shelf inventory to nearby shoppers without changing your routine.',
     features: [
@@ -55,7 +55,7 @@ const pillarsData = {
   },
   shoppers: {
     badge: 'Neighborhood Marketplace',
-    urlTag: 'shop.subtech.app',
+    urlTag: 'shop.stv.com',
     headline: 'Order directly from trusted local stores with 20-minute delivery.',
     desc: 'Browse confirmed in-stock items from pharmacies, supermarkets, and local shops in your area with zero guesswork on availability.',
     features: [
@@ -68,7 +68,7 @@ const pillarsData = {
   },
   riders: {
     badge: 'On-Demand Courier Fleet',
-    urlTag: 'rider.subtech.app',
+    urlTag: 'rider.stv.com',
     headline: 'Consistent local routes with pre-bagged, zero-wait pickups.',
     desc: 'Receive alerts for paid, pre-packaged orders within compact districts. Spend less time waiting at counters and more time earning.',
     features: [
@@ -90,7 +90,7 @@ function MerchantPreview() {
           <span className="lp-preview-dot" />
           <span>Live Storefront & Till</span>
         </div>
-        <span className="lp-preview-subdomain font-mono">spar-ikeja.subtech.app</span>
+        <span className="lp-preview-subdomain font-mono">spar-ikeja.stv.com</span>
       </div>
 
       <div className="lp-preview-body">
@@ -136,7 +136,7 @@ function ShopperPreview() {
           <span className="lp-preview-dot" />
           <span>Neighborhood Market</span>
         </div>
-        <span className="lp-preview-subdomain font-mono">shop.subtech.app</span>
+        <span className="lp-preview-subdomain font-mono">shop.stv.com</span>
       </div>
 
       <div className="lp-preview-body">
@@ -182,7 +182,7 @@ function RiderPreview() {
           <span className="lp-preview-dot" />
           <span>Active Courier Radar</span>
         </div>
-        <span className="lp-preview-subdomain font-mono">rider.subtech.app</span>
+        <span className="lp-preview-subdomain font-mono">rider.stv.com</span>
       </div>
 
       <div className="lp-preview-body">

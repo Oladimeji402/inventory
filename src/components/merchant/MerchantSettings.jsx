@@ -76,7 +76,7 @@ export default function MerchantSettings({ storeProfile, onSaveSettings }) {
                   style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                 />
                 <span style={{ padding: '10px 14px', background: '#fafafa', border: '1.5px solid #e5e5e5', borderLeft: 'none', borderTopRightRadius: '6px', borderBottomRightRadius: '6px', fontSize: '13px', color: '#737373', fontWeight: 600 }}>
-                  .subtech.app
+                  .stv.com
                 </span>
               </div>
             </div>

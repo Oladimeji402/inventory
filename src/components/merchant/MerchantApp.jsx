@@ -154,7 +154,7 @@ export default function MerchantApp({ onLaunchPOS, onOpenStorefront, onExitToLan
               style={{ cursor: 'pointer', background: '#fafafa', border: '1px solid #e5e5e5' }}
             >
               <Store size={14} color="#27BBAD" />
-              <span>https://{storeProfile.slug}.subtech.app</span>
+              <span>https://{storeProfile.slug}.stv.com</span>
               <span style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 700, marginLeft: '4px' }}>[Preview]</span>
             </button>
           </div>

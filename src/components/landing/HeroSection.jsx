@@ -63,7 +63,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
             value={subdomain}
             onChange={e => { setSubdomain(e.target.value); setClaimResult(null); }}
           />
-          <span className="lp-hero-claim-suffix">.subtech.app</span>
+          <span className="lp-hero-claim-suffix">.stv.com</span>
           <button type="submit" className="lp-hero-claim-btn">
             Claim Free URL
           </button>
@@ -72,7 +72,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
         {claimResult && (
           <div className="lp-hero-claim-result lp-reveal">
             <CheckCircle2 size={15} />
-            <span><strong>{claimResult}.subtech.app</strong> is available —</span>
+            <span><strong>{claimResult}.stv.com</strong> is available —</span>
             <button onClick={() => onOpenStoreModal(claimResult)}>Register now →</button>
           </div>
         )}
@@ -107,7 +107,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
             <div className="lp-hero-mockup-dots">
               <span /><span /><span />
             </div>
-            <div className="lp-hero-mockup-url font-mono">spar-ikeja.subtech.app</div>
+            <div className="lp-hero-mockup-url font-mono">spar-ikeja.stv.com</div>
             <div className="lp-hero-mockup-status">
               <Wifi size={11} color="#27BBAD" />
               <span>Live</span>

@@ -158,11 +158,11 @@ export default function MerchantOverview({
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span className="font-mono" style={{ padding: '8px 14px', background: '#fafafa', border: '1px solid #e5e5e5', borderRadius: '6px', fontSize: '13.5px', fontWeight: 600, color: '#0a0a0a' }}>
-            https://{storeProfile.slug}.subtech.app
+            https://{storeProfile.slug}.stv.com
           </span>
           <button 
             className="merchant-btn-primary"
-            onClick={onOpenStorefront ? onOpenStorefront : () => window.open(`https://${storeProfile.slug}.subtech.app`, '_blank')}
+            onClick={onOpenStorefront ? onOpenStorefront : () => window.open(`https://${storeProfile.slug}.stv.com`, '_blank')}
           >
             <span>Visit Webstore</span>
             <ArrowUpRight size={14} />

@@ -31,7 +31,7 @@ export default function MarketplaceStoresGrid({ stores = [], onSelectStore }) {
                   </span>
                   <h3 className="mp-store-name">{store.name}</h3>
                   <span className="mp-store-subdomain font-mono">
-                    {store.slug}.subtech.app
+                    {store.slug}.stv.com
                   </span>
                 </div>
               </div>

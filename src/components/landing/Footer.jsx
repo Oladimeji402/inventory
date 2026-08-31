@@ -78,10 +78,10 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
             <div className="lp-footer-col">
               <h5 className="lp-footer-heading">Ecosystem</h5>
               <ul className="lp-footer-links">
-                <li><a href="#subdomains" className="lp-footer-mono-link">*.subtech.app</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">rider.subtech.app</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">shop.subtech.app</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">admin.subtech.app</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">*.stv.com</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">rider.stv.com</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">shop.stv.com</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">admin.stv.com</a></li>
               </ul>
             </div>
 

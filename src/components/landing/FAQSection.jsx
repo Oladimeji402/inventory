@@ -16,7 +16,7 @@ const faqs = [
   },
   {
     q: "What does my store's custom web address look like?",
-    a: 'Every registered merchant receives a dedicated branded URL (such as https://your-store.subtech.app). This serves as your live digital catalog where neighborhood shoppers can view confirmed shelf stock and place orders directly.'
+    a: 'Every registered merchant receives a dedicated branded URL (such as https://your-store.stv.com). This serves as your live digital catalog where neighborhood shoppers can view confirmed shelf stock and place orders directly.'
   },
   {
     q: 'How does Subtech prevent double-selling between counter and online?',

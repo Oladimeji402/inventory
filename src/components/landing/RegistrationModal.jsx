@@ -112,7 +112,7 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
                         onChange={(e) => setFormData(prev => ({ ...prev, subdomain: e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, '') }))}
                         className="subdomain-slug-input font-mono"
                       />
-                      <span className="subdomain-suffix font-mono">.subtech.app</span>
+                      <span className="subdomain-suffix font-mono">.stv.com</span>
                     </div>
                     <span className="form-hint">
                       This will be your live online store link for customer checkouts.
@@ -247,7 +247,7 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
             <div className="provisioned-url-card my-4 p-3 rounded-lg bg-slate-50 border border-emerald-300">
               <div className="text-xs text-slate-500">Your Live Storefront URL:</div>
               <div className="font-mono font-bold text-base mt-0.5" style={{ color: '#27BBAD' }}>
-                https://{formData.subdomain || 'my-store'}.subtech.app
+                https://{formData.subdomain || 'my-store'}.stv.com
               </div>
             </div>
 

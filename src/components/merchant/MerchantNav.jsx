@@ -62,7 +62,7 @@ export default function MerchantNav({
             {storeProfile.name || 'Subtech Retail'}
           </h3>
           <span className="font-mono" style={{ fontSize: '11px', color: '#737373', display: 'block' }}>
-            {storeProfile.slug}.subtech.app
+            {storeProfile.slug}.stv.com
           </span>
         </div>
       </div>
