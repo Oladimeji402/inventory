@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowRight } from 'lucide-react';
+import { BRAND } from '../../config/brand';
 
 const links = [
   { label: 'Platform',  href: '#ecosystem' },
@@ -45,8 +46,8 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
                 />
               </svg>
             </div>
-            <span className="lp-brand-name">Subtech</span>
-            <span className="lp-brand-tag">Retail OS</span>
+            <span className="lp-brand-name">{BRAND.name}</span>
+            <span className="lp-brand-tag">{BRAND.tagline}</span>
           </a>
 
           {/* Desktop links */}

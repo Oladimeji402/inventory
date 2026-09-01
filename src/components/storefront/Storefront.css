@@ -1,6 +1,6 @@
 /* ==========================================================================
    SUBTECH CUSTOMER STOREFRONT STYLES
-   Mobile-First · White + #27BBAD Teal · Ultra Fast Checkout
+   Mobile-First · White + #2B7CFF Teal · Ultra Fast Checkout
    ========================================================================== */
 
 .storefront-root {
@@ -43,13 +43,13 @@
   width: 38px;
   height: 38px;
   border-radius: 10px;
-  background: #27BBAD;
+  background: #2B7CFF;
   color: #ffffff;
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 18px;
-  box-shadow: 0 2px 6px rgba(39, 187, 173, 0.25);
+  box-shadow: 0 2px 6px rgba(43, 124, 255, 0.25);
   flex-shrink: 0;
 }
 
@@ -63,7 +63,7 @@
 
 .sf-brand-badge {
   font-size: 11.5px;
-  color: #27BBAD;
+  color: #2B7CFF;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -93,7 +93,7 @@
 }
 
 .sf-cart-count {
-  background: #27BBAD;
+  background: #2B7CFF;
   color: #ffffff;
   font-size: 11px;
   font-weight: 800;
@@ -160,7 +160,7 @@
 }
 
 .sf-search-box:focus-within {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
 }
 
 .sf-search-input {
@@ -248,7 +248,7 @@
 
 .sf-product-card:hover {
   transform: translateY(-2px);
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
   box-shadow: 0 8px 20px rgba(0,0,0,0.06);
 }
 
@@ -292,9 +292,9 @@
   align-items: center;
   gap: 4px;
   padding: 6px 14px;
-  background: rgba(39, 187, 173, 0.1);
-  color: #27BBAD;
-  border: 1.5px solid rgba(39, 187, 173, 0.3);
+  background: rgba(43, 124, 255, 0.1);
+  color: #2B7CFF;
+  border: 1.5px solid rgba(43, 124, 255, 0.3);
   border-radius: 8px;
   font-size: 13px;
   font-weight: 700;
@@ -304,9 +304,9 @@
 }
 
 .sf-add-btn:hover {
-  background: #27BBAD;
+  background: #2B7CFF;
   color: #ffffff;
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
 }
 
 .sf-qty-adjuster {

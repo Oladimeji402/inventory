@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BRAND } from '../../config/brand';
 import { 
   MapPin, 
   Search, 
@@ -24,13 +25,13 @@ export default function MarketplaceHeader({
       <div className="mp-header-container">
         {/* Brand & Location */}
         <div className="mp-brand-block">
-          <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '10px', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Store size={20} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ fontSize: '15px', fontWeight: 800, color: '#0a0a0a' }}>Subtech Hub</span>
-              <span className="font-mono" style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 700 }}>shop.stv.com</span>
+              <span style={{ fontSize: '15px', fontWeight: 800, color: '#0a0a0a' }}>{BRAND.name} Hub</span>
+              <span className="font-mono" style={{ fontSize: '11px', color: '#2B7CFF', fontWeight: 700 }}>shop.stv.com</span>
             </div>
 
             {/* Location Corridor Picker */}
@@ -39,7 +40,7 @@ export default function MarketplaceHeader({
                 className="mp-location-selector"
                 onClick={() => setDropdownOpen(!dropdownOpen)}
               >
-                <MapPin size={12} color="#27BBAD" />
+                <MapPin size={12} color="#2B7CFF" />
                 <span>{selectedCorridor}</span>
                 <ChevronDown size={12} color="#737373" />
               </button>
@@ -56,8 +57,8 @@ export default function MarketplaceHeader({
                         width: '100%',
                         textAlign: 'left',
                         padding: '8px 10px',
-                        background: selectedCorridor === c ? 'rgba(39, 187, 173, 0.1)' : 'transparent',
-                        color: selectedCorridor === c ? '#27BBAD' : '#0a0a0a',
+                        background: selectedCorridor === c ? 'rgba(43, 124, 255, 0.1)' : 'transparent',
+                        color: selectedCorridor === c ? '#2B7CFF' : '#0a0a0a',
                         fontWeight: selectedCorridor === c ? 700 : 500,
                         border: 'none',
                         borderRadius: '6px',
@@ -73,7 +74,7 @@ export default function MarketplaceHeader({
                       }}
                     >
                       <span>{c}</span>
-                      {selectedCorridor === c && <span style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 800 }}>✓</span>}
+                      {selectedCorridor === c && <span style={{ fontSize: '11px', color: '#2B7CFF', fontWeight: 800 }}>✓</span>}
                     </button>
                   ))}
                 </div>

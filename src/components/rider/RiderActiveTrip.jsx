@@ -52,7 +52,7 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
 
         <div style={{ textAlign: 'right' }}>
           <span style={{ fontSize: '11.5px', color: '#737373', fontWeight: 600 }}>Trip Earnings</span>
-          <div className="font-mono" style={{ fontSize: '18px', fontWeight: 800, color: '#27BBAD' }}>
+          <div className="font-mono" style={{ fontSize: '18px', fontWeight: 800, color: '#2B7CFF' }}>
             {formatNaira(trip.fare)}
           </div>
         </div>
@@ -79,15 +79,15 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
         {/* Pickup Section */}
         <div style={{ 
           padding: '14px', 
-          background: stage === 'pickup' ? 'rgba(39, 187, 173, 0.05)' : '#fafafa', 
+          background: stage === 'pickup' ? 'rgba(43, 124, 255, 0.05)' : '#fafafa', 
           border: '1.5px solid', 
-          borderColor: stage === 'pickup' ? '#27BBAD' : '#f0f0f0', 
+          borderColor: stage === 'pickup' ? '#2B7CFF' : '#f0f0f0', 
           borderRadius: '12px',
           marginBottom: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                 <Store size={16} />
               </div>
               <div>
@@ -113,9 +113,9 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
         {/* Dropoff Section */}
         <div style={{ 
           padding: '14px', 
-          background: stage === 'transit' || stage === 'doorstep_otp' ? 'rgba(39, 187, 173, 0.05)' : '#fafafa', 
+          background: stage === 'transit' || stage === 'doorstep_otp' ? 'rgba(43, 124, 255, 0.05)' : '#fafafa', 
           border: '1.5px solid', 
-          borderColor: stage === 'transit' || stage === 'doorstep_otp' ? '#27BBAD' : '#f0f0f0', 
+          borderColor: stage === 'transit' || stage === 'doorstep_otp' ? '#2B7CFF' : '#f0f0f0', 
           borderRadius: '12px'
         }}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
@@ -148,7 +148,7 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
             width: '100%',
             padding: '16px',
             borderRadius: '14px',
-            background: '#27BBAD',
+            background: '#2B7CFF',
             color: '#ffffff',
             border: 'none',
             fontSize: '15.5px',
@@ -158,7 +158,7 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(39, 187, 173, 0.35)',
+            boxShadow: '0 4px 14px rgba(43, 124, 255, 0.35)',
             fontFamily: 'inherit'
           }}
         >
@@ -200,7 +200,7 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
             width: '100%',
             padding: '16px',
             borderRadius: '14px',
-            background: '#27BBAD',
+            background: '#2B7CFF',
             color: '#ffffff',
             border: 'none',
             fontSize: '15.5px',
@@ -210,7 +210,7 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
             alignItems: 'center',
             justifyContent: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(39, 187, 173, 0.35)',
+            boxShadow: '0 4px 14px rgba(43, 124, 255, 0.35)',
             fontFamily: 'inherit'
           }}
         >

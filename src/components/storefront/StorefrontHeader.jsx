@@ -26,7 +26,7 @@ export default function StorefrontHeader({
           <div>
             <h1 className="sf-brand-title">{storeProfile.name || 'Apex Health Pharmacy'}</h1>
             <div className="sf-brand-badge">
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#27BBAD' }} />
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#2B7CFF' }} />
               <span>Open Now · ~18–25 min delivery</span>
             </div>
           </div>

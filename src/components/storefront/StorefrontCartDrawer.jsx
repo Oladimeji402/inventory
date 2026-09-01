@@ -67,7 +67,7 @@ export default function StorefrontCartDrawer({
         {/* Header */}
         <div className="sf-drawer-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ShoppingBag size={18} color="#27BBAD" />
+            <ShoppingBag size={18} color="#2B7CFF" />
             <h3 style={{ fontSize: '16px', fontWeight: 800, margin: 0 }}>Your Shopping Bag</h3>
             <span style={{ fontSize: '12px', background: '#f5f5f5', padding: '2px 8px', borderRadius: '100px', fontWeight: 700 }}>
               {cartItems.reduce((sum, i) => sum + i.quantity, 0)} items
@@ -88,7 +88,7 @@ export default function StorefrontCartDrawer({
               onClick={() => setFulfillmentType('delivery')}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                <Bike size={14} color={fulfillmentType === 'delivery' ? '#27BBAD' : '#737373'} />
+                <Bike size={14} color={fulfillmentType === 'delivery' ? '#2B7CFF' : '#737373'} />
                 <span>Express Delivery (~20m)</span>
               </div>
             </button>
@@ -98,7 +98,7 @@ export default function StorefrontCartDrawer({
               onClick={() => setFulfillmentType('pickup')}
             >
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                <Store size={14} color={fulfillmentType === 'pickup' ? '#27BBAD' : '#737373'} />
+                <Store size={14} color={fulfillmentType === 'pickup' ? '#2B7CFF' : '#737373'} />
                 <span>Store Pickup (Free)</span>
               </div>
             </button>
@@ -136,7 +136,7 @@ export default function StorefrontCartDrawer({
                         <div style={{ fontSize: '13.5px', fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                           {item.name}
                         </div>
-                        <div className="font-mono" style={{ fontSize: '12.5px', color: '#27BBAD', fontWeight: 700 }}>
+                        <div className="font-mono" style={{ fontSize: '12.5px', color: '#2B7CFF', fontWeight: 700 }}>
                           {formatNaira(item.price)}
                         </div>
                       </div>
@@ -213,9 +213,9 @@ export default function StorefrontCartDrawer({
                     style={{
                       padding: '8px 4px',
                       border: '1.5px solid',
-                      borderColor: paymentMethod === p.key ? '#27BBAD' : '#e5e5e5',
-                      background: paymentMethod === p.key ? 'rgba(39, 187, 173, 0.08)' : '#ffffff',
-                      color: paymentMethod === p.key ? '#27BBAD' : '#525252',
+                      borderColor: paymentMethod === p.key ? '#2B7CFF' : '#e5e5e5',
+                      background: paymentMethod === p.key ? 'rgba(43, 124, 255, 0.08)' : '#ffffff',
+                      color: paymentMethod === p.key ? '#2B7CFF' : '#525252',
                       borderRadius: '8px',
                       fontSize: '11.5px',
                       fontWeight: 600,

@@ -54,7 +54,7 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
       >
         {/* Top Success Badge */}
         <div style={{ textAlign: 'center', marginBottom: '24px' }}>
-          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(39, 187, 173, 0.1)', color: '#27BBAD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+          <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'rgba(43, 124, 255, 0.1)', color: '#2B7CFF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
             <CheckCircle2 size={36} />
           </div>
           <h2 style={{ fontSize: '22px', fontWeight: 800, margin: '0 0 4px', color: '#0a0a0a', letterSpacing: '-0.02em' }}>
@@ -76,7 +76,7 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
             </div>
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '11.5px', color: '#737373', fontWeight: 700, textTransform: 'uppercase' }}>Estimated Dropoff</div>
-              <span className="font-mono" style={{ fontSize: '14px', fontWeight: 800, color: '#27BBAD' }}>
+              <span className="font-mono" style={{ fontSize: '14px', fontWeight: 800, color: '#2B7CFF' }}>
                 {eta > 0 ? `~${eta} mins` : 'Arrived!'}
               </span>
             </div>
@@ -84,13 +84,13 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
 
           {/* Progress Bar */}
           <div style={{ height: '6px', background: '#e5e5e5', borderRadius: '100px', overflow: 'hidden', position: 'relative' }}>
-            <div style={{ width: `${progressPct}%`, height: '100%', background: '#27BBAD', transition: 'width 0.8s ease' }} />
+            <div style={{ width: `${progressPct}%`, height: '100%', background: '#2B7CFF', transition: 'width 0.8s ease' }} />
           </div>
 
           {/* Assigned Driver Box */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #e5e5e5', fontSize: '12.5px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <Bike size={14} />
               </div>
               <div>
@@ -120,7 +120,7 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
             Dropoff Destination
           </div>
           <div style={{ fontSize: '13px', color: '#525252', display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <MapPin size={14} color="#27BBAD" />
+            <MapPin size={14} color="#2B7CFF" />
             <span>{order.address}</span>
           </div>
         </div>

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Store, Bike, ArrowRight, ArrowUp } from 'lucide-react';
+import { BRAND, shopUrl, riderUrl, adminUrl } from '../../config/brand';
 
 export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
   const sectionRef = useRef(null);
@@ -63,7 +64,7 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
                     />
                   </svg>
                 </div>
-                <span className="lp-brand-name">Subtech</span>
+                <span className="lp-brand-name">{BRAND.name}</span>
               </div>
               <p className="lp-footer-brand-desc">
                 The hyperlocal commerce operating system connecting brick-and-mortar stores, local shoppers, and on-demand courier networks.
@@ -78,10 +79,10 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
             <div className="lp-footer-col">
               <h5 className="lp-footer-heading">Ecosystem</h5>
               <ul className="lp-footer-links">
-                <li><a href="#subdomains" className="lp-footer-mono-link">*.stv.com</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">rider.stv.com</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">shop.stv.com</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">admin.stv.com</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">*.{BRAND.domain}</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">{riderUrl}</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">{shopUrl}</a></li>
+                <li><a href="#subdomains" className="lp-footer-mono-link">{adminUrl}</a></li>
               </ul>
             </div>
 
@@ -116,7 +117,7 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
 
           <div className="lp-footer-bottom">
             <p className="lp-footer-copyright">
-              &copy; {new Date().getFullYear()} Subtech Ventures Inc. Powering hyperlocal commerce in Nigeria.
+              &copy; {new Date().getFullYear()} {BRAND.name} Ventures Inc. Powering hyperlocal commerce in Nigeria.
             </p>
             <button className="lp-back-to-top" onClick={scrollTop} aria-label="Back to top">
               <span>Back to top</span>

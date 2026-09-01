@@ -69,9 +69,9 @@ export default function MerchantOrders({ orders = [], onUpdateOrderStatus }) {
               style={{
                 fontSize: '12.5px',
                 padding: '6px 12px',
-                background: filter === f.key ? 'rgba(39, 187, 173, 0.08)' : '#ffffff',
-                borderColor: filter === f.key ? '#27BBAD' : '#e5e5e5',
-                color: filter === f.key ? '#27BBAD' : '#525252'
+                background: filter === f.key ? 'rgba(43, 124, 255, 0.08)' : '#ffffff',
+                borderColor: filter === f.key ? '#2B7CFF' : '#e5e5e5',
+                color: filter === f.key ? '#2B7CFF' : '#525252'
               }}
               onClick={() => setFilter(f.key)}
             >
@@ -132,7 +132,7 @@ export default function MerchantOrders({ orders = [], onUpdateOrderStatus }) {
                     </div>
                     <div style={{ fontSize: '13.5px', fontWeight: 700, color: '#0a0a0a' }}>{order.customerName}</div>
                     <div style={{ fontSize: '12.5px', color: '#525252', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                      <MapPin size={13} color="#27BBAD" />
+                      <MapPin size={13} color="#2B7CFF" />
                       <span>{order.address}</span>
                     </div>
                   </div>
@@ -166,10 +166,10 @@ export default function MerchantOrders({ orders = [], onUpdateOrderStatus }) {
                         <div>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                              <Bike size={15} color="#27BBAD" />
+                              <Bike size={15} color="#2B7CFF" />
                               <strong style={{ fontSize: '13px' }}>{order.courierInfo?.courierName || 'Samuel O. (Rider #284)'}</strong>
                             </div>
-                            <span className="font-mono" style={{ fontSize: '12px', color: '#27BBAD', fontWeight: 700 }}>
+                            <span className="font-mono" style={{ fontSize: '12px', color: '#2B7CFF', fontWeight: 700 }}>
                               ETA ~{order.courierInfo?.etaMinutes || 12} mins
                             </span>
                           </div>
@@ -183,14 +183,14 @@ export default function MerchantOrders({ orders = [], onUpdateOrderStatus }) {
                           style={{ width: '100%', justifyContent: 'center', marginTop: '14px', fontSize: '12.5px' }}
                           onClick={() => handleMarkDelivered(order.id)}
                         >
-                          <Check size={14} color="#27BBAD" />
+                          <Check size={14} color="#2B7CFF" />
                           <span>Confirm Handover & Settle</span>
                         </button>
                       </>
                     )}
 
                     {isDelivered && (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#27BBAD', fontSize: '13px', fontWeight: 600 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#2B7CFF', fontSize: '13px', fontWeight: 600 }}>
                         <ShieldCheck size={18} />
                         <span>Order Completed & Delivered via OTP</span>
                       </div>

@@ -42,7 +42,7 @@ export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess })
       <div style={{ background: '#0a0a0a', color: '#ffffff', borderRadius: '20px', padding: '24px', marginBottom: '20px', boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
           <span style={{ fontSize: '12.5px', color: '#a3a3a3', fontWeight: 600 }}>Available Payout Balance</span>
-          <span style={{ fontSize: '11.5px', background: 'rgba(39, 187, 173, 0.2)', color: '#27BBAD', padding: '2px 8px', borderRadius: '100px', fontWeight: 700 }}>
+          <span style={{ fontSize: '11.5px', background: 'rgba(43, 124, 255, 0.2)', color: '#2B7CFF', padding: '2px 8px', borderRadius: '100px', fontWeight: 700 }}>
             Instant Withdrawal
           </span>
         </div>
@@ -52,7 +52,7 @@ export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess })
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '12px', fontSize: '12px', color: '#a3a3a3' }}>
-          <Building2 size={13} color="#27BBAD" />
+          <Building2 size={13} color="#2B7CFF" />
           <span>Guaranty Trust Bank · 0192837465</span>
         </div>
 
@@ -63,7 +63,7 @@ export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess })
             width: '100%',
             padding: '14px',
             borderRadius: '12px',
-            background: balance > 0 ? '#27BBAD' : '#333333',
+            background: balance > 0 ? '#2B7CFF' : '#333333',
             color: '#ffffff',
             border: 'none',
             fontSize: '14.5px',
@@ -89,8 +89,8 @@ export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess })
       </div>
 
       {cashoutDone && (
-        <div style={{ padding: '14px 18px', background: 'rgba(39, 187, 173, 0.1)', border: '1px solid #27BBAD', borderRadius: '12px', color: '#0f766e', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
-          <CheckCircle2 size={16} color="#27BBAD" />
+        <div style={{ padding: '14px 18px', background: 'rgba(43, 124, 255, 0.1)', border: '1px solid #2B7CFF', borderRadius: '12px', color: '#0f766e', fontSize: '13px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '20px' }}>
+          <CheckCircle2 size={16} color="#2B7CFF" />
           <span>₦18,450 successfully sent to your bank account!</span>
         </div>
       )}
@@ -106,7 +106,7 @@ export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess })
 
         <div style={{ background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '12px', padding: '14px' }}>
           <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>100% Tips</div>
-          <div className="font-mono" style={{ fontSize: '18px', fontWeight: 800, color: '#27BBAD', marginTop: '2px' }}>
+          <div className="font-mono" style={{ fontSize: '18px', fontWeight: 800, color: '#2B7CFF', marginTop: '2px' }}>
             ₦1,200
           </div>
         </div>
@@ -150,7 +150,7 @@ export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess })
                   {formatNaira(t.fare + t.tip)}
                 </div>
                 {t.tip > 0 && (
-                  <span style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 700 }}>
+                  <span style={{ fontSize: '11px', color: '#2B7CFF', fontWeight: 700 }}>
                     +{formatNaira(t.tip)} tip
                   </span>
                 )}

@@ -153,9 +153,9 @@ export default function MerchantApp({ onLaunchPOS, onOpenStorefront, onExitToLan
               title="Open Public Customer Storefront"
               style={{ cursor: 'pointer', background: '#fafafa', border: '1px solid #e5e5e5' }}
             >
-              <Store size={14} color="#27BBAD" />
+              <Store size={14} color="#2B7CFF" />
               <span>https://{storeProfile.slug}.stv.com</span>
-              <span style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 700, marginLeft: '4px' }}>[Preview]</span>
+              <span style={{ fontSize: '11px', color: '#2B7CFF', fontWeight: 700, marginLeft: '4px' }}>[Preview]</span>
             </button>
           </div>
 
@@ -170,7 +170,7 @@ export default function MerchantApp({ onLaunchPOS, onOpenStorefront, onExitToLan
               }}
               title="View Notifications"
             >
-              <Bell size={16} color={currentTab === 'notifications' ? '#27BBAD' : '#525252'} />
+              <Bell size={16} color={currentTab === 'notifications' ? '#2B7CFF' : '#525252'} />
               {unreadNotifsCount > 0 && (
                 <span style={{ 
                   position: 'absolute', 
@@ -187,7 +187,7 @@ export default function MerchantApp({ onLaunchPOS, onOpenStorefront, onExitToLan
 
             {storeProfile.hasPhysicalStore && (
               <button className="merchant-btn-pos" onClick={onLaunchPOS}>
-                <Terminal size={14} color="#27BBAD" />
+                <Terminal size={14} color="#2B7CFF" />
                 <span>POS Till</span>
               </button>
             )}

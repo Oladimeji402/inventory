@@ -33,7 +33,7 @@ export default function StorefrontProductCard({ product, quantityInCart = 0, onA
       <div className="sf-product-footer">
         <div>
           <div className="sf-product-price font-mono">{formatNaira(product.price)}</div>
-          <div style={{ fontSize: '11px', color: isOutOfStock ? '#e11d48' : '#27BBAD', fontWeight: 600 }}>
+          <div style={{ fontSize: '11px', color: isOutOfStock ? '#e11d48' : '#2B7CFF', fontWeight: 600 }}>
             {isOutOfStock ? 'Out of Stock' : `${product.stock} in stock`}
           </div>
         </div>

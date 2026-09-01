@@ -38,7 +38,7 @@ export default function RiderOtpKeypad({ expectedOtp = '3819', onVerified, onCan
 
   return (
     <div style={{ padding: '24px 20px', background: '#ffffff', borderRadius: '20px', textAlign: 'center' }}>
-      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(39, 187, 173, 0.1)', color: '#27BBAD', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
+      <div style={{ width: '48px', height: '48px', borderRadius: '50%', background: 'rgba(43, 124, 255, 0.1)', color: '#2B7CFF', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 12px' }}>
         <ShieldCheck size={26} />
       </div>
 

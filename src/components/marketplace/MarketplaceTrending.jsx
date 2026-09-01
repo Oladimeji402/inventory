@@ -26,7 +26,7 @@ export default function MarketplaceTrending({ products = [], onSelectProductStor
 
               {/* Store provenance badge */}
               <div 
-                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#27BBAD', background: 'rgba(39, 187, 173, 0.1)', padding: '2px 8px', borderRadius: '100px', marginBottom: '6px', cursor: 'pointer' }}
+                style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '11px', fontWeight: 600, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '2px 8px', borderRadius: '100px', marginBottom: '6px', cursor: 'pointer' }}
                 onClick={() => onSelectProductStore(p.storeSlug)}
               >
                 <Store size={10} />
@@ -47,9 +47,9 @@ export default function MarketplaceTrending({ products = [], onSelectProductStor
                 style={{
                   padding: '6px 12px',
                   borderRadius: '8px',
-                  border: '1.5px solid #27BBAD',
-                  background: 'rgba(39, 187, 173, 0.08)',
-                  color: '#27BBAD',
+                  border: '1.5px solid #2B7CFF',
+                  background: 'rgba(43, 124, 255, 0.08)',
+                  color: '#2B7CFF',
                   fontSize: '12px',
                   fontWeight: 700,
                   cursor: 'pointer',

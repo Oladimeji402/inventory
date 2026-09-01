@@ -59,7 +59,7 @@ export default function MerchantSalesChart() {
             <span style={{ fontSize: '13px', fontWeight: 600, color: '#737373', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Sales Revenue Trend
             </span>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 700, color: '#27BBAD', background: 'rgba(39, 187, 173, 0.1)', padding: '2px 8px', borderRadius: '100px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '12px', fontWeight: 700, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '2px 8px', borderRadius: '100px' }}>
               <ArrowUpRight size={13} />
               {currentSet.growth}
             </span>
@@ -114,8 +114,8 @@ export default function MerchantSalesChart() {
         >
           <defs>
             <linearGradient id="tealSalesGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#27BBAD" stopOpacity="0.25" />
-              <stop offset="100%" stopColor="#27BBAD" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#2B7CFF" stopOpacity="0.25" />
+              <stop offset="100%" stopColor="#2B7CFF" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
@@ -151,7 +151,7 @@ export default function MerchantSalesChart() {
               return `${i === 0 ? '' : 'L'} ${x} ${y}`;
             }).join(' ')}`}
             fill="none"
-            stroke="#27BBAD"
+            stroke="#2B7CFF"
             strokeWidth="3"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -173,7 +173,7 @@ export default function MerchantSalesChart() {
                   cy={y}
                   r={isHovered ? 7 : 4.5}
                   fill="#ffffff"
-                  stroke="#27BBAD"
+                  stroke="#2B7CFF"
                   strokeWidth={isHovered ? 3.5 : 2.5}
                   style={{ transition: 'all 0.15s ease' }}
                 />
@@ -189,7 +189,7 @@ export default function MerchantSalesChart() {
               key={i} 
               style={{ 
                 fontSize: '11.5px', 
-                color: hoveredPoint?.time === p.time ? '#27BBAD' : '#737373', 
+                color: hoveredPoint?.time === p.time ? '#2B7CFF' : '#737373', 
                 fontWeight: hoveredPoint?.time === p.time ? 700 : 500,
                 fontFamily: 'monospace' 
               }}
@@ -207,7 +207,7 @@ export default function MerchantSalesChart() {
           <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#0a0a0a', marginTop: '2px' }}>
             {formatNaira(currentSet.total * 0.68)}
           </div>
-          <div style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 600 }}>68% of volume</div>
+          <div style={{ fontSize: '11px', color: '#2B7CFF', fontWeight: 600 }}>68% of volume</div>
         </div>
 
         <div>
@@ -223,7 +223,7 @@ export default function MerchantSalesChart() {
           <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#0a0a0a', marginTop: '2px' }}>
             ₦6,450
           </div>
-          <div style={{ fontSize: '11px', color: '#27BBAD', fontWeight: 600 }}>+₦800 vs last week</div>
+          <div style={{ fontSize: '11px', color: '#2B7CFF', fontWeight: 600 }}>+₦800 vs last week</div>
         </div>
       </div>
     </div>

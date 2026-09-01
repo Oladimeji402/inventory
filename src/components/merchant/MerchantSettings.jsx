@@ -48,7 +48,7 @@ export default function MerchantSettings({ storeProfile, onSaveSettings }) {
         {/* Section 1: Brand & Subdomain */}
         <div className="merchant-card" style={{ padding: '28px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #f0f0f0' }}>
-            <Globe2 size={18} color="#27BBAD" />
+            <Globe2 size={18} color="#2B7CFF" />
             <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Store Identity & Subdomain</h3>
           </div>
 
@@ -86,7 +86,7 @@ export default function MerchantSettings({ storeProfile, onSaveSettings }) {
         {/* Section 2: Bank Payout Account */}
         <div className="merchant-card" style={{ padding: '28px', marginBottom: '24px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #f0f0f0' }}>
-            <CreditCard size={18} color="#27BBAD" />
+            <CreditCard size={18} color="#2B7CFF" />
             <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Automated Bank Payout Details</h3>
           </div>
 
@@ -127,7 +127,7 @@ export default function MerchantSettings({ storeProfile, onSaveSettings }) {
         {/* Section 3: Physical Location & Store Features */}
         <div className="merchant-card" style={{ padding: '28px', marginBottom: '28px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #f0f0f0' }}>
-            <MapPin size={18} color="#27BBAD" />
+            <MapPin size={18} color="#2B7CFF" />
             <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Location & Fulfillment Options</h3>
           </div>
 
@@ -158,7 +158,7 @@ export default function MerchantSettings({ storeProfile, onSaveSettings }) {
                   type="checkbox"
                   checked={formData.hasPhysicalStore}
                   onChange={(e) => setFormData({ ...formData, hasPhysicalStore: e.target.checked })}
-                  style={{ width: '18px', height: '18px', accentColor: '#27BBAD' }}
+                  style={{ width: '18px', height: '18px', accentColor: '#2B7CFF' }}
                 />
                 <span style={{ fontSize: '14px', fontWeight: 600, color: '#0a0a0a' }}>
                   Enable Counterpoint Offline POS Module (for stores with physical counter tills)
@@ -171,7 +171,7 @@ export default function MerchantSettings({ storeProfile, onSaveSettings }) {
         {/* Submit Bar */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
           {savedSuccess && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#27BBAD', fontSize: '13.5px', fontWeight: 600 }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#2B7CFF', fontSize: '13.5px', fontWeight: 600 }}>
               <Check size={16} />
               <span>Settings saved successfully!</span>
             </span>

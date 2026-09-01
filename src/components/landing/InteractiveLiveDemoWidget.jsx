@@ -161,7 +161,7 @@ export default function InteractiveLiveDemoWidget() {
                 onClick={() => setSelectedStoreIndex(idx)}
                 disabled={demoState !== 'idle' && demoState !== 'delivered'}
               >
-                <Store size={15} color={selectedStoreIndex === idx ? '#27BBAD' : '#737373'} />
+                <Store size={15} color={selectedStoreIndex === idx ? '#2B7CFF' : '#737373'} />
                 <span>{store.storeName}</span>
               </button>
             ))}
@@ -221,14 +221,14 @@ export default function InteractiveLiveDemoWidget() {
                       {currentStock} units
                     </span>
                     {demoState !== 'idle' && (
-                      <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, color: '#27BBAD' }}>(-1 sold)</span>
+                      <span className="font-mono" style={{ fontSize: '12px', fontWeight: 700, color: '#2B7CFF' }}>(-1 sold)</span>
                     )}
                   </div>
                 </div>
 
                 {demoState !== 'idle' && (
                   <div className="lp-demo-receipt-mini">
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#27BBAD', fontWeight: 600, fontSize: '11.5px', marginBottom: '4px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#2B7CFF', fontWeight: 600, fontSize: '11.5px', marginBottom: '4px' }}>
                       <Receipt size={13} />
                       <span className="font-mono">DIGITAL RECEIPT #{Math.floor(100000 + Math.random() * 900000)}</span>
                     </div>
@@ -277,13 +277,13 @@ export default function InteractiveLiveDemoWidget() {
                   <h5 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 8px', color: 'var(--lp-text)' }}>{currentStore.productName}</h5>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <span className="font-mono" style={{ fontWeight: 700, color: 'var(--lp-text)', fontSize: '15px' }}>{currentStore.price}</span>
-                    <span style={{ fontSize: '12px', fontWeight: 600, color: '#27BBAD' }}>{currentStock} available</span>
+                    <span style={{ fontSize: '12px', fontWeight: 600, color: '#2B7CFF' }}>{currentStock} available</span>
                   </div>
                   <div style={{ marginTop: '12px', padding: '10px', background: '#fafafa', border: '1px solid var(--lp-border)', borderRadius: '6px' }}>
                     <div style={{ fontSize: '11px', color: 'var(--lp-text-3)', textTransform: 'uppercase', letterSpacing: '0.04em', fontWeight: 600 }}>Delivery Destination:</div>
                     <div style={{ fontSize: '12.5px', fontWeight: 700, color: 'var(--lp-text)', marginTop: '2px' }}>{currentStore.buyerName}</div>
                     <div style={{ fontSize: '12px', color: 'var(--lp-text-2)', display: 'flex', alignItems: 'center', gap: '4px', marginTop: '2px' }}>
-                      <MapPin size={11} color="#27BBAD" />
+                      <MapPin size={11} color="#2B7CFF" />
                       <span>{currentStore.buyerAddress}</span>
                     </div>
                   </div>
@@ -346,14 +346,14 @@ export default function InteractiveLiveDemoWidget() {
                 <div className="lp-gps-driver-card">
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Navigation size={13} color="#27BBAD" />
+                      <Navigation size={13} color="#2B7CFF" />
                       <strong style={{ fontSize: '13px', color: 'var(--lp-text)' }}>{currentStore.riderName}</strong>
                     </div>
                     <span className="font-mono" style={{ fontSize: '11.5px', color: 'var(--lp-text-3)' }}>{currentStore.vehicle}</span>
                   </div>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', paddingTop: '6px', borderTop: '1px solid var(--lp-border)', fontSize: '12px' }}>
                     <span style={{ color: 'var(--lp-text-2)' }}>Status:</span>
-                    <strong style={{ color: '#27BBAD' }}>
+                    <strong style={{ color: '#2B7CFF' }}>
                       {demoState === 'delivered' ? '✓ Handover OTP Verified' : demoState === 'in_transit' ? `In Route (ETA ~${etaTimer} mins)` : 'Awaiting Order'}
                     </strong>
                   </div>
@@ -366,7 +366,7 @@ export default function InteractiveLiveDemoWidget() {
           {logs.length > 0 && (
             <div className="lp-demo-stream">
               <div className="lp-demo-stream-header">
-                <ShieldCheck size={14} color="#27BBAD" />
+                <ShieldCheck size={14} color="#2B7CFF" />
                 <span className="font-mono" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>
                   PLATFORM EVENT STREAM & AUDIT TRAIL
                 </span>
@@ -375,7 +375,7 @@ export default function InteractiveLiveDemoWidget() {
                 {logs.map((log, index) => (
                   <div key={index} className="lp-demo-stream-item">
                     <span className="font-mono" style={{ color: 'var(--lp-text-3)', fontSize: '11.5px' }}>[{log.time}]</span>
-                    <span style={{ fontSize: '12.5px', color: log.type === 'success' ? '#27BBAD' : 'var(--lp-text)' }}>
+                    <span style={{ fontSize: '12.5px', color: log.type === 'success' ? '#2B7CFF' : 'var(--lp-text)' }}>
                       {log.msg}
                     </span>
                   </div>

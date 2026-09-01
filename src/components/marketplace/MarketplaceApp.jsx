@@ -154,12 +154,12 @@ export default function MarketplaceApp({ onOpenStorefront, onExitToLanding }) {
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px', background: 'rgba(255,255,255,0.06)', padding: '16px 20px', borderRadius: '16px', border: '1px solid rgba(255,255,255,0.1)' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Bike size={20} />
             </div>
             <div>
               <div style={{ fontSize: '13.5px', fontWeight: 700 }}>Direct Courier Radar</div>
-              <div style={{ fontSize: '12px', color: '#27BBAD' }}>Verified neighborhood riders on duty</div>
+              <div style={{ fontSize: '12px', color: '#2B7CFF' }}>Verified neighborhood riders on duty</div>
             </div>
           </div>
         </div>

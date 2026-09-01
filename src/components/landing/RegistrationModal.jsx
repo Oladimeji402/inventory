@@ -237,7 +237,7 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
           /* Success View */
           <div className="modal-success-pane text-center py-4">
             <div className="success-icon-wrapper">
-              <CheckCircle2 size={52} color="#27BBAD" className="mx-auto" />
+              <CheckCircle2 size={52} color="#2B7CFF" className="mx-auto" />
             </div>
             <h3 className="text-xl font-bold text-slate-900 mt-3">Store Provisioned Successfully!</h3>
             <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
@@ -246,7 +246,7 @@ export default function RegistrationModal({ isOpen, onClose, initialSlug = '', o
 
             <div className="provisioned-url-card my-4 p-3 rounded-lg bg-slate-50 border border-emerald-300">
               <div className="text-xs text-slate-500">Your Live Storefront URL:</div>
-              <div className="font-mono font-bold text-base mt-0.5" style={{ color: '#27BBAD' }}>
+              <div className="font-mono font-bold text-base mt-0.5" style={{ color: '#2B7CFF' }}>
                 https://{formData.subdomain || 'my-store'}.stv.com
               </div>
             </div>

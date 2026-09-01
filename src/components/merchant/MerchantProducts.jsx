@@ -229,7 +229,7 @@ export default function MerchantProducts({ isAddModalOpen, onCloseAddModal, onOp
   const renderGauge = (pct) => {
     const isHigh = pct >= 80;
     const isMedium = pct >= 50 && pct < 80;
-    const color = isHigh ? '#27BBAD' : isMedium ? '#10b981' : '#f43f5e';
+    const color = isHigh ? '#2B7CFF' : isMedium ? '#10b981' : '#f43f5e';
     const strokeDash = (pct / 100) * 126;
 
     return (
@@ -341,7 +341,7 @@ export default function MerchantProducts({ isAddModalOpen, onCloseAddModal, onOp
               <div style={{ fontSize: '12px', color: '#737373', fontWeight: 600 }}>Average Performance</div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '4px' }}>
                 {renderGauge(84)}
-                <span style={{ fontSize: '14px', fontWeight: 700, color: '#27BBAD' }}>Excellent!</span>
+                <span style={{ fontSize: '14px', fontWeight: 700, color: '#2B7CFF' }}>Excellent!</span>
               </div>
             </div>
 
@@ -359,7 +359,7 @@ export default function MerchantProducts({ isAddModalOpen, onCloseAddModal, onOp
               <div style={{ fontSize: '12px', color: '#737373', fontWeight: 600 }}>Return Rate</div>
               <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', marginTop: '4px' }}>
                 <span className="font-mono" style={{ fontSize: '26px', fontWeight: 800, color: '#0a0a0a' }}>0.4%</span>
-                <span style={{ fontSize: '12px', color: '#27BBAD', fontWeight: 600 }}>Very Low</span>
+                <span style={{ fontSize: '12px', color: '#2B7CFF', fontWeight: 600 }}>Very Low</span>
               </div>
             </div>
           </div>
@@ -421,7 +421,7 @@ export default function MerchantProducts({ isAddModalOpen, onCloseAddModal, onOp
               <div style={{ display: 'flex', alignItems: 'center', gap: '12px', borderLeft: '1px solid #f0f0f0', paddingLeft: '16px' }}>
                 <div>
                   <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>
-                    Performance <strong style={{ color: p.gaugePct >= 80 ? '#27BBAD' : '#0a0a0a' }}>{p.performance}</strong>
+                    Performance <strong style={{ color: p.gaugePct >= 80 ? '#2B7CFF' : '#0a0a0a' }}>{p.performance}</strong>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '12px', color: '#525252', marginTop: '2px' }}>
                     <span className="font-mono">👁 {p.views}</span>

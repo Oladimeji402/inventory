@@ -1,6 +1,6 @@
 /* ==========================================================================
    SUBTECH NEIGHBORHOOD MARKETPLACE STYLES (shop.stv.com)
-   White + #27BBAD Teal · Apple-Standard Spacing · Multi-Store Directory
+   White + #2B7CFF Teal · Apple-Standard Spacing · Multi-Store Directory
    ========================================================================== */
 
 .marketplace-root {
@@ -59,7 +59,7 @@
 }
 
 .mp-location-selector:hover {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
 }
 
 .mp-search-bar {
@@ -76,7 +76,7 @@
 }
 
 .mp-search-bar:focus-within {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
 }
 
 .mp-search-input {
@@ -121,8 +121,8 @@
   gap: 6px;
   font-size: 12px;
   font-weight: 800;
-  color: #27BBAD;
-  background: rgba(39, 187, 173, 0.15);
+  color: #2B7CFF;
+  background: rgba(43, 124, 255, 0.15);
   padding: 4px 12px;
   border-radius: 100px;
   text-transform: uppercase;
@@ -162,13 +162,13 @@
 }
 
 .mp-cat-btn:hover {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
   color: #0a0a0a;
 }
 
 .mp-cat-btn.active {
-  background: #27BBAD;
-  border-color: #27BBAD;
+  background: #2B7CFF;
+  border-color: #2B7CFF;
   color: #ffffff;
 }
 
@@ -233,7 +233,7 @@
 
 .mp-store-card:hover {
   transform: translateY(-3px);
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
   box-shadow: 0 12px 28px rgba(0,0,0,0.06);
 }
 
@@ -317,6 +317,6 @@
 }
 
 .mp-trending-card:hover {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
   transform: translateY(-2px);
 }

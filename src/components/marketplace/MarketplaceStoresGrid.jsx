@@ -26,7 +26,7 @@ export default function MarketplaceStoresGrid({ stores = [], onSelectStore }) {
                   <span>{store.emoji || '🏪'}</span>
                 </div>
                 <div style={{ minWidth: 0 }}>
-                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#27BBAD', textTransform: 'uppercase' }}>
+                  <span style={{ fontSize: '11px', fontWeight: 700, color: '#2B7CFF', textTransform: 'uppercase' }}>
                     {store.category}
                   </span>
                   <h3 className="mp-store-name">{store.name}</h3>
@@ -50,13 +50,13 @@ export default function MarketplaceStoresGrid({ stores = [], onSelectStore }) {
                   <Star size={12} fill="#f59e0b" color="#f59e0b" />
                   {store.rating}
                 </span>
-                <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#27BBAD', fontWeight: 600 }}>
+                <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#2B7CFF', fontWeight: 600 }}>
                   <Clock size={12} />
                   {store.deliveryTime}
                 </span>
               </div>
 
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#27BBAD', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#2B7CFF', display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <span>Enter Store</span>
                 <ArrowRight size={13} />
               </span>

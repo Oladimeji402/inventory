@@ -109,7 +109,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
             </div>
             <div className="lp-hero-mockup-url font-mono">spar-ikeja.stv.com</div>
             <div className="lp-hero-mockup-status">
-              <Wifi size={11} color="#27BBAD" />
+              <Wifi size={11} color="#2B7CFF" />
               <span>Live</span>
             </div>
           </div>

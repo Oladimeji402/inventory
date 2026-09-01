@@ -15,13 +15,13 @@ export default function RiderProfile({ onExitToLanding }) {
     <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
       {/* Profile Header */}
       <div style={{ background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '16px', padding: '24px', textAlign: 'center', marginBottom: '20px' }}>
-        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 800, margin: '0 auto 12px' }}>
+        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 800, margin: '0 auto 12px' }}>
           SO
         </div>
 
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#0a0a0a' }}>Samuel Olawale</h2>
-          <ShieldCheck size={18} color="#27BBAD" />
+          <ShieldCheck size={18} color="#2B7CFF" />
         </div>
         <span className="font-mono" style={{ fontSize: '12px', color: '#737373', display: 'block', marginTop: '2px' }}>
           Courier ID: RIDER-284 · Ikeja GRA Node
@@ -40,7 +40,7 @@ export default function RiderProfile({ onExitToLanding }) {
           <div style={{ width: '1px', background: '#e5e5e5' }} />
           <div>
             <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>On-Time Rate</div>
-            <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#27BBAD' }}>98.4%</div>
+            <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#2B7CFF' }}>98.4%</div>
           </div>
         </div>
       </div>
@@ -58,11 +58,11 @@ export default function RiderProfile({ onExitToLanding }) {
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
             <span style={{ color: '#737373' }}>Riders License</span>
-            <strong style={{ color: '#27BBAD' }}>✓ Verified (Active)</strong>
+            <strong style={{ color: '#2B7CFF' }}>✓ Verified (Active)</strong>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
             <span style={{ color: '#737373' }}>Thermal Delivery Box</span>
-            <strong style={{ color: '#27BBAD' }}>✓ Inspected (Approved)</strong>
+            <strong style={{ color: '#2B7CFF' }}>✓ Inspected (Approved)</strong>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
             <span style={{ color: '#737373' }}>Assigned Corridor</span>

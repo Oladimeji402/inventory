@@ -103,7 +103,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
         <div className="lp-subdomain-box lp-reveal lp-reveal-d1">
           <div className="lp-subdomain-box-header">
             <div className="lp-subdomain-box-title">
-              <Terminal size={16} color="#27BBAD" />
+              <Terminal size={16} color="#2B7CFF" />
               <span className="font-mono">LIVE SUBDOMAIN GENERATOR & DOMAIN RESOLVER</span>
             </div>
             <div className="lp-subdomain-live-tag">
@@ -135,9 +135,9 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
             <div className="lp-subdomain-output-side">
               <div className="lp-subdomain-preview-card">
                 <div className="lp-subdomain-preview-url">
-                  <Lock size={14} color="#27BBAD" />
+                  <Lock size={14} color="#2B7CFF" />
                   <span className="font-mono">
-                    https://<strong style={{ color: '#27BBAD' }}>{cleanSlug}</strong>.stv.com
+                    https://<strong style={{ color: '#2B7CFF' }}>{cleanSlug}</strong>.stv.com
                   </span>
                 </div>
                 <div className="lp-subdomain-preview-actions">
@@ -146,7 +146,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
                     onClick={() => handleCopy(`https://${cleanSlug}.stv.com`)}
                     title="Copy URL"
                   >
-                    {copied ? <Check size={14} color="#27BBAD" /> : <Copy size={14} />}
+                    {copied ? <Check size={14} color="#2B7CFF" /> : <Copy size={14} />}
                   </button>
                   <button 
                     className="lp-btn-claim-small"
@@ -176,7 +176,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
                 </div>
 
                 <div className="lp-subdomain-node-domain font-mono">
-                  <Server size={14} color="#27BBAD" />
+                  <Server size={14} color="#2B7CFF" />
                   <span>{card.domain}</span>
                 </div>
 

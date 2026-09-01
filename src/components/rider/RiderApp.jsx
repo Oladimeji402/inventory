@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import './Rider.css';
+import { BRAND } from '../../config/brand';
 import RiderRadar from './RiderRadar';
 import RiderActiveTrip from './RiderActiveTrip';
 import RiderWallet from './RiderWallet';
@@ -36,12 +37,12 @@ export default function RiderApp({ onExitToLanding }) {
       {/* Driver Top Status Bar */}
       <header className="rider-top-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '8px', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Bike size={16} />
           </div>
           <div>
             <h1 style={{ fontSize: '14px', fontWeight: 800, margin: 0, color: '#0a0a0a' }}>
-              Subtech Courier
+              {BRAND.name} Courier
             </h1>
             <span className="font-mono" style={{ fontSize: '10.5px', color: '#737373', display: 'block' }}>
               Ikeja GRA Node · Rider #284
@@ -55,7 +56,7 @@ export default function RiderApp({ onExitToLanding }) {
           onClick={() => setIsOnline(!isOnline)}
         >
           <span className="rider-duty-dot" />
-          <span style={{ fontSize: '12px', fontWeight: 700, color: isOnline ? '#27BBAD' : '#737373' }}>
+          <span style={{ fontSize: '12px', fontWeight: 700, color: isOnline ? '#2B7CFF' : '#737373' }}>
             {isOnline ? 'ONLINE' : 'OFFLINE'}
           </span>
         </button>

@@ -1,6 +1,6 @@
 /* ==========================================================================
    SUBTECH MERCHANT DASHBOARD — CLEAN DESIGN SYSTEM
-   White + #27BBAD Teal · Inter · Apple-Standard Spacing
+   White + #2B7CFF Teal · Inter · Apple-Standard Spacing
    ========================================================================== */
 
 .merchant-root {
@@ -44,7 +44,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background: #27BBAD;
+  background: #2B7CFF;
   color: #ffffff;
   display: flex;
   align-items: center;
@@ -100,15 +100,15 @@
 }
 
 .merchant-nav-item.active {
-  color: #27BBAD;
-  background: rgba(39, 187, 173, 0.08);
+  color: #2B7CFF;
+  background: rgba(43, 124, 255, 0.08);
 }
 
 .merchant-nav-badge {
   margin-left: auto;
   font-size: 11px;
   font-weight: 700;
-  background: #27BBAD;
+  background: #2B7CFF;
   color: #ffffff;
   padding: 2px 7px;
   border-radius: 100px;
@@ -178,8 +178,8 @@
 }
 
 .merchant-store-link-pill:hover {
-  border-color: #27BBAD;
-  color: #27BBAD;
+  border-color: #2B7CFF;
+  color: #2B7CFF;
 }
 
 .merchant-btn-pos {
@@ -199,8 +199,8 @@
 }
 
 .merchant-btn-pos:hover {
-  border-color: #27BBAD;
-  color: #27BBAD;
+  border-color: #2B7CFF;
+  color: #2B7CFF;
 }
 
 .merchant-btn-primary {
@@ -211,8 +211,8 @@
   font-size: 13.5px;
   font-weight: 600;
   color: #ffffff;
-  background: #27BBAD;
-  border: 1.5px solid #27BBAD;
+  background: #2B7CFF;
+  border: 1.5px solid #2B7CFF;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -221,8 +221,8 @@
 }
 
 .merchant-btn-primary:hover {
-  background: #1fa89b;
-  border-color: #1fa89b;
+  background: #1a6ae8;
+  border-color: #1a6ae8;
 }
 
 .merchant-btn-secondary {
@@ -242,8 +242,8 @@
 }
 
 .merchant-btn-secondary:hover {
-  border-color: #27BBAD;
-  color: #27BBAD;
+  border-color: #2B7CFF;
+  color: #2B7CFF;
 }
 
 /* Content Container */
@@ -307,8 +307,8 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background: rgba(39, 187, 173, 0.08);
-  color: #27BBAD;
+  background: rgba(43, 124, 255, 0.08);
+  color: #2B7CFF;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -324,7 +324,7 @@
 
 .merchant-kpi-sub {
   font-size: 12px;
-  color: #27BBAD;
+  color: #2B7CFF;
   font-weight: 600;
 }
 
@@ -367,7 +367,7 @@
 }
 
 .merchant-search-wrap:focus-within {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
   background: #ffffff;
 }
 
@@ -424,8 +424,8 @@
 }
 
 .merchant-badge.live {
-  background: rgba(39, 187, 173, 0.1);
-  color: #27BBAD;
+  background: rgba(43, 124, 255, 0.1);
+  color: #2B7CFF;
 }
 
 .merchant-badge.low {
@@ -444,8 +444,8 @@
 }
 
 .merchant-badge.dispatched {
-  background: rgba(39, 187, 173, 0.1);
-  color: #27BBAD;
+  background: rgba(43, 124, 255, 0.1);
+  color: #2B7CFF;
 }
 
 /* ── MODAL ────────────────────────────────────────────────────────────────── */
@@ -523,7 +523,7 @@
 .merchant-field-input:focus,
 .merchant-field-select:focus,
 .merchant-field-textarea:focus {
-  border-color: #27BBAD;
+  border-color: #2B7CFF;
 }
 
 .merchant-modal-footer {

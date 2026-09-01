@@ -84,11 +84,11 @@ export default function MerchantNotifications({ onNavigateTab }) {
 
   const getIcon = (type) => {
     switch (type) {
-      case 'order': return <ShoppingBag size={16} color="#27BBAD" />;
+      case 'order': return <ShoppingBag size={16} color="#2B7CFF" />;
       case 'rider': return <Bike size={16} color="#2563eb" />;
       case 'stock': return <AlertTriangle size={16} color="#d97706" />;
       case 'payout': return <CreditCard size={16} color="#16a34a" />;
-      default: return <Bell size={16} color="#27BBAD" />;
+      default: return <Bell size={16} color="#2B7CFF" />;
     }
   };
 
@@ -102,7 +102,7 @@ export default function MerchantNotifications({ onNavigateTab }) {
               Notifications & Activity Feed
             </h1>
             {unreadCount > 0 && (
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff', background: '#27BBAD', padding: '2px 8px', borderRadius: '100px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#ffffff', background: '#2B7CFF', padding: '2px 8px', borderRadius: '100px' }}>
                 {unreadCount} unread
               </span>
             )}
@@ -143,9 +143,9 @@ export default function MerchantNotifications({ onNavigateTab }) {
             style={{
               fontSize: '12.5px',
               padding: '6px 14px',
-              background: filter === tab.key ? 'rgba(39, 187, 173, 0.08)' : '#ffffff',
-              borderColor: filter === tab.key ? '#27BBAD' : '#e5e5e5',
-              color: filter === tab.key ? '#27BBAD' : '#525252'
+              background: filter === tab.key ? 'rgba(43, 124, 255, 0.08)' : '#ffffff',
+              borderColor: filter === tab.key ? '#2B7CFF' : '#e5e5e5',
+              color: filter === tab.key ? '#2B7CFF' : '#525252'
             }}
             onClick={() => setFilter(tab.key)}
           >
@@ -170,7 +170,7 @@ export default function MerchantNotifications({ onNavigateTab }) {
                 style={{
                   padding: '20px 24px',
                   borderBottom: idx === filteredNotifs.length - 1 ? 'none' : '1px solid #f0f0f0',
-                  background: n.unread ? 'rgba(39, 187, 173, 0.03)' : '#ffffff',
+                  background: n.unread ? 'rgba(43, 124, 255, 0.03)' : '#ffffff',
                   display: 'flex',
                   alignItems: 'flex-start',
                   justifyContent: 'space-between',
@@ -200,7 +200,7 @@ export default function MerchantNotifications({ onNavigateTab }) {
                         {n.title}
                       </h4>
                       {n.unread && (
-                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#27BBAD', display: 'inline-block' }} />
+                        <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#2B7CFF', display: 'inline-block' }} />
                       )}
                     </div>
                     <p style={{ fontSize: '13.5px', color: '#525252', margin: '4px 0 0', lineHeight: 1.5 }}>

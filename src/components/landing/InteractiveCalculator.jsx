@@ -152,7 +152,7 @@ export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderMod
               {/* Output Result Side */}
               <div className="lp-calc-results">
                 <div className="lp-calc-results-header">
-                  <TrendingUp size={18} color="#27BBAD" />
+                  <TrendingUp size={18} color="#2B7CFF" />
                   <span className="lp-calc-results-eyebrow">Projected Annual Margin Retained</span>
                 </div>
 
@@ -172,13 +172,13 @@ export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderMod
                   </div>
                   <div className="lp-calc-breakdown-row">
                     <span>Subtech Platform Fee:</span>
-                    <span className="font-mono" style={{ color: '#27BBAD', fontWeight: 600 }}>
+                    <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 600 }}>
                       {formatNaira(subtechCost)}/mo
                     </span>
                   </div>
                   <div className="lp-calc-breakdown-total">
                     <span>Net Monthly Profit Kept:</span>
-                    <span className="font-mono" style={{ color: '#27BBAD', fontWeight: 800, fontSize: '17px' }}>
+                    <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 800, fontSize: '17px' }}>
                       +{formatNaira(merchantMonthlySavings)}/mo
                     </span>
                   </div>
@@ -271,7 +271,7 @@ export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderMod
               {/* Rider Output Result Side */}
               <div className="lp-calc-results">
                 <div className="lp-calc-results-header">
-                  <Coins size={18} color="#27BBAD" />
+                  <Coins size={18} color="#2B7CFF" />
                   <span className="lp-calc-results-eyebrow">Estimated Monthly Courier Payout</span>
                 </div>
 
@@ -291,13 +291,13 @@ export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderMod
                   </div>
                   <div className="lp-calc-breakdown-row">
                     <span>Estimated Tips (100% Yours):</span>
-                    <span className="font-mono" style={{ color: '#27BBAD', fontWeight: 600 }}>
+                    <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 600 }}>
                       +{formatNaira(estimatedTipsMonthly)}
                     </span>
                   </div>
                   <div className="lp-calc-breakdown-total">
                     <span>Daily Average Rate:</span>
-                    <span className="font-mono" style={{ color: '#27BBAD', fontWeight: 800, fontSize: '17px' }}>
+                    <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 800, fontSize: '17px' }}>
                       {formatNaira(riderTotalMonthly / workingDays)} / day
                     </span>
                   </div>

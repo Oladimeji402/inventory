@@ -154,7 +154,7 @@ export default function RiderSignupModal({ isOpen, onClose, onOpenRiderPortal })
           </div>
         ) : (
           <div className="modal-success-pane text-center py-4">
-            <CheckCircle2 size={52} color="#27BBAD" className="mx-auto" />
+            <CheckCircle2 size={52} color="#2B7CFF" className="mx-auto" />
             <h3 className="text-xl font-bold text-slate-900 mt-3">Welcome to Subtech Courier!</h3>
             <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
               Your courier terminal has been activated for <strong>{formData.primaryZone}</strong>.
@@ -162,7 +162,7 @@ export default function RiderSignupModal({ isOpen, onClose, onOpenRiderPortal })
 
             <button 
               className="lp-btn-primary justify-center mt-6"
-              style={{ width: '100%', padding: '14px', background: '#27BBAD' }}
+              style={{ width: '100%', padding: '14px', background: '#2B7CFF' }}
               onClick={() => {
                 onClose();
                 if (onOpenRiderPortal) onOpenRiderPortal();

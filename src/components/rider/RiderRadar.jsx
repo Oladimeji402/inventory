@@ -64,7 +64,7 @@ export default function RiderRadar({ isOnline, onAcceptTrip }) {
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       {/* Radar Scanner View */}
       <div className="rider-radar-container">
-        <span style={{ fontSize: '12px', fontWeight: 800, color: isOnline ? '#27BBAD' : '#737373', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
+        <span style={{ fontSize: '12px', fontWeight: 800, color: isOnline ? '#2B7CFF' : '#737373', letterSpacing: '0.06em', textTransform: 'uppercase' }}>
           {isOnline ? 'Scanning Neighborhood Corridor (1–3km)...' : 'You are currently offline'}
         </span>
 
@@ -98,7 +98,7 @@ export default function RiderRadar({ isOnline, onAcceptTrip }) {
         <div className="rider-incoming-card">
           {/* Header */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 800, color: '#27BBAD', background: 'rgba(39, 187, 173, 0.1)', padding: '4px 10px', borderRadius: '100px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 800, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '4px 10px', borderRadius: '100px' }}>
               <Zap size={13} />
               NEW DELIVERY REQUEST
             </span>
@@ -113,7 +113,7 @@ export default function RiderRadar({ isOnline, onAcceptTrip }) {
           <div style={{ background: '#0a0a0a', color: '#ffffff', borderRadius: '14px', padding: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
             <div>
               <span style={{ fontSize: '11px', color: '#a3a3a3', textTransform: 'uppercase', fontWeight: 600 }}>Guaranteed Trip Earning</span>
-              <div className="font-mono" style={{ fontSize: '24px', fontWeight: 800, color: '#27BBAD' }}>
+              <div className="font-mono" style={{ fontSize: '24px', fontWeight: 800, color: '#2B7CFF' }}>
                 {formatNaira(incomingOffer.fare + incomingOffer.tip)}
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function RiderRadar({ isOnline, onAcceptTrip }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '20px' }}>
             {/* Pickup */}
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#27BBAD', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
+              <div style={{ width: '24px', height: '24px', borderRadius: '6px', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, marginTop: '2px' }}>
                 <Store size={13} />
               </div>
               <div>
@@ -161,7 +161,7 @@ export default function RiderRadar({ isOnline, onAcceptTrip }) {
             </button>
             <button
               onClick={() => onAcceptTrip(incomingOffer)}
-              style={{ padding: '14px', borderRadius: '12px', border: 'none', background: '#27BBAD', color: '#ffffff', fontSize: '15px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 4px 14px rgba(39, 187, 173, 0.4)', fontFamily: 'inherit' }}
+              style={{ padding: '14px', borderRadius: '12px', border: 'none', background: '#2B7CFF', color: '#ffffff', fontSize: '15px', fontWeight: 800, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px', boxShadow: '0 4px 14px rgba(43, 124, 255, 0.4)', fontFamily: 'inherit' }}
             >
               <Check size={18} />
               <span>Accept Delivery</span>

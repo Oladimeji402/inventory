@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BRAND } from '../../config/brand';
 import { 
   LayoutDashboard, 
   TrendingUp,
@@ -59,7 +60,7 @@ export default function MerchantNav({
         </div>
         <div style={{ minWidth: 0, flex: 1 }}>
           <h3 style={{ fontSize: '14.5px', fontWeight: 800, margin: 0, color: '#0a0a0a' }}>
-            {storeProfile.name || 'Subtech Retail'}
+            {storeProfile.name || `${BRAND.name} Retail`}
           </h3>
           <span className="font-mono" style={{ fontSize: '11px', color: '#737373', display: 'block' }}>
             {storeProfile.slug}.stv.com
@@ -274,7 +275,7 @@ export default function MerchantNav({
       <div style={{ paddingTop: '14px', borderTop: '1px solid #f0f0f0', display: 'flex', flexDirection: 'column', gap: '8px' }}>
         {storeProfile.hasPhysicalStore && (
           <button className="merchant-btn-pos" onClick={onLaunchPOS} style={{ width: '100%', justifyContent: 'center' }}>
-            <Terminal size={14} color="#27BBAD" />
+            <Terminal size={14} color="#2B7CFF" />
             <span>Launch POS Till</span>
           </button>
         )}

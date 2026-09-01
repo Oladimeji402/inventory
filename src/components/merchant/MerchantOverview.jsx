@@ -49,7 +49,7 @@ export default function MerchantOverview({
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 700, color: '#27BBAD', background: 'rgba(39, 187, 173, 0.1)', padding: '3px 10px', borderRadius: '100px' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '5px', fontSize: '12px', fontWeight: 700, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '3px 10px', borderRadius: '100px' }}>
               <Sparkles size={13} />
               Today's Net Sales
             </span>
@@ -62,7 +62,7 @@ export default function MerchantOverview({
             <h2 className="font-mono" style={{ fontSize: '36px', fontWeight: 800, color: '#0a0a0a', margin: 0, letterSpacing: '-0.03em', lineHeight: 1 }}>
               ₦148,500
             </h2>
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13.5px', fontWeight: 700, color: '#27BBAD' }}>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px', fontSize: '13.5px', fontWeight: 700, color: '#2B7CFF' }}>
               <ArrowUpRight size={15} />
               +28.4% vs yesterday
             </span>
@@ -145,7 +145,7 @@ export default function MerchantOverview({
       {/* Subdomain Share Box */}
       <div className="merchant-card" style={{ padding: '24px', background: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-          <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(39, 187, 173, 0.1)', color: '#27BBAD', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: '44px', height: '44px', borderRadius: '10px', background: 'rgba(43, 124, 255, 0.1)', color: '#2B7CFF', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <Store size={22} />
           </div>
           <div>

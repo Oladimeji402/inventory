@@ -119,7 +119,7 @@ export default function MerchantAnalytics({ products = [], orders = [] }) {
                     </td>
                     <td className="font-mono" style={{ fontWeight: 600 }}>{item.salesCount}</td>
                     <td className="font-mono" style={{ fontWeight: 700, color: '#0a0a0a' }}>{formatNaira(item.revenue)}</td>
-                    <td className="font-mono" style={{ fontWeight: 700, color: '#27BBAD' }}>{item.margin}</td>
+                    <td className="font-mono" style={{ fontWeight: 700, color: '#2B7CFF' }}>{item.margin}</td>
                   </tr>
                 ))}
               </tbody>
@@ -133,7 +133,7 @@ export default function MerchantAnalytics({ products = [], orders = [] }) {
           <div className="merchant-card" style={{ padding: '24px', marginBottom: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
               <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>Peak Order Hours</h4>
-              <span style={{ fontSize: '11.5px', color: '#27BBAD', fontWeight: 700 }}>Peak: 2PM - 6PM</span>
+              <span style={{ fontSize: '11.5px', color: '#2B7CFF', fontWeight: 700 }}>Peak: 2PM - 6PM</span>
             </div>
 
             <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', height: '110px', paddingBottom: '8px', borderBottom: '1px solid #f0f0f0' }}>
@@ -143,7 +143,7 @@ export default function MerchantAnalytics({ products = [], orders = [] }) {
                     style={{ 
                       width: '20px', 
                       height: h.volume, 
-                      background: h.isPeak ? '#27BBAD' : '#e5e5e5', 
+                      background: h.isPeak ? '#2B7CFF' : '#e5e5e5', 
                       borderRadius: '4px',
                       transition: 'all 0.3s ease'
                     }} 
@@ -168,7 +168,7 @@ export default function MerchantAnalytics({ products = [], orders = [] }) {
                   <span className="font-mono" style={{ fontWeight: 700 }}>64%</span>
                 </div>
                 <div style={{ height: '6px', background: '#f0f0f0', borderRadius: '3px', overflow: 'hidden' }}>
-                  <div style={{ width: '64%', height: '100%', background: '#27BBAD' }} />
+                  <div style={{ width: '64%', height: '100%', background: '#2B7CFF' }} />
                 </div>
               </div>
 

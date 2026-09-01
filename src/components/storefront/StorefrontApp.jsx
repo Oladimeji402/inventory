@@ -177,7 +177,7 @@ export default function StorefrontApp({
         <div className="sf-banner-card">
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ fontSize: '12px', fontWeight: 700, color: '#27BBAD', background: 'rgba(39, 187, 173, 0.1)', padding: '3px 10px', borderRadius: '100px' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '3px 10px', borderRadius: '100px' }}>
                 {storeProfile.category}
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '12.5px', fontWeight: 700, color: '#f59e0b' }}>
@@ -192,11 +192,11 @@ export default function StorefrontApp({
 
             <div className="sf-banner-meta">
               <div className="sf-banner-meta-item">
-                <MapPin size={13} color="#27BBAD" />
+                <MapPin size={13} color="#2B7CFF" />
                 <span>{storeProfile.address}</span>
               </div>
               <div className="sf-banner-meta-item">
-                <Clock size={13} color="#27BBAD" />
+                <Clock size={13} color="#2B7CFF" />
                 <span>Delivery: {storeProfile.deliveryTime}</span>
               </div>
             </div>
@@ -276,7 +276,7 @@ export default function StorefrontApp({
       {totalCartCount > 0 && (
         <div className="sf-bottom-bar" onClick={() => setIsCartOpen(true)}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ background: '#27BBAD', color: '#ffffff', padding: '3px 8px', borderRadius: '100px', fontSize: '12px', fontWeight: 800 }}>
+            <span style={{ background: '#2B7CFF', color: '#ffffff', padding: '3px 8px', borderRadius: '100px', fontSize: '12px', fontWeight: 800 }}>
               {totalCartCount} items
             </span>
             <span style={{ fontSize: '14px', fontWeight: 700 }}>
@@ -284,7 +284,7 @@ export default function StorefrontApp({
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 700, color: '#27BBAD' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 700, color: '#2B7CFF' }}>
             <span>Checkout</span>
             <span>→</span>
           </div>

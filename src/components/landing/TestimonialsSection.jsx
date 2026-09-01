@@ -63,7 +63,7 @@ export default function TestimonialsSection() {
               {/* Star Rating */}
               <div className="lp-star-row">
                 {[...Array(5)].map((_, j) => (
-                  <Star key={j} size={15} fill="#27BBAD" color="#27BBAD" />
+                  <Star key={j} size={15} fill="#2B7CFF" color="#2B7CFF" />
                 ))}
               </div>
 
