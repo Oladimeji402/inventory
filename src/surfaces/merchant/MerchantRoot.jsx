@@ -44,7 +44,7 @@ export default function MerchantRoot() {
   }, []);
 
   useLayoutEffect(() => {
-    if (auth.loading) return;
+    if (auth.loading || (auth.session && !auth.membershipReady)) return;
 
     if (!auth.session) {
       if (path === '/dashboard' || path === '/onboarding' || path === '/') {
@@ -68,7 +68,7 @@ export default function MerchantRoot() {
     }
   }, [auth.loading, auth.session, auth.needsOnboarding, path]);
 
-  if (auth.loading) return <LoadingScreen />;
+  if (auth.loading || (auth.session && !auth.membershipReady)) return <LoadingScreen />;
 
   const configError = auth.configured
     ? ''

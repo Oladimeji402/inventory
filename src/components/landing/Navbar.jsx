@@ -49,18 +49,11 @@ export default function Navbar() {
           {/* Desktop actions */}
           <div className="lp-nav-actions">
             <a
-              className="lp-btn-ghost"
-              style={{ padding: '9px 16px', fontSize: 14 }}
-              href={appLinks.merchantLogin()}
-            >
-              Sign in
-            </a>
-            <a
               className="lp-btn-primary"
               style={{ padding: '9px 20px', fontSize: 14 }}
-              href={appLinks.merchantSignup()}
+              href={appLinks.start()}
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight size={14} />
             </a>
           </div>
@@ -86,26 +79,12 @@ export default function Navbar() {
           ))}
           <div className="lp-mobile-actions">
             <a
-              className="lp-btn-secondary"
-              style={{ width: '100%', justifyContent: 'center' }}
-              href={appLinks.merchantLogin()}
-            >
-              Sign in
-            </a>
-            <a
               className="lp-btn-primary"
               style={{ width: '100%', justifyContent: 'center' }}
-              href={appLinks.merchantSignup()}
+              href={appLinks.start()}
             >
-              <span>Get Started Free</span>
+              <span>Get Started</span>
               <ArrowRight size={14} />
-            </a>
-            <a
-              className="lp-btn-secondary"
-              style={{ width: '100%', justifyContent: 'center', fontSize: '13.5px' }}
-              href={appLinks.rider()}
-            >
-              Join as a Courier
             </a>
           </div>
         </div>

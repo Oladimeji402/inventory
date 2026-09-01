@@ -35,6 +35,7 @@ export function useMerchantAuth() {
   const [tenant, setTenant] = useState(null);
   const [membershipRole, setMembershipRole] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [membershipReady, setMembershipReady] = useState(false);
   const [error, setError] = useState(null);
 
   const hydrate = useCallback(async (nextSession) => {
@@ -43,18 +44,24 @@ export function useMerchantAuth() {
       setProfile(null);
       setTenant(null);
       setMembershipRole(null);
+      setMembershipReady(true);
+      setLoading(false);
+      return;
+    }
+
+    if (!nextSession?.user) {
+      setSession(null);
+      setProfile(null);
+      setTenant(null);
+      setMembershipRole(null);
+      setMembershipReady(true);
       setLoading(false);
       return;
     }
 
     setSession(nextSession);
-    if (!nextSession?.user) {
-      setProfile(null);
-      setTenant(null);
-      setMembershipRole(null);
-      setLoading(false);
-      return;
-    }
+    setMembershipReady(false);
+    setLoading(true);
 
     try {
       const data = await loadMembership(nextSession.user.id);
@@ -65,6 +72,7 @@ export function useMerchantAuth() {
     } catch (err) {
       setError(err.message || 'Could not load your store account.');
     } finally {
+      setMembershipReady(true);
       setLoading(false);
     }
   }, []);
@@ -72,20 +80,19 @@ export function useMerchantAuth() {
   useEffect(() => {
     if (!isSupabaseConfigured) {
       setLoading(false);
+      setMembershipReady(true);
       return undefined;
     }
 
-    let mounted = true;
-    supabase.auth.getSession().then(({ data }) => {
-      if (mounted) hydrate(data.session);
-    });
-
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
+      if (event === 'TOKEN_REFRESHED') {
+        setSession(nextSession);
+        return;
+      }
       hydrate(nextSession);
     });
 
     return () => {
-      mounted = false;
       listener?.subscription?.unsubscribe();
     };
   }, [hydrate]);
@@ -188,7 +195,10 @@ export function useMerchantAuth() {
     membershipRole,
     loading,
     error,
-    needsOnboarding: Boolean(session && (!tenant || tenant.onboarding_status !== 'complete')),
+    membershipReady,
+    needsOnboarding: Boolean(
+      session && membershipReady && (!tenant || tenant.onboarding_status !== 'complete')
+    ),
     signUp,
     signIn,
     requestPasswordReset,

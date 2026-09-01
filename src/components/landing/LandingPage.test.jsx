@@ -47,10 +47,16 @@ describe('Subtech landing page', () => {
     expect(screen.getByText(/Estimated net take-home earnings per month/i)).toBeInTheDocument();
   });
 
-  it('sends merchants to the merchant subdomain signup', () => {
+  it('sends Get Started to the merchant/rider picker', () => {
+    render(<LandingPage />);
+    expect(screen.queryByRole('link', { name: /^Sign in$/i })).not.toBeInTheDocument();
+    const start = screen.getAllByRole('link', { name: /Get Started/i })[0];
+    expect(start.getAttribute('href')).toContain('/start');
+  });
+
+  it('sends store registration CTAs to merchant signup', () => {
     render(<LandingPage />);
     const links = screen.getAllByRole('link', { name: /Register Your Store Free/i });
-    expect(links[0].getAttribute('href')).toContain('merchant.localhost');
     expect(links[0].getAttribute('href')).toContain('/signup');
   });
 });

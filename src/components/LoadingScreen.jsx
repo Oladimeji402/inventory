@@ -4,7 +4,7 @@ export default function LoadingScreen() {
   return (
     <div className="loading-screen">
       <Logo size={40} />
-      <p>Loading Counterpoint…</p>
+      <p>Loading…</p>
     </div>
   );
 }

@@ -26,6 +26,8 @@ describe('surface URLs', () => {
     expect(resolveSurface(location)).toBe('marketing');
     expect(resolveSurface({ ...location, pathname: '/signup' })).toBe('merchant');
     expect(resolveSurface({ ...location, pathname: '/dashboard' })).toBe('merchant');
+    expect(resolveSurface({ ...location, pathname: '/start' })).toBe('marketing');
+    expect(surfaceUrl('marketing', '/start', location)).toBe('https://inventory-grab.vercel.app/start');
     expect(authCallbackUrl('/login', { ...location, pathname: '/signup' })).toBe(
       'https://inventory-grab.vercel.app/login'
     );

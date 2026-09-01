@@ -107,6 +107,7 @@ export const appLinks = {
       ? surfaceUrl('merchant', `/signup?slug=${encodeURIComponent(slug)}`, location)
       : surfaceUrl('merchant', '/signup', location),
   merchantForgot: (location) => surfaceUrl('merchant', '/forgot', location),
+  start: (location) => surfaceUrl('marketing', '/start', location),
   rider: (location) => surfaceUrl('rider', '/', location),
   shop: (location) => surfaceUrl('shop', '/', location)
 };
