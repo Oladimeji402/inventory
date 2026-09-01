@@ -1,10 +1,13 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import AuthLayout from './AuthLayout';
 import Field from '../../../shared/ui/Field';
 import PasswordField from '../../../shared/ui/PasswordField';
 import Button from '../../../shared/ui/Button';
+import { BRAND } from '../../../config/brand';
+import { readIntendedSlug, saveIntendedSlug } from '../../../lib/intendedSlug';
+import { slugifyStoreName } from '../../../lib/merchantConstants';
 
-export default function SignupPage({ onSubmit, initialError }) {
+export default function SignupPage({ onSubmit, initialError, intendedSlug = '' }) {
   const [form, setForm] = useState({
     fullName: '',
     email: '',
@@ -15,6 +18,11 @@ export default function SignupPage({ onSubmit, initialError }) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState(initialError || '');
   const [checkEmail, setCheckEmail] = useState(false);
+  const [slug] = useState(() => slugifyStoreName(intendedSlug || readIntendedSlug()));
+
+  useEffect(() => {
+    if (slug) saveIntendedSlug(slug);
+  }, [slug]);
 
   const update = (field) => (event) => {
     setForm((current) => ({ ...current, [field]: event.target.value }));
@@ -38,7 +46,8 @@ export default function SignupPage({ onSubmit, initialError }) {
       fullName: form.fullName,
       email: form.email,
       phone: form.phone,
-      password: form.password
+      password: form.password,
+      intendedSlug: slug
     });
     setSubmitting(false);
 
@@ -57,7 +66,7 @@ export default function SignupPage({ onSubmit, initialError }) {
         title="Check your email"
         lead="Open the link we sent, then come back to finish setting up the store."
         visualTitle="Almost there."
-        visualCaption="Confirm the account, then pick your store URL."
+        visualCaption="Confirm the account, then finish store setup to keep your URL."
         imageSrc="/images/auth/counter.jpg"
       >
         <p className="auth-form-lead" style={{ marginTop: 0 }}>
@@ -81,6 +90,12 @@ export default function SignupPage({ onSubmit, initialError }) {
       imageSrc="/images/auth/grocery.jpg"
     >
       <form className="auth-form" onSubmit={handleSubmit}>
+        {slug && (
+          <p className="auth-legal-note">
+            You’ll confirm <strong>{slug}.{BRAND.domain}</strong> in store setup.
+            It’s free right now — not held until you finish.
+          </p>
+        )}
         <Field id="merchant-full-name" label="Full name">
           <input
             id="merchant-full-name"

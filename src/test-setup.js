@@ -33,6 +33,7 @@ if (typeof window !== 'undefined' && !window.IntersectionObserver) {
 beforeEach(() => {
   try {
     window.localStorage?.clear();
+    window.sessionStorage?.clear();
   } catch {
     // ignore
   }

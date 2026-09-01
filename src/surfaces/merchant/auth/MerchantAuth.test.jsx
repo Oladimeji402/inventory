@@ -57,7 +57,8 @@ describe('Merchant auth pages', () => {
       fullName: 'Adeola Balogun',
       email: 'adeola@store.com',
       phone: '+2348000000000',
-      password: 'password1'
+      password: 'password1',
+      intendedSlug: ''
     });
   });
 

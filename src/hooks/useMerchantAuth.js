@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { authCallbackUrl } from '../config/surfaces';
+import { checkStoreSlug } from '../lib/slugAvailability';
+import { clearIntendedSlug } from '../lib/intendedSlug';
 
 const CONFIG_ERROR =
   'Supabase is not configured. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your .env file.';
@@ -105,7 +107,7 @@ export function useMerchantAuth() {
     setMembershipRole(data.membershipRole);
   }, [session]);
 
-  const signUp = useCallback(async ({ fullName, email, phone, password }) => {
+  const signUp = useCallback(async ({ fullName, email, phone, password, intendedSlug }) => {
     if (!isSupabaseConfigured) return { error: CONFIG_ERROR };
 
     const { data, error: signUpError } = await supabase.auth.signUp({
@@ -115,7 +117,8 @@ export function useMerchantAuth() {
         emailRedirectTo: authCallbackUrl('/login'),
         data: {
           full_name: fullName.trim(),
-          phone: phone.trim()
+          phone: phone.trim(),
+          intended_slug: String(intendedSlug || '').trim()
         }
       }
     });
@@ -153,10 +156,12 @@ export function useMerchantAuth() {
   }, []);
 
   const checkSlug = useCallback(async (slug) => {
-    if (!isSupabaseConfigured) return { available: true };
-    const { data, error: rpcError } = await supabase.rpc('is_slug_available', { p_slug: slug });
-    if (rpcError) return { available: false, error: rpcError.message };
-    return { available: Boolean(data) };
+    const result = await checkStoreSlug(slug);
+    if (result.status === 'available') return { available: true, slug: result.slug };
+    if (result.status === 'error') return { available: false, error: result.error, slug: result.slug };
+    if (result.status === 'taken') return { available: false, error: 'That store URL is taken.', slug: result.slug };
+    if (result.status === 'reserved') return { available: false, error: 'That store URL is reserved.', slug: result.slug };
+    return { available: false, error: 'Choose a valid store URL.', slug: result.slug };
   }, []);
 
   const completeOnboarding = useCallback(async (payload) => {
@@ -182,6 +187,7 @@ export function useMerchantAuth() {
     });
 
     if (rpcError) return { error: rpcError.message };
+    clearIntendedSlug();
     await refreshTenant();
     return { data };
   }, [refreshTenant]);

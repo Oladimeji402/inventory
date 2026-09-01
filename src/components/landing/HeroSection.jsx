@@ -1,6 +1,10 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { ArrowRight, Store, PlayCircle, CheckCircle2, Wifi, WifiOff, Scan, Receipt } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { ArrowRight, Store, PlayCircle, CheckCircle2, Wifi, Receipt, AlertCircle } from 'lucide-react';
 import { appLinks } from '../../config/surfaces';
+import { BRAND } from '../../config/brand';
+import { checkStoreSlug } from '../../lib/slugAvailability';
+import { saveIntendedSlug } from '../../lib/intendedSlug';
+import { slugifyStoreName } from '../../lib/merchantConstants';
 
 const stats = [
   { value: '< 20 min', label: 'Target Delivery' },
@@ -9,52 +13,80 @@ const stats = [
   { value: '3 steps',  label: 'To Go Live' },
 ];
 
+const CLAIM_COPY = {
+  available: (slug) => (
+    <>
+      <strong>{slug}.{BRAND.domain}</strong> is free right now — not held until you finish store setup.
+    </>
+  ),
+  taken: (slug) => (
+    <>
+      <strong>{slug}.{BRAND.domain}</strong> is already in use. Try another name.
+    </>
+  ),
+  reserved: (slug) => (
+    <>
+      <strong>{slug}</strong> is reserved. Pick a store name customers will recognize.
+    </>
+  ),
+  invalid: () => 'Use 2–30 letters, numbers, or hyphens. Don’t start or end with a hyphen.',
+  error: (message) => message || 'Couldn’t check that URL right now. Try again.'
+};
+
 export default function HeroSection({ onOpenLiveDemo }) {
-  const [subdomain,    setSubdomain]    = useState('');
-  const [claimResult,  setClaimResult]  = useState(null);
+  const [subdomain, setSubdomain] = useState('');
+  const [claim, setClaim] = useState(null);
+  const [checking, setChecking] = useState(false);
   const ref = useRef(null);
 
-  // Reveal elements immediately — hero is always in viewport
   useEffect(() => {
     const els = ref.current?.querySelectorAll('.lp-reveal') || [];
-    const t = setTimeout(() => els.forEach(el => el.classList.add('visible')), 60);
+    const t = setTimeout(() => els.forEach((el) => el.classList.add('visible')), 60);
     return () => clearTimeout(t);
   }, []);
 
-  const handleClaim = e => {
-    e.preventDefault();
-    const slug = subdomain.toLowerCase().replace(/[^a-z0-9-]/g, '').replace(/^-+|-+$/, '');
-    if (slug) setClaimResult(slug);
+  const handleClaim = async (event) => {
+    event.preventDefault();
+    const slug = slugifyStoreName(subdomain);
+    setSubdomain(slug);
+    setChecking(true);
+    setClaim(null);
+    const result = await checkStoreSlug(slug);
+    setChecking(false);
+    setClaim(result);
+    if (result.status === 'available') saveIntendedSlug(result.slug);
   };
+
+  const resultClass = claim?.status === 'available'
+    ? 'is-ok'
+    : claim?.status === 'error' || claim?.status === 'taken' || claim?.status === 'reserved' || claim?.status === 'invalid'
+      ? 'is-error'
+      : '';
 
   return (
     <section className="lp-hero" ref={ref}>
       <div className="lp-hero-inner">
 
-        {/* Badge */}
         <div className="lp-hero-badge lp-reveal">
           <span className="lp-hero-badge-dot" />
           Hyperlocal Retail OS — Nigeria
         </div>
 
-        {/* Headline */}
         <h1 className="lp-hero-title lp-reveal lp-reveal-d1">
           Every neighborhood<br />
           store,{' '}
           <span className="lp-hero-title-teal">online.</span>
         </h1>
 
-        {/* Subtext */}
         <p className="lp-hero-sub lp-reveal lp-reveal-d2">
           Live storefront. Local delivery. Optional counter checkout.
           One platform for every corner shop, pharmacy, and supermarket in Nigeria.
         </p>
 
-        {/* Subdomain claim bar */}
         <form
           className="lp-hero-claim lp-reveal lp-reveal-d2"
           onSubmit={handleClaim}
-          style={claimResult ? { marginBottom: 8 } : {}}
+          style={claim || checking ? { marginBottom: 8 } : {}}
         >
           <span className="lp-hero-claim-prefix">https://</span>
           <input
@@ -62,23 +94,36 @@ export default function HeroSection({ onOpenLiveDemo }) {
             type="text"
             placeholder="your-store"
             value={subdomain}
-            onChange={e => { setSubdomain(e.target.value); setClaimResult(null); }}
+            maxLength={30}
+            autoComplete="off"
+            spellCheck={false}
+            onChange={(e) => {
+              setSubdomain(e.target.value);
+              setClaim(null);
+            }}
           />
-          <span className="lp-hero-claim-suffix">.stv.com</span>
-          <button type="submit" className="lp-hero-claim-btn">
-            Claim Free URL
+          <span className="lp-hero-claim-suffix">.{BRAND.domain}</span>
+          <button type="submit" className="lp-hero-claim-btn" disabled={checking || !subdomain.trim()}>
+            {checking ? 'Checking…' : 'Claim Free URL'}
           </button>
         </form>
 
-        {claimResult && (
-          <div className="lp-hero-claim-result lp-reveal">
-            <CheckCircle2 size={15} />
-            <span><strong>{claimResult}.stv.com</strong> is available —</span>
-            <a href={appLinks.merchantSignup(claimResult)}>Register now →</a>
+        {claim && (
+          <div className={`lp-hero-claim-result lp-reveal ${resultClass}`}>
+            {claim.status === 'available' ? <CheckCircle2 size={15} /> : <AlertCircle size={15} />}
+            <span>
+              {claim.status === 'available' && CLAIM_COPY.available(claim.slug)}
+              {claim.status === 'taken' && CLAIM_COPY.taken(claim.slug)}
+              {claim.status === 'reserved' && CLAIM_COPY.reserved(claim.slug)}
+              {claim.status === 'invalid' && CLAIM_COPY.invalid()}
+              {claim.status === 'error' && CLAIM_COPY.error(claim.error)}
+            </span>
+            {claim.status === 'available' && (
+              <a href={appLinks.merchantSignup(claim.slug)}>Register now →</a>
+            )}
           </div>
         )}
 
-        {/* CTAs */}
         <div className="lp-hero-ctas lp-reveal lp-reveal-d3">
           <a className="lp-btn-primary" href={appLinks.merchantSignup()}>
             <Store size={16} />
@@ -91,7 +136,6 @@ export default function HeroSection({ onOpenLiveDemo }) {
           </button>
         </div>
 
-        {/* Stats bar */}
         <div className="lp-hero-stats lp-reveal lp-reveal-d4">
           {stats.map((s, i) => (
             <div key={i} className="lp-hero-stat">
@@ -101,20 +145,17 @@ export default function HeroSection({ onOpenLiveDemo }) {
           ))}
         </div>
 
-        {/* Product window mockup */}
         <div className="lp-hero-mockup lp-reveal lp-reveal-d4">
-          {/* Browser chrome */}
           <div className="lp-hero-mockup-chrome">
             <div className="lp-hero-mockup-dots">
               <span /><span /><span />
             </div>
-            <div className="lp-hero-mockup-url font-mono">spar-ikeja.stv.com</div>
+            <div className="lp-hero-mockup-url font-mono">spar-ikeja.{BRAND.domain}</div>
             <div className="lp-hero-mockup-status">
               <Wifi size={11} color="#2B7CFF" />
               <span>Live</span>
             </div>
           </div>
-          {/* Storefront checkout */}
           <div className="lp-hero-mockup-body">
             <div className="lp-hero-mockup-col left">
               <div className="lp-hero-mockup-section-label">Cart</div>

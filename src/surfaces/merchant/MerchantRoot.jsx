@@ -1,9 +1,10 @@
 import { useLayoutEffect, useState } from 'react';
 import LoadingScreen from '../../components/LoadingScreen';
 import MerchantApp from '../../components/merchant/MerchantApp';
-import TillApp from '../../App';
 import { useMerchantAuth } from '../../hooks/useMerchantAuth';
 import { appLinks } from '../../config/surfaces';
+import { readIntendedSlug } from '../../lib/intendedSlug';
+import { slugifyStoreName } from '../../lib/merchantConstants';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
 import LoginPage from './auth/LoginPage';
 import OnboardingPage from './auth/OnboardingPage';
@@ -35,7 +36,6 @@ function slugFromQuery() {
 export default function MerchantRoot() {
   const auth = useMerchantAuth();
   const [path, setPath] = useState(currentPath);
-  const [workspace, setWorkspace] = useState('dashboard');
 
   useLayoutEffect(() => {
     const onPop = () => setPath(currentPath());
@@ -76,8 +76,15 @@ export default function MerchantRoot() {
 
   if (!auth.session) {
     const page = authPage(path);
+    const intendedSlug = slugifyStoreName(slugFromQuery() || readIntendedSlug());
     if (page === 'signup') {
-      return <SignupPage onSubmit={auth.signUp} initialError={configError} />;
+      return (
+        <SignupPage
+          onSubmit={auth.signUp}
+          initialError={configError}
+          intendedSlug={intendedSlug}
+        />
+      );
     }
     if (page === 'forgot') {
       return <ForgotPasswordPage onSubmit={auth.requestPasswordReset} />;
@@ -88,24 +95,26 @@ export default function MerchantRoot() {
   if (auth.needsOnboarding) {
     return (
       <OnboardingPage
-        initialSlug={slugFromQuery()}
+        initialSlug={slugifyStoreName(
+          slugFromQuery()
+          || auth.user?.user_metadata?.intended_slug
+          || readIntendedSlug()
+        )}
         ownerName={auth.profile?.full_name || auth.user?.email}
+        ownerMetadata={auth.user?.user_metadata}
         onCheckSlug={auth.checkSlug}
         onComplete={auth.completeOnboarding}
       />
     );
   }
 
-  if (workspace === 'till') {
-    return <TillApp onExit={() => setWorkspace('dashboard')} />;
-  }
-
   return (
     <MerchantApp
       tenant={auth.tenant}
       profile={auth.profile}
+      membershipRole={auth.membershipRole}
+      onRefreshTenant={auth.refreshTenant}
       onSignOut={auth.signOut}
-      onLaunchPOS={() => setWorkspace('till')}
       onOpenStorefront={() => {
         window.location.href = appLinks.shop();
       }}

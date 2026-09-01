@@ -10,6 +10,7 @@ import {
   requiresCacNumber,
   slugifyStoreName
 } from '../../../lib/merchantConstants';
+import { readIntendedSlug } from '../../../lib/intendedSlug';
 
 const emptyForm = {
   tradingName: '',
@@ -30,11 +31,27 @@ const emptyForm = {
   accountName: ''
 };
 
-export default function OnboardingPage({ initialSlug = '', onComplete, onCheckSlug, ownerName }) {
+function resolveInitialSlug(initialSlug, ownerMetadata) {
+  return slugifyStoreName(
+    initialSlug
+    || ownerMetadata?.intended_slug
+    || readIntendedSlug()
+  );
+}
+
+export default function OnboardingPage({
+  initialSlug = '',
+  onComplete,
+  onCheckSlug,
+  ownerName,
+  ownerMetadata
+}) {
+  const preferredSlug = resolveInitialSlug(initialSlug, ownerMetadata);
   const [step, setStep] = useState(1);
-  const [form, setForm] = useState({ ...emptyForm, slug: initialSlug || '' });
-  const [slugTouched, setSlugTouched] = useState(Boolean(initialSlug));
+  const [form, setForm] = useState({ ...emptyForm, slug: preferredSlug });
+  const [slugTouched, setSlugTouched] = useState(Boolean(preferredSlug));
   const [slugStatus, setSlugStatus] = useState('');
+  const [slugAvailable, setSlugAvailable] = useState(!preferredSlug);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const { states, cities, citiesLoading, citiesError } = useNigeriaLocations(form.state);
@@ -58,15 +75,19 @@ export default function OnboardingPage({ initialSlug = '', onComplete, onCheckSl
     const handle = window.setTimeout(async () => {
       const result = await onCheckSlug(form.slug);
       if (result?.error) {
+        setSlugAvailable(false);
         setSlugStatus(result.error);
         return;
       }
-      setSlugStatus(result?.available ? 'This store URL is available.' : 'That store URL is taken or reserved.');
+      setSlugAvailable(Boolean(result?.available));
+      setSlugStatus(result?.available
+        ? 'This store URL is free right now — not held until you finish.'
+        : 'That store URL is taken or reserved.');
     }, 350);
     return () => window.clearTimeout(handle);
   }, [form.slug, onCheckSlug]);
 
-  const goNext = () => {
+  const goNext = async () => {
     setError('');
     if (step === 1) {
       if (!form.tradingName.trim()) {
@@ -82,9 +103,19 @@ export default function OnboardingPage({ initialSlug = '', onComplete, onCheckSl
       setError('City and store address are required for pickup and dispatch.');
       return;
     }
-    if (step === 3 && !form.slug.trim()) {
-      setError('Choose a store URL.');
-      return;
+    if (step === 3) {
+      if (!form.slug.trim()) {
+        setError('Choose a store URL.');
+        return;
+      }
+      if (onCheckSlug) {
+        const result = await onCheckSlug(form.slug);
+        if (!result?.available) {
+          setError(result?.error || 'That store URL is taken or reserved.');
+          setSlugAvailable(false);
+          return;
+        }
+      }
     }
     setStep((current) => current + 1);
   };
@@ -354,7 +385,7 @@ export default function OnboardingPage({ initialSlug = '', onComplete, onCheckSl
                 Back
               </button>
             )}
-            <button type="submit" className="auth-submit" disabled={submitting}>
+            <button type="submit" className="auth-submit" disabled={submitting || (step === 3 && form.slug && slugAvailable === false)}>
               <span>{step === 4 ? (submitting ? 'Provisioning store…' : 'Finish setup') : 'Continue'}</span>
               <ArrowRight size={16} />
             </button>

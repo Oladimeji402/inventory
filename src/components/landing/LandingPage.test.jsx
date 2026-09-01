@@ -1,6 +1,20 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import LandingPage from './LandingPage';
 
+vi.mock('../../lib/slugAvailability', () => ({
+  checkStoreSlug: vi.fn(async (raw) => {
+    const slug = String(raw || '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')
+      .slice(0, 30);
+    if (slug.length < 2) return { slug, status: 'invalid' };
+    if (slug === 'admin' || slug === 'login') return { slug, status: 'reserved' };
+    if (slug === 'taken-shop') return { slug, status: 'taken' };
+    return { slug, status: 'available' };
+  })
+}));
+
 describe('Subtech landing page', () => {
   it('renders the brand and hero value proposition', () => {
     render(<LandingPage />);
@@ -9,14 +23,25 @@ describe('Subtech landing page', () => {
     expect(screen.getByText(/Live storefront\. Local delivery/i)).toBeInTheDocument();
   });
 
-  it('allows checking subdomain availability in the hero bar', () => {
+  it('allows checking subdomain availability in the hero bar', async () => {
     render(<LandingPage />);
     const input = screen.getByPlaceholderText('your-store');
     fireEvent.change(input, { target: { value: 'super-mart' } });
     fireEvent.click(screen.getByRole('button', { name: /Claim Free URL/i }));
 
-    expect(screen.getByText(/super-mart.stv.com/i)).toBeInTheDocument();
-    expect(screen.getByText(/is available/i)).toBeInTheDocument();
+    expect(await screen.findByText(/super-mart.stv.com/i)).toBeInTheDocument();
+    expect(screen.getByText(/free right now/i)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Register now/i }).getAttribute('href')).toContain('/signup');
+    expect(screen.getByRole('link', { name: /Register now/i }).getAttribute('href')).toContain('slug=super-mart');
+  });
+
+  it('does not fake availability for reserved store names', async () => {
+    render(<LandingPage />);
+    fireEvent.change(screen.getByPlaceholderText('your-store'), { target: { value: 'admin' } });
+    fireEvent.click(screen.getByRole('button', { name: /Claim Free URL/i }));
+
+    expect(await screen.findByText(/reserved/i)).toBeInTheDocument();
+    expect(screen.queryByRole('link', { name: /Register now/i })).not.toBeInTheDocument();
   });
 
   it('switches between store, shopper, and courier ecosystem tabs', () => {

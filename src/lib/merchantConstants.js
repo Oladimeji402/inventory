@@ -80,6 +80,18 @@ export function slugifyStoreName(value) {
     .slice(0, 30);
 }
 
+export const RESERVED_SLUGS = new Set([
+  'admin', 'api', 'www', 'app', 'auth', 'status', 'docs', 'billing',
+  'shop', 'rider', 'marketplace', 'merchant', 'pos', 'mail', 'cdn',
+  'support', 'help', 'blog', 'store', 'stores',
+  'login', 'signup', 'forgot', 'start', 'dashboard', 'onboarding',
+  'settings', 'orders', 'products', 'analytics'
+]);
+
+export function isValidStoreSlug(slug) {
+  return /^[a-z0-9]([a-z0-9-]{0,28}[a-z0-9])?$/.test(slug) && slug.length >= 2;
+}
+
 export function requiresCacNumber(entityType) {
   return entityType === 'business_name' || entityType === 'limited_company';
 }
