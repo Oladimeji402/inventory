@@ -11,12 +11,8 @@ import SalesTab from './components/SalesTab';
 import InventoryTab from './components/InventoryTab';
 import ReportsTab from './components/ReportsTab';
 import AdminTab from './components/AdminTab';
-import LandingPage from './components/landing/LandingPage';
-import MerchantApp from './components/merchant/MerchantApp';
-import StorefrontApp from './components/storefront/StorefrontApp';
-import RiderApp from './components/rider/RiderApp';
-import MarketplaceApp from './components/marketplace/MarketplaceApp';
-import { ArrowLeft, Store, Terminal } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
+import { appLinks } from './config/surfaces';
 
 function createInitialTillState() {
   const draft = loadTillDraft();
@@ -31,23 +27,7 @@ function createInitialTillState() {
   };
 }
 
-export default function App({ initialView }) {
-  const getStartingView = () => {
-    if (initialView) return initialView;
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('view') === 'marketplace' || params.get('view') === 'shop') return 'marketplace';
-      if (params.get('view') === 'rider') return 'rider';
-      if (params.get('view') === 'storefront') return 'storefront';
-      if (params.get('view') === 'merchant') return 'merchant';
-      if (params.get('view') === 'pos') return 'pos';
-      if (params.get('view') === 'landing') return 'landing';
-      if (process.env.NODE_ENV === 'test') return 'pos';
-    }
-    return 'landing';
-  };
-
-  const [viewMode, setViewMode] = useState(getStartingView);
+export default function App({ onExit }) {
   const {
     loading,
     products,
@@ -58,7 +38,7 @@ export default function App({ initialView }) {
     setEmployees,
     recordSale,
     removeSale,
-    logActivity
+    logActivity,
   } = useAppData();
 
   const initialTill = useRef(createInitialTillState()).current;
@@ -589,50 +569,9 @@ export default function App({ initialView }) {
     setTab(nextTab);
   }
 
-  if (viewMode === 'landing') {
-    return (
-      <LandingPage 
-        onLaunchPOS={() => setViewMode('pos')} 
-        onOpenMerchantPortal={() => setViewMode('merchant')}
-        onOpenRiderPortal={() => setViewMode('rider')}
-        onOpenMarketplace={() => setViewMode('marketplace')}
-      />
-    );
-  }
-
-  if (viewMode === 'marketplace') {
-    return (
-      <MarketplaceApp
-        onOpenStorefront={() => setViewMode('storefront')}
-        onExitToLanding={() => setViewMode('landing')}
-      />
-    );
-  }
-
-  if (viewMode === 'merchant') {
-    return (
-      <MerchantApp
-        onLaunchPOS={() => setViewMode('pos')}
-        onOpenStorefront={() => setViewMode('storefront')}
-        onExitToLanding={() => setViewMode('landing')}
-      />
-    );
-  }
-
-  if (viewMode === 'storefront') {
-    return (
-      <StorefrontApp
-        onExitToLanding={() => setViewMode('landing')}
-      />
-    );
-  }
-
-  if (viewMode === 'rider') {
-    return (
-      <RiderApp
-        onExitToLanding={() => setViewMode('landing')}
-      />
-    );
+  function leaveTill() {
+    if (onExit) onExit();
+    else window.location.href = appLinks.marketing();
   }
 
   if (loading) {
@@ -650,10 +589,10 @@ export default function App({ initialView }) {
           </div>
           <button 
             className="btn-back-to-landing"
-            onClick={() => setViewMode('landing')}
+            onClick={leaveTill}
           >
             <ArrowLeft size={14} />
-            <span>Back to Ecosystem Overview</span>
+            <span>{onExit ? 'Back to dashboard' : 'Back to website'}</span>
           </button>
         </div>
         <LoginScreen employees={employees} onLogin={handleLogin} />
@@ -671,10 +610,10 @@ export default function App({ initialView }) {
         </div>
         <button 
           className="btn-back-to-landing"
-          onClick={() => setViewMode('landing')}
+          onClick={leaveTill}
         >
           <ArrowLeft size={14} />
-          <span>Back to Ecosystem Overview</span>
+          <span>{onExit ? 'Back to dashboard' : 'Back to website'}</span>
         </button>
       </div>
 

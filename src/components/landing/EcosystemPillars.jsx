@@ -5,16 +5,17 @@ import {
   Clock, Layers, Coins, Navigation,
   Check, ArrowRight, AlertCircle, ArrowUpRight
 } from 'lucide-react';
+import { appLinks } from '../../config/surfaces';
 
 const problems = [
   {
     before: {
-      title: 'Connectivity Outages Halt Sales',
-      desc: 'Internet flickers mid-checkout. Systems freeze, cashiers write manual receipts, and queues back up.'
+      title: 'No way for neighbors to order',
+      desc: 'Customers only buy if they walk in. WhatsApp DMs get lost and you never know what is still on the shelf.'
     },
     after: {
-      title: 'Always-On Local Offline Mode',
-      desc: 'IndexedDB keeps registers scanning and ringing sales with 100% uptime. Automatic sync upon reconnection.'
+      title: 'A live storefront for the neighborhood',
+      desc: 'Shoppers see confirmed stock, check out, and a rider picks up — without rebuilding your shop around a till.'
     }
   },
   {
@@ -24,7 +25,7 @@ const problems = [
     },
     after: {
       title: 'Single Source of Inventory Truth',
-      desc: 'Every in-store barcode scan instantly updates the live storefront count in real-time. Zero overselling.'
+      desc: 'Catalog quantities stay in sync with what you actually have. Zero overselling.'
     }
   },
   {
@@ -43,13 +44,13 @@ const pillarsData = {
   merchants: {
     badge: 'Storefront & Operations',
     urlTag: '<your-store>.stv.com',
-    headline: 'Turn your physical counter into an online local flagship.',
-    desc: 'Equip your store with an offline-resilient register and broadcast your live shelf inventory to nearby shoppers without changing your routine.',
+    headline: 'Launch a neighborhood storefront. Add a till later if you need one.',
+    desc: 'Publish live stock to nearby shoppers, take orders, and dispatch riders — without making a counter register the product.',
     features: [
-      { title: 'Offline-First Register', desc: 'Scan and issue receipts continuously even during network outages.' },
-      { title: 'Real-Time Web Catalog', desc: 'Auto-publish available stock to customers within your delivery radius.' },
-      { title: 'Instant Courier Dispatch', desc: 'Broadcast pickup requests to verified local riders directly at checkout.' },
-      { title: 'Staff Controls & Audits', desc: 'Cashier PINs, shift summaries, and transparent drawer reconciliations.' },
+      { title: 'Live Web Catalog', desc: 'Auto-publish available stock to customers within your delivery radius.' },
+      { title: 'Instant Courier Dispatch', desc: 'Broadcast pickup requests to verified local riders as soon as an order is paid.' },
+      { title: 'Orders & Inventory', desc: 'One backoffice for catalog, orders, and payouts when you are ready.' },
+      { title: 'Optional Counter Till', desc: 'Add an in-store checkout later. It is a package, not the platform.' },
     ],
     ctaText: 'Claim Your Store Subdomain',
   },
@@ -59,7 +60,7 @@ const pillarsData = {
     headline: 'Order directly from trusted local stores with 20-minute delivery.',
     desc: 'Browse confirmed in-stock items from pharmacies, supermarkets, and local shops in your area with zero guesswork on availability.',
     features: [
-      { title: 'Verified In-Stock Items', desc: 'Inventory quantities synced directly from store tills — no phantom items.' },
+      { title: 'Verified In-Stock Items', desc: 'Quantities come from the merchant catalog — no phantom items.' },
       { title: 'Sub-30 Minute Delivery', desc: 'Orders fulfilled by dedicated neighborhood couriers within 1–5 km.' },
       { title: 'Multi-Store Neighborhood Cart', desc: 'Combine essentials from your pharmacy and grocery store in one session.' },
       { title: 'Live Delivery Tracking', desc: 'Real-time GPS status from shelf pickup straight to your doorstep.' },
@@ -88,7 +89,7 @@ function MerchantPreview() {
       <div className="lp-preview-card-header">
         <div className="lp-preview-status-pill">
           <span className="lp-preview-dot" />
-          <span>Live Storefront & Till</span>
+          <span>Live Storefront</span>
         </div>
         <span className="lp-preview-subdomain font-mono">spar-ikeja.stv.com</span>
       </div>
@@ -105,7 +106,7 @@ function MerchantPreview() {
         <div className="lp-preview-item">
           <div>
             <div className="lp-preview-item-title">Golden Penny Pasta (500g)</div>
-            <div className="lp-preview-item-sub">Till Stock: 34 units remaining</div>
+            <div className="lp-preview-item-sub">In stock: 34 units remaining</div>
           </div>
           <div className="lp-preview-item-price">₦3,200</div>
         </div>
@@ -143,7 +144,7 @@ function ShopperPreview() {
         <div className="lp-preview-item">
           <div>
             <div className="lp-preview-item-title">Apex Health Pharmacy</div>
-            <div className="lp-preview-item-sub">1.2 km away · Direct till-synced inventory</div>
+            <div className="lp-preview-item-sub">1.2 km away · Live shelf inventory</div>
           </div>
           <span className="lp-preview-tag">14 min delivery</span>
         </div>
@@ -228,7 +229,7 @@ const tabs = [
   { key: 'riders', label: 'Couriers', icon: Bike },
 ];
 
-export default function EcosystemPillars({ onOpenStoreModal, onOpenRiderModal }) {
+export default function EcosystemPillars() {
   const [activeTab, setActiveTab] = useState('merchants');
   const sectionRef = useRef(null);
 
@@ -248,12 +249,11 @@ export default function EcosystemPillars({ onOpenStoreModal, onOpenRiderModal })
   const ActiveMockup = mockups[activeTab];
 
   const handleCta = () => {
-    if (activeTab === 'merchants') onOpenStoreModal();
+    if (activeTab === 'merchants') window.location.href = appLinks.merchantSignup();
     else if (activeTab === 'shoppers') {
-      const demo = document.querySelector('#live-demo');
-      if (demo) demo.scrollIntoView({ behavior: 'smooth' });
+      document.querySelector('#live-demo')?.scrollIntoView({ behavior: 'smooth' });
     } else {
-      onOpenRiderModal();
+      window.location.href = appLinks.rider();
     }
   };
 
@@ -319,7 +319,7 @@ export default function EcosystemPillars({ onOpenStoreModal, onOpenRiderModal })
             <span className="lp-eyebrow">The Ecosystem</span>
             <h2 className="lp-h2">Three stakeholders. One unified commerce network.</h2>
             <p className="lp-body" style={{ marginTop: '16px' }}>
-              Designed to create seamless coordination between store counters, neighborhood doorsteps, and couriers.
+              Designed to coordinate storefronts, neighborhood doorsteps, and couriers.
             </p>
           </div>
 

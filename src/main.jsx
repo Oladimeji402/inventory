@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { registerSW } from 'virtual:pwa-register';
-import App from './App';
+import Root from './surfaces/Root';
 import { PwaProvider } from './components/PwaProvider';
 import './index.css';
 
@@ -12,7 +12,7 @@ if (typeof window !== 'undefined') {
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <PwaProvider>
-      <App />
+      <Root />
     </PwaProvider>
   </React.StrictMode>
 );

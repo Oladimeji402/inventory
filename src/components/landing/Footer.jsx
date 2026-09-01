@@ -1,8 +1,10 @@
 import React, { useEffect, useRef } from 'react';
 import { Store, Bike, ArrowRight, ArrowUp } from 'lucide-react';
-import { BRAND, shopUrl, riderUrl, adminUrl } from '../../config/brand';
+import { BRAND } from '../../config/brand';
+import { appLinks } from '../../config/surfaces';
+import BrandMark from '../../shared/components/BrandMark';
 
-export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
+export default function Footer() {
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -33,15 +35,15 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
               Join forward-thinking store owners and couriers operating with live catalog visibility and zero double-selling.
             </p>
             <div className="lp-final-cta-btns">
-              <button className="lp-btn-primary" onClick={() => onOpenStoreModal()}>
+              <a className="lp-btn-primary" href={appLinks.merchantSignup()}>
                 <Store size={16} />
                 <span>Register Your Store Free</span>
                 <ArrowRight size={16} />
-              </button>
-              <button className="lp-btn-secondary" onClick={onOpenRiderModal}>
+              </a>
+              <a className="lp-btn-secondary" href={appLinks.rider()}>
                 <Bike size={16} />
                 <span>Apply as a Courier</span>
-              </button>
+              </a>
             </div>
           </div>
         </div>
@@ -54,17 +56,7 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
             {/* Brand column */}
             <div className="lp-footer-brand-col">
               <div className="lp-footer-brand">
-                <div className="lp-brand-mark">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M17 8C17 5.79 14.76 4 12 4S7 5.79 7 8c0 1.86 1.28 3.46 3.14 4.07L13 13c1.29.46 2 1.38 2 2.5C15 17.43 13.65 19 12 19s-3-1.57-3-3.5"
-                      stroke="#fff"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
-                <span className="lp-brand-name">{BRAND.name}</span>
+                <BrandMark showTagline={false} />
               </div>
               <p className="lp-footer-brand-desc">
                 The hyperlocal commerce operating system connecting brick-and-mortar stores, local shoppers, and on-demand courier networks.
@@ -80,9 +72,8 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
               <h5 className="lp-footer-heading">Ecosystem</h5>
               <ul className="lp-footer-links">
                 <li><a href="#subdomains" className="lp-footer-mono-link">*.{BRAND.domain}</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">{riderUrl}</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">{shopUrl}</a></li>
-                <li><a href="#subdomains" className="lp-footer-mono-link">{adminUrl}</a></li>
+                <li><a href={appLinks.rider()} className="lp-footer-mono-link">{appLinks.rider()}</a></li>
+                <li><a href={appLinks.shop()} className="lp-footer-mono-link">{appLinks.shop()}</a></li>
               </ul>
             </div>
 
@@ -103,14 +94,14 @@ export default function Footer({ onOpenStoreModal, onOpenRiderModal }) {
             <div className="lp-footer-col">
               <h5 className="lp-footer-heading">Get Started</h5>
               <div className="lp-footer-actions">
-                <button className="lp-btn-primary" style={{ width: '100%', justifyContent: 'center' }} onClick={() => onOpenStoreModal()}>
+                <a className="lp-btn-primary" style={{ width: '100%', justifyContent: 'center' }} href={appLinks.merchantSignup()}>
                   <span>Register Store Free</span>
                   <ArrowRight size={14} />
-                </button>
-                <button className="lp-btn-secondary" style={{ width: '100%', justifyContent: 'center' }} onClick={onOpenRiderModal}>
+                </a>
+                <a className="lp-btn-secondary" style={{ width: '100%', justifyContent: 'center' }} href={appLinks.rider()}>
                   <Bike size={14} />
                   <span>Join Courier Fleet</span>
-                </button>
+                </a>
               </div>
             </div>
           </div>

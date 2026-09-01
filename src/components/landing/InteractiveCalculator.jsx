@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Store, Bike, TrendingUp, Coins, ArrowRight } from 'lucide-react';
+import { appLinks } from '../../config/surfaces';
 
-export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderModal }) {
+export default function InteractiveCalculator() {
   const [calcType, setCalcType] = useState('merchant'); // 'merchant' | 'rider'
   const sectionRef = useRef(null);
 
@@ -184,14 +185,14 @@ export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderMod
                   </div>
                 </div>
 
-                <button 
+                <a 
                   className="lp-btn-primary"
                   style={{ width: '100%', justifyContent: 'center' }}
-                  onClick={() => onOpenStoreModal()}
+                  href={appLinks.merchantSignup()}
                 >
                   <span>Start Keeping Your Margin</span>
                   <ArrowRight size={15} />
-                </button>
+                </a>
               </div>
             </div>
           ) : (
@@ -303,14 +304,14 @@ export default function InteractiveCalculator({ onOpenStoreModal, onOpenRiderMod
                   </div>
                 </div>
 
-                <button 
+                <a 
                   className="lp-btn-primary"
                   style={{ width: '100%', justifyContent: 'center' }}
-                  onClick={() => onOpenRiderModal()}
+                  href={appLinks.rider()}
                 >
                   <span>Apply to Ride With Subtech</span>
                   <ArrowRight size={15} />
-                </button>
+                </a>
               </div>
             </div>
           )}

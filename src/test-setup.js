@@ -16,6 +16,19 @@ if (typeof window !== 'undefined' && !window.matchMedia) {
   });
 }
 
+if (typeof window !== 'undefined' && !window.IntersectionObserver) {
+  class IntersectionObserverMock {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  Object.defineProperty(window, 'IntersectionObserver', {
+    writable: true,
+    configurable: true,
+    value: IntersectionObserverMock
+  });
+}
+
 // Keep each test starting from a clean till (no leftover drafts/sales).
 beforeEach(() => {
   try {

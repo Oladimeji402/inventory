@@ -3,24 +3,20 @@ import { Plus } from 'lucide-react';
 
 const faqs = [
   {
-    q: 'How does offline mode work when our internet cuts out?',
-    a: 'Subtech uses browser-native IndexedDB storage to keep sales operations local. If your Wi-Fi or data connection fails, cashiers can continue barcode scanning, ringing sales, and generating receipts without stoppage. The moment internet connectivity returns, all transactions and inventory adjustments synchronize automatically in the background.'
+    q: "What does my store's custom web address look like?",
+    a: 'Every registered merchant receives a dedicated branded URL (such as https://your-store.stv.com). This is your live catalog where neighborhood shoppers can view confirmed stock and place orders.'
   },
   {
     q: 'How does the on-demand rider dispatch function?',
-    a: 'When an in-store cashier or online customer completes a delivery order, one tap triggers an automated dispatch radar to verified couriers within a 1–3km radius. The closest available rider accepts, arrives to a pre-packaged parcel, and delivers directly with live GPS status updates and an OTP delivery confirmation.'
+    a: 'When a customer completes a delivery order, one tap triggers an automated dispatch radar to verified couriers within a 1–3km radius. The closest available rider accepts, arrives to a pre-packaged parcel, and delivers with live GPS and an OTP confirmation.'
   },
   {
-    q: 'Do I need proprietary POS hardware or dedicated machines?',
-    a: 'No. Subtech runs directly in modern web browsers (Chrome, Safari, Edge) on any existing laptop, desktop, iPad, or Android tablet. It integrates seamlessly with standard USB and Bluetooth barcode scanners and thermal receipt printers.'
+    q: 'How does Subtech keep online stock accurate?',
+    a: 'Inventory is a single catalog. When an item sells — online or in-store — the quantity on your storefront updates immediately. When the last unit is gone, it marks as out of stock.'
   },
   {
-    q: "What does my store's custom web address look like?",
-    a: 'Every registered merchant receives a dedicated branded URL (such as https://your-store.stv.com). This serves as your live digital catalog where neighborhood shoppers can view confirmed shelf stock and place orders directly.'
-  },
-  {
-    q: 'How does Subtech prevent double-selling between counter and online?',
-    a: 'Inventory levels are synchronized in real-time. Whenever an item is scanned and sold at your physical till counter, the quantity displayed on your digital catalog decrements instantly. When the last unit is sold, it marks as "Out of Stock" immediately.'
+    q: 'Do I need a till or special hardware to start?',
+    a: 'No. The storefront, backoffice, and rider dispatch run in a modern browser. A counter till is an optional add-on later if you want in-store checkout — it is not required to go live.'
   },
   {
     q: 'How do couriers receive payments, and what fees apply?',

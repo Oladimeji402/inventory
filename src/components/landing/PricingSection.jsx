@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Check, ArrowRight, Bike } from 'lucide-react';
+import { appLinks } from '../../config/surfaces';
 
 const plans = [
   {
@@ -9,14 +10,14 @@ const plans = [
     priceAnnual: '₦0',
     period: 'forever free',
     featured: false,
-    desc: 'Modernize your checkout counter and launch your neighborhood digital storefront.',
+    desc: 'Launch your neighborhood storefront and dispatch riders. Add a counter till later if you need one.',
     features: [
-      '1 Store Branch & Register',
-      'Up to 150 live catalog products',
-      'Offline-First Checkout Mode',
-      'Custom Subdomain (your-store.stv.com)',
-      'Pay-as-you-go Rider Dispatch',
-      'Daily Sales Summaries & Receipts',
+      '1 storefront & live catalog',
+      'Up to 150 catalog products',
+      'Custom subdomain (your-store.stv.com)',
+      'Pay-as-you-go rider dispatch',
+      'Order alerts and daily summaries',
+      'Optional counter checkout add-on',
     ],
     cta: 'Start Free Today',
   },
@@ -27,15 +28,15 @@ const plans = [
     priceAnnual: '₦14,800',
     period: '/month, billed annually',
     featured: true,
-    desc: 'Unlimited products, multi-cashier staff PINs, and automated priority courier radar.',
+    desc: 'Unlimited products, staff accounts, and automated priority courier radar.',
     features: [
-      'Unlimited Products & Live Web Catalog',
-      'Up to 5 Cashier & Shift Manager PINs',
-      'Priority Courier Dispatch Radar',
-      'WhatsApp Order Alerts & Webhooks',
-      'Low-Stock Automated Notifications',
-      'Multiple Payment Gateways (Cash, Card, Transfer)',
-      'Audit Logs & Cash Drawer Reconciliation',
+      'Unlimited products & live web catalog',
+      'Up to 5 staff accounts',
+      'Priority courier dispatch radar',
+      'WhatsApp order alerts & webhooks',
+      'Low-stock automated notifications',
+      'Multiple payment methods (cash, card, transfer)',
+      'Optional counter till add-on',
     ],
     cta: 'Start 14-Day Free Trial',
   },
@@ -60,7 +61,7 @@ const plans = [
   }
 ];
 
-export default function PricingSection({ onOpenStoreModal, onOpenRiderModal }) {
+export default function PricingSection() {
   const [billing, setBilling] = useState('monthly');
   const sectionRef = useRef(null);
 
@@ -139,13 +140,13 @@ export default function PricingSection({ onOpenStoreModal, onOpenRiderModal }) {
                 ))}
               </div>
 
-              <button
+              <a
                 className={`lp-pricing-cta ${plan.featured ? 'primary' : 'secondary'}`}
-                onClick={() => onOpenStoreModal()}
+                href={appLinks.merchantSignup()}
               >
                 <span>{plan.cta}</span>
                 <ArrowRight size={15} />
-              </button>
+              </a>
             </div>
           ))}
         </div>
@@ -161,10 +162,10 @@ export default function PricingSection({ onOpenStoreModal, onOpenRiderModal }) {
               The Subtech Rider application is 100% free to join. Keep 100% of customer tips with zero monthly subscription costs.
             </p>
           </div>
-          <button className="lp-btn-secondary" onClick={onOpenRiderModal} style={{ flexShrink: 0 }}>
+          <a className="lp-btn-secondary" href={appLinks.rider()} style={{ flexShrink: 0 }}>
             <span>Join Courier Fleet</span>
             <ArrowRight size={14} />
-          </button>
+          </a>
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, X, ArrowRight } from 'lucide-react';
-import { BRAND } from '../../config/brand';
+import BrandMark from '../../shared/components/BrandMark';
+import { appLinks } from '../../config/surfaces';
 
 const links = [
   { label: 'Platform',  href: '#ecosystem' },
@@ -9,7 +10,7 @@ const links = [
   { label: 'FAQ',       href: '#faq' },
 ];
 
-export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -31,24 +32,10 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
         <nav className="lp-nav">
 
           {/* Brand */}
-          <a
-            className="lp-brand"
+          <BrandMark
             href="#"
-            onClick={e => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-          >
-            <div className="lp-brand-mark">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-                <path
-                  d="M17 8C17 5.79 14.76 4 12 4S7 5.79 7 8c0 1.86 1.28 3.46 3.14 4.07L13 13c1.29.46 2 1.38 2 2.5C15 17.43 13.65 19 12 19s-3-1.57-3-3.5"
-                  stroke="#fff"
-                  strokeWidth="2.2"
-                  strokeLinecap="round"
-                />
-              </svg>
-            </div>
-            <span className="lp-brand-name">{BRAND.name}</span>
-            <span className="lp-brand-tag">{BRAND.tagline}</span>
-          </a>
+            onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
+          />
 
           {/* Desktop links */}
           <ul className="lp-nav-links">
@@ -61,14 +48,21 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
 
           {/* Desktop actions */}
           <div className="lp-nav-actions">
-            <button
+            <a
+              className="lp-btn-ghost"
+              style={{ padding: '9px 16px', fontSize: 14 }}
+              href={appLinks.merchantLogin()}
+            >
+              Sign in
+            </a>
+            <a
               className="lp-btn-primary"
               style={{ padding: '9px 20px', fontSize: 14 }}
-              onClick={() => onOpenStoreModal()}
+              href={appLinks.merchantSignup()}
             >
               <span>Get Started Free</span>
               <ArrowRight size={14} />
-            </button>
+            </a>
           </div>
 
           {/* Mobile hamburger */}
@@ -91,21 +85,28 @@ export default function Navbar({ onOpenStoreModal, onOpenRiderModal }) {
             </a>
           ))}
           <div className="lp-mobile-actions">
-            <button
+            <a
+              className="lp-btn-secondary"
+              style={{ width: '100%', justifyContent: 'center' }}
+              href={appLinks.merchantLogin()}
+            >
+              Sign in
+            </a>
+            <a
               className="lp-btn-primary"
               style={{ width: '100%', justifyContent: 'center' }}
-              onClick={() => { setOpen(false); onOpenStoreModal(); }}
+              href={appLinks.merchantSignup()}
             >
               <span>Get Started Free</span>
               <ArrowRight size={14} />
-            </button>
-            <button
+            </a>
+            <a
               className="lp-btn-secondary"
               style={{ width: '100%', justifyContent: 'center', fontSize: '13.5px' }}
-              onClick={() => { setOpen(false); onOpenRiderModal(); }}
+              href={appLinks.rider()}
             >
               Join as a Courier
-            </button>
+            </a>
           </div>
         </div>
       )}

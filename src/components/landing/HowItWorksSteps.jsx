@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Store, Scan, Bike, ArrowRight } from 'lucide-react';
+import { appLinks } from '../../config/surfaces';
 
 const steps = [
   {
@@ -7,28 +8,28 @@ const steps = [
     badge: 'Quick Setup',
     icon: Store,
     title: 'Claim Your Dedicated Store Subdomain',
-    desc: 'Choose your custom URL (e.g. your-store.stv.com), configure your store profile, and set cashier access in under 2 minutes.',
+    desc: 'Choose your custom URL (e.g. your-store.stv.com), set up the store profile, and go live in under 2 minutes.',
     actionText: 'Register Store',
   },
   {
     num: '02',
     badge: 'Live Sync',
     icon: Scan,
-    title: 'Scan Items & Broadcast Live Catalog',
-    desc: 'Scan barcodes or import your inventory. Your physical shelf stock automatically publishes online in real-time with zero double-entry.',
+    title: 'Publish Inventory to a Live Catalog',
+    desc: 'Add products or import your inventory. Shelf stock publishes online in real time so nearby shoppers only see what you actually have.',
     actionText: 'See How Sync Works',
   },
   {
     num: '03',
     badge: 'Instant Dispatch',
     icon: Bike,
-    title: 'Ring Up Sales & Auto-Dispatch Couriers',
-    desc: 'When an order is completed, one tap alerts nearby verified couriers to pick up the pre-bagged parcel for 20-minute delivery.',
+    title: 'Take Orders & Auto-Dispatch Couriers',
+    desc: 'When an order is paid, one tap alerts nearby verified couriers to pick up the pre-bagged parcel for 20-minute delivery.',
     actionText: 'Explore Delivery Fleet',
   }
 ];
 
-export default function HowItWorksSteps({ onOpenStoreModal }) {
+export default function HowItWorksSteps() {
   const sectionRef = useRef(null);
 
   useEffect(() => {
@@ -44,7 +45,7 @@ export default function HowItWorksSteps({ onOpenStoreModal }) {
   }, []);
 
   const handleAction = (idx) => {
-    if (idx === 0) onOpenStoreModal();
+    if (idx === 0) window.location.href = appLinks.merchantSignup();
     else if (idx === 1) document.querySelector('#live-demo')?.scrollIntoView({ behavior: 'smooth' });
     else document.querySelector('#pricing')?.scrollIntoView({ behavior: 'smooth' });
   };

@@ -9,7 +9,7 @@ const testimonials = [
     type: 'store',
     stat: '+42%',
     statDesc: 'Order volume within 60 days',
-    quote: 'Before Subtech, network downtime meant stalled checkouts and lost sales. Now our cashiers scan offline without a hiccup, and online orders dispatch automatically with one tap.',
+    quote: 'Neighbors order from our store URL now. Stock is accurate, and riders pick up paid orders without us living in WhatsApp.',
   },
   {
     name: 'Chinedu Eze',

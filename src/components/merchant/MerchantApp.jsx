@@ -72,9 +72,31 @@ const initialOrders = [
   }
 ];
 
-export default function MerchantApp({ onLaunchPOS, onOpenStorefront, onExitToLanding }) {
+function tenantToStoreProfile(tenant) {
+  if (!tenant) return initialStoreProfile;
+  return {
+    name: tenant.trading_name || initialStoreProfile.name,
+    slug: tenant.slug || initialStoreProfile.slug,
+    category: tenant.category || initialStoreProfile.category,
+    address: tenant.address || initialStoreProfile.address,
+    whatsapp: tenant.contact_phone || initialStoreProfile.whatsapp,
+    bankName: initialStoreProfile.bankName,
+    accountNumber: initialStoreProfile.accountNumber,
+    accountName: initialStoreProfile.accountName,
+    hasPhysicalStore: tenant.has_physical_store ?? true
+  };
+}
+
+export default function MerchantApp({
+  tenant,
+  profile,
+  onSignOut,
+  onLaunchPOS,
+  onOpenStorefront,
+  onExitToLanding
+}) {
   const [currentTab, setCurrentTab] = useState('overview');
-  const [storeProfile, setStoreProfile] = useState(initialStoreProfile);
+  const [storeProfile, setStoreProfile] = useState(() => tenantToStoreProfile(tenant));
   const [products, setProducts] = useState(initialProducts);
   const [orders, setOrders] = useState(initialOrders);
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
@@ -189,6 +211,17 @@ export default function MerchantApp({ onLaunchPOS, onOpenStorefront, onExitToLan
               <button className="merchant-btn-pos" onClick={onLaunchPOS}>
                 <Terminal size={14} color="#2B7CFF" />
                 <span>POS Till</span>
+              </button>
+            )}
+
+            {onSignOut && (
+              <button
+                className="merchant-btn-secondary"
+                onClick={onSignOut}
+                style={{ fontSize: '13px' }}
+                title={profile?.full_name || 'Sign out'}
+              >
+                Sign out
               </button>
             )}
 

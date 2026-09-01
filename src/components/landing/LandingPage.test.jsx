@@ -1,67 +1,56 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import LandingPage from './LandingPage';
 
-describe('Subtech Ventures Hyperlocal Landing Page', () => {
-  it('renders the brand title and key ecosystem value propositions', () => {
-    render(<LandingPage onLaunchPOS={() => {}} />);
-    expect(screen.getAllByText(/Subtech Ventures/i).length).toBeGreaterThan(0);
-    expect(screen.getByText(/From Store Counter to Doorstep/i)).toBeInTheDocument();
-    expect(screen.getByText(/1,420\+/i)).toBeInTheDocument();
-    expect(screen.getByText(/18.4 min/i)).toBeInTheDocument();
+describe('Subtech landing page', () => {
+  it('renders the brand and hero value proposition', () => {
+    render(<LandingPage />);
+    expect(screen.getAllByText(/Subtech/i).length).toBeGreaterThan(0);
+    expect(screen.getByText(/Every neighborhood/i)).toBeInTheDocument();
+    expect(screen.getByText(/Live storefront\. Local delivery/i)).toBeInTheDocument();
   });
 
   it('allows checking subdomain availability in the hero bar', () => {
-    render(<LandingPage onLaunchPOS={() => {}} />);
-    const input = screen.getByPlaceholderText('your-store-name');
+    render(<LandingPage />);
+    const input = screen.getByPlaceholderText('your-store');
     fireEvent.change(input, { target: { value: 'super-mart' } });
-    fireEvent.click(screen.getByRole('button', { name: /Claim Store URL/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Claim Free URL/i }));
 
     expect(screen.getByText(/super-mart.stv.com/i)).toBeInTheDocument();
-    expect(screen.getByText(/is available to reserve today!/i)).toBeInTheDocument();
+    expect(screen.getByText(/is available/i)).toBeInTheDocument();
   });
 
-  it('switches between 3-sided ecosystem tabs (Merchants, Shoppers, Riders)', () => {
-    render(<LandingPage onLaunchPOS={() => {}} />);
-    
-    // By default, merchants tab is active
-    expect(screen.getByText(/Turn physical shelves into a live digital storefront/i)).toBeInTheDocument();
+  it('switches between store, shopper, and courier ecosystem tabs', () => {
+    render(<LandingPage />);
 
-    // Switch to Shoppers
-    fireEvent.click(screen.getByRole('button', { name: /For Local Shoppers/i }));
-    expect(screen.getByText(/Browse live inventory in your neighborhood/i)).toBeInTheDocument();
+    expect(screen.getByText(/Launch a neighborhood storefront/i)).toBeInTheDocument();
 
-    // Switch to Riders
-    fireEvent.click(screen.getByRole('button', { name: /For On-Demand Riders/i }));
-    expect(screen.getByText(/Connect store checkouts to customer doors with zero idle waiting time/i)).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Shoppers$/i }));
+    expect(screen.getByText(/Order directly from trusted local stores with 20-minute delivery/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /^Couriers$/i }));
+    expect(screen.getByText(/Consistent local routes with pre-bagged, zero-wait pickups/i)).toBeInTheDocument();
   });
 
-  it('runs interactive live 3-way demo simulation', async () => {
-    render(<LandingPage onLaunchPOS={() => {}} />);
-    const triggerBtn = screen.getByRole('button', { name: /Ring Up Sale & Auto-Dispatch Rider/i });
-    expect(triggerBtn).toBeInTheDocument();
-
+  it('runs the interactive live demo simulation', async () => {
+    render(<LandingPage />);
+    const triggerBtn = screen.getByRole('button', { name: /Trigger Order Checkout/i });
     fireEvent.click(triggerBtn);
-    expect(await screen.findByText(/TAX INVOICE/i)).toBeInTheDocument();
+    expect(await screen.findByText(/DIGITAL RECEIPT/i)).toBeInTheDocument();
   });
 
-  it('switches calculator between Store Savings and Rider Earnings modes', () => {
-    render(<LandingPage onLaunchPOS={() => {}} />);
-    
-    // Default: Store Savings
-    expect(screen.getByText(/Saved per year with Subtech Ventures/i)).toBeInTheDocument();
+  it('switches calculator between store savings and courier earnings', () => {
+    render(<LandingPage />);
 
-    // Switch to Rider Earnings
-    fireEvent.click(screen.getByRole('button', { name: /Rider Earnings Calculator/i }));
-    expect(screen.getByText(/Take-home earnings per month/i)).toBeInTheDocument();
+    expect(screen.getByText(/Projected Annual Margin Retained/i)).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole('button', { name: /Courier Earnings/i }));
+    expect(screen.getByText(/Estimated net take-home earnings per month/i)).toBeInTheDocument();
   });
 
-  it('opens and interacts with the Store Registration modal', () => {
-    render(<LandingPage onLaunchPOS={() => {}} />);
-    
-    const regButtons = screen.getAllByRole('button', { name: /Register Store/i });
-    fireEvent.click(regButtons[0]);
-
-    expect(screen.getByText(/Register Your Store on Subtech Ventures/i)).toBeInTheDocument();
-    expect(screen.getByPlaceholderText(/e.g. Apex Supermarket & Wine/i)).toBeInTheDocument();
+  it('sends merchants to the merchant subdomain signup', () => {
+    render(<LandingPage />);
+    const links = screen.getAllByRole('link', { name: /Register Your Store Free/i });
+    expect(links[0].getAttribute('href')).toContain('merchant.localhost');
+    expect(links[0].getAttribute('href')).toContain('/signup');
   });
 });

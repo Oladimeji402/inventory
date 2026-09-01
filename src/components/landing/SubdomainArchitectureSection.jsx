@@ -10,8 +10,9 @@ import {
   Bike,
   ShoppingBag
 } from 'lucide-react';
+import { appLinks } from '../../config/surfaces';
 
-export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenRiderModal }) {
+export default function SubdomainArchitectureSection() {
   const [storeQuery, setStoreQuery] = useState('kemi-organics');
   const [copied, setCopied] = useState(false);
   const sectionRef = useRef(null);
@@ -47,10 +48,10 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
         'Custom store branding & logo',
         'Direct customer web checkout',
         'Real-time order & revenue analytics',
-        'Optional POS till add-on for counters'
+        'Optional counter till add-on'
       ],
       actionText: 'Reserve Subdomain',
-      action: () => onOpenStoreModal(cleanSlug)
+      action: () => { window.location.href = appLinks.merchantSignup(cleanSlug); }
     },
     {
       role: 'On-Demand Courier Network',
@@ -65,7 +66,7 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
         'Instant automated bank payouts'
       ],
       actionText: 'Courier Portal',
-      action: () => onOpenRiderModal()
+      action: () => { window.location.href = appLinks.rider(); }
     },
     {
       role: 'Neighborhood Shopper Hub',
@@ -148,12 +149,12 @@ export default function SubdomainArchitectureSection({ onOpenStoreModal, onOpenR
                   >
                     {copied ? <Check size={14} color="#2B7CFF" /> : <Copy size={14} />}
                   </button>
-                  <button 
+                  <a 
                     className="lp-btn-claim-small"
-                    onClick={() => onOpenStoreModal(cleanSlug)}
+                    href={appLinks.merchantSignup(cleanSlug)}
                   >
                     Claim URL
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>

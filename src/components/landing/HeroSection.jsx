@@ -1,14 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ArrowRight, Store, PlayCircle, CheckCircle2, Wifi, WifiOff, Scan, Receipt } from 'lucide-react';
+import { appLinks } from '../../config/surfaces';
 
 const stats = [
   { value: '< 20 min', label: 'Target Delivery' },
-  { value: '100%',     label: 'Offline Uptime' },
+  { value: 'Live',     label: 'Storefront URL' },
   { value: '₦0',       label: 'Setup Cost' },
   { value: '3 steps',  label: 'To Go Live' },
 ];
 
-export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaunchPOS, onOpenLiveDemo }) {
+export default function HeroSection({ onOpenLiveDemo }) {
   const [subdomain,    setSubdomain]    = useState('');
   const [claimResult,  setClaimResult]  = useState(null);
   const ref = useRef(null);
@@ -45,7 +46,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
 
         {/* Subtext */}
         <p className="lp-hero-sub lp-reveal lp-reveal-d2">
-          Offline-first POS till. Live web storefront. Instant rider dispatch.
+          Live storefront. Local delivery. Optional counter checkout.
           One platform for every corner shop, pharmacy, and supermarket in Nigeria.
         </p>
 
@@ -73,17 +74,17 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
           <div className="lp-hero-claim-result lp-reveal">
             <CheckCircle2 size={15} />
             <span><strong>{claimResult}.stv.com</strong> is available —</span>
-            <button onClick={() => onOpenStoreModal(claimResult)}>Register now →</button>
+            <a href={appLinks.merchantSignup(claimResult)}>Register now →</a>
           </div>
         )}
 
         {/* CTAs */}
         <div className="lp-hero-ctas lp-reveal lp-reveal-d3">
-          <button className="lp-btn-primary" onClick={() => onOpenStoreModal()}>
+          <a className="lp-btn-primary" href={appLinks.merchantSignup()}>
             <Store size={16} />
             Register Your Store Free
             <ArrowRight size={16} />
-          </button>
+          </a>
           <button className="lp-btn-secondary" onClick={onOpenLiveDemo}>
             <PlayCircle size={16} />
             Try Live Demo
@@ -113,7 +114,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
               <span>Live</span>
             </div>
           </div>
-          {/* POS content */}
+          {/* Storefront checkout */}
           <div className="lp-hero-mockup-body">
             <div className="lp-hero-mockup-col left">
               <div className="lp-hero-mockup-section-label">Cart</div>
@@ -148,7 +149,7 @@ export default function HeroSection({ onOpenStoreModal, onOpenRiderModal, onLaun
               <div className="lp-hero-mockup-pay-row">Cash</div>
               <div className="lp-hero-mockup-receipt-btn">
                 <Receipt size={11} />
-                <span>Print Receipt</span>
+                <span>Confirm order</span>
               </div>
             </div>
           </div>
