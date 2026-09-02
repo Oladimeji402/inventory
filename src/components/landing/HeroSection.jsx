@@ -69,7 +69,7 @@ export default function HeroSection({ onOpenLiveDemo }) {
 
         <div className="lp-hero-badge lp-reveal">
           <span className="lp-hero-badge-dot" />
-          Hyperlocal Retail OS — Nigeria
+          Built for corner shops, pharmacies &amp; supermarkets in Ogun
         </div>
 
         <h1 className="lp-hero-title lp-reveal lp-reveal-d1">

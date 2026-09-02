@@ -63,7 +63,7 @@ export default function Footer() {
               </p>
               <div className="lp-footer-network-status">
                 <span className="lp-footer-dot" />
-                <span>System Operational · 99.98% uptime</span>
+                <span>No setup fees · Change plans anytime</span>
               </div>
             </div>
 

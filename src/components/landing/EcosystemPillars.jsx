@@ -263,10 +263,10 @@ export default function EcosystemPillars() {
       <section className="lp-section lp-problem-section">
         <div className="lp-container">
           <div className="lp-section-header lp-reveal">
-            <span className="lp-eyebrow">The Challenge</span>
-            <h2 className="lp-h2">Neighborhood retail shouldn't struggle with disconnected systems.</h2>
+            <span className="lp-eyebrow">The Problem</span>
+            <h2 className="lp-h2">Running a shop offline and selling online shouldn't feel like two different businesses.</h2>
             <p className="lp-body" style={{ marginTop: '16px' }}>
-              Traditional offline stores and modern on-demand delivery operate in silos. Subtech bridges the divide.
+              Most tools make you choose one or the other. Subtech runs both from the same stock list.
             </p>
           </div>
 
@@ -316,10 +316,10 @@ export default function EcosystemPillars() {
       <section id="ecosystem" className="lp-section lp-ecosystem-section">
         <div className="lp-container">
           <div className="lp-section-header-center lp-reveal">
-            <span className="lp-eyebrow">The Ecosystem</span>
-            <h2 className="lp-h2">Three stakeholders. One unified commerce network.</h2>
+            <span className="lp-eyebrow">Who It's For</span>
+            <h2 className="lp-h2">Built for shop owners, shoppers, and riders.</h2>
             <p className="lp-body" style={{ marginTop: '16px' }}>
-              Designed to coordinate storefronts, neighborhood doorsteps, and couriers.
+              One system that connects your shop, the neighbors who buy from you, and the riders who deliver for you.
             </p>
           </div>
 

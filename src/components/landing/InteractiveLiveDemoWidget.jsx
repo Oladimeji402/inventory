@@ -99,20 +99,20 @@ export default function InteractiveLiveDemoWidget() {
 
     // Step 1: Ringing Sale
     setDemoState('ringing');
-    addLog(`[Storefront] Customer initiated checkout at ${currentStore.subdomain}`, 'info');
+    addLog(`Customer checked out at ${currentStore.subdomain}`, 'info');
 
     setTimeout(() => {
       // Step 2: Syncing Inventory
       setDemoState('syncing');
       setCurrentStock(prev => Math.max(0, prev - 1));
-      addLog(`[Inventory Sync] Live catalog stock decremented to ${currentStore.initialStock - 1} units in real time`, 'success');
-      addLog(`[Settlement] ${currentStore.price} direct payment confirmed`, 'success');
+      addLog(`Stock updated: ${currentStore.initialStock - 1} units left on the shelf`, 'success');
+      addLog(`Payment of ${currentStore.price} confirmed`, 'success');
 
       setTimeout(() => {
         // Step 3: Courier Dispatch & Transit
         setDemoState('in_transit');
-        addLog(`[Radar] Auto-dispatched nearest verified courier: ${currentStore.riderName}`, 'info');
-        addLog(`[Route Batch] Corridor delivery route optimized (ETA ~18 mins)`, 'info');
+        addLog(`Nearest available rider notified: ${currentStore.riderName}`, 'info');
+        addLog(`Route set — on the way (ETA ~18 mins)`, 'info');
 
         // Animate progress
         let progress = 0;
@@ -124,8 +124,8 @@ export default function InteractiveLiveDemoWidget() {
           if (progress >= 100) {
             clearInterval(interval);
             setDemoState('delivered');
-            addLog(`[Proof of Delivery] OTP verified. Handed over to ${currentStore.buyerName}`, 'success');
-            addLog(`[Payout] 100% courier trip fare & tips deposited to driver wallet`, 'success');
+            addLog(`Delivered and confirmed with ${currentStore.buyerName}`, 'success');
+            addLog(`Rider paid — 100% of the trip fare and tips`, 'success');
           }
         }, 900);
 
@@ -146,10 +146,10 @@ export default function InteractiveLiveDemoWidget() {
       <div className="lp-container">
         {/* Header without pill */}
         <div className="lp-section-header-center lp-reveal">
-          <span className="lp-eyebrow">Interactive Simulation</span>
-          <h2 className="lp-h2">Watch the 3-way network execute in real time.</h2>
+          <span className="lp-eyebrow">Try It Yourself</span>
+          <h2 className="lp-h2">See an order go from checkout to doorstep, live.</h2>
           <p className="lp-body" style={{ marginTop: '16px' }}>
-            Experience how a storefront checkout decrements live shelf inventory and auto-dispatches an on-demand courier in seconds.
+            Watch what happens the moment a customer checks out — your stock count updates and a rider gets notified automatically.
           </p>
 
           {/* Store Category Selectors */}
@@ -173,9 +173,9 @@ export default function InteractiveLiveDemoWidget() {
           {/* Top Bar */}
           <div className="lp-demo-top-bar">
             <div className="lp-demo-top-left">
-              <span className="lp-preview-dot" />
+              <span className={`lp-preview-dot${demoState === 'in_transit' ? ' is-live' : ''}`} />
               <span className="font-mono" style={{ fontSize: '12.5px', fontWeight: 600 }}>
-                ACTIVE TENANT: {currentStore.subdomain}
+                Now viewing: {currentStore.subdomain}
               </span>
             </div>
             {demoState !== 'idle' && (
@@ -368,7 +368,7 @@ export default function InteractiveLiveDemoWidget() {
               <div className="lp-demo-stream-header">
                 <ShieldCheck size={14} color="#2B7CFF" />
                 <span className="font-mono" style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.05em' }}>
-                  PLATFORM EVENT STREAM & AUDIT TRAIL
+                  WHAT JUST HAPPENED
                 </span>
               </div>
               <div className="lp-demo-stream-body">

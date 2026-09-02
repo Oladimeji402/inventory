@@ -49,17 +49,17 @@ export default function TestimonialsSection() {
   return (
     <section id="testimonials" className="lp-section lp-testimonials-section" ref={sectionRef}>
       <div className="lp-container">
-        <div className="lp-section-header-center lp-reveal">
+        <div className="lp-section-header lp-reveal">
           <span className="lp-eyebrow">From Early Adopters</span>
-          <h2 className="lp-h2">What store owners and couriers are saying.</h2>
+          <h2 className="lp-h2">What shop owners and riders are saying.</h2>
           <p className="lp-body" style={{ marginTop: '16px' }}>
-            Feedback from the first wave of pharmacy owners, supermarket managers, and delivery riders on the platform.
+            Real feedback from the first pharmacy owners, supermarket managers, and delivery riders using Subtech.
           </p>
         </div>
 
         <div className="lp-testimonials-grid lp-reveal lp-reveal-d1">
           {testimonials.map((t, i) => (
-            <div key={i} className="lp-testimonial-card">
+            <div key={i} className={`lp-testimonial-card${i === 0 ? ' featured' : ''}`}>
               {/* Star Rating */}
               <div className="lp-star-row">
                 {[...Array(5)].map((_, j) => (

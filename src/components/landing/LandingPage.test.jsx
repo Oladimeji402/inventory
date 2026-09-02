@@ -66,10 +66,10 @@ describe('Subtech landing page', () => {
   it('switches calculator between store savings and courier earnings', () => {
     render(<LandingPage />);
 
-    expect(screen.getByText(/Projected Annual Margin Retained/i)).toBeInTheDocument();
+    expect(screen.getByText(/What You'd Keep In A Year/i)).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: /Courier Earnings/i }));
-    expect(screen.getByText(/Estimated net take-home earnings per month/i)).toBeInTheDocument();
+    expect(screen.getByText(/What you'd take home every month/i)).toBeInTheDocument();
   });
 
   it('sends Get Started to the merchant/rider picker', () => {

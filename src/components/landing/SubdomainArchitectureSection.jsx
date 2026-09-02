@@ -39,48 +39,48 @@ export default function SubdomainArchitectureSection() {
 
   const subdomainCards = [
     {
-      role: 'Merchant Storefront & Backoffice',
+      role: 'Your Storefront',
       domain: `${cleanSlug}.stv.com`,
       icon: Store,
-      badge: 'Auto-Provisioned',
-      description: 'Your isolated digital storefront for customer checkout + backoffice dashboard to track inventory and revenue.',
+      badge: 'Ready Instantly',
+      description: 'Your own web address where customers check out, plus a simple dashboard to track stock and sales.',
       features: [
-        'Custom store branding & logo',
-        'Direct customer web checkout',
-        'Real-time order & revenue analytics',
+        'Your shop name & logo on the page',
+        'Customers pay and order online',
+        'See orders and sales as they happen',
         'Optional counter till add-on'
       ],
-      actionText: 'Reserve Subdomain',
+      actionText: 'Claim This Address',
       action: () => { window.location.href = appLinks.merchantSignup(cleanSlug); }
     },
     {
-      role: 'On-Demand Courier Network',
+      role: 'Rider Delivery Network',
       domain: 'rider.stv.com',
       icon: Bike,
-      badge: 'Fleet Hub',
-      description: 'The dispatch command center where verified local couriers receive automated pickup and route batching requests.',
+      badge: 'Always On',
+      description: 'Where nearby riders get notified the moment one of your orders needs picking up.',
       features: [
-        'Real-time GPS dispatch radar',
-        'Optimized corridor batch routes',
-        'Digital proof-of-delivery OTP',
-        'Instant automated bank payouts'
+        'Live map of nearby delivery requests',
+        'Groups nearby drop-offs into one trip',
+        'One-time code confirms safe handover',
+        'Paid straight to their bank, automatically'
       ],
-      actionText: 'Courier Portal',
+      actionText: 'See The Rider App',
       action: () => { window.location.href = appLinks.rider(); }
     },
     {
-      role: 'Neighborhood Shopper Hub',
+      role: 'The Neighborhood Marketplace',
       domain: 'shop.stv.com',
       icon: ShoppingBag,
-      badge: 'Discovery Hub',
-      description: 'Central marketplace for neighborhood residents to discover confirmed in-stock items from all nearby merchants.',
+      badge: 'Browse & Order',
+      description: 'Where neighbors browse real, in-stock items from nearby shops and order in one place.',
       features: [
-        'Multi-store neighborhood discovery',
-        'Verified in-stock shelf quantities',
-        'Single checkout across nearby stores',
-        'Live courier GPS tracking'
+        'Every nearby shop in one place',
+        'Only shows what is actually on the shelf',
+        'One checkout, even across different shops',
+        'Track the rider on a live map'
       ],
-      actionText: 'Explore Shopper Hub',
+      actionText: 'See The Marketplace',
       action: () => {
         const el = document.querySelector('#live-demo');
         if (el) el.scrollIntoView({ behavior: 'smooth' });
@@ -93,10 +93,10 @@ export default function SubdomainArchitectureSection() {
       <div className="lp-container">
         {/* Header without pill */}
         <div className="lp-section-header-center lp-reveal">
-          <span className="lp-eyebrow">Multi-Tenant Architecture</span>
-          <h2 className="lp-h2">Your brand. Your custom subdomain. Zero dev overhead.</h2>
+          <span className="lp-eyebrow">Your Shop's Web Address</span>
+          <h2 className="lp-h2">your-shop-name.stv.com — yours in seconds, no developer needed.</h2>
           <p className="lp-body" style={{ marginTop: '16px' }}>
-            Every registered merchant gets an isolated, high-speed storefront with built-in payment processing and native courier dispatch.
+            Every shop that signs up gets its own fast, secure web address — with payments and rider delivery already built in.
           </p>
         </div>
 
@@ -105,18 +105,18 @@ export default function SubdomainArchitectureSection() {
           <div className="lp-subdomain-box-header">
             <div className="lp-subdomain-box-title">
               <Terminal size={16} color="#2B7CFF" />
-              <span className="font-mono">LIVE SUBDOMAIN GENERATOR & DOMAIN RESOLVER</span>
+              <span className="font-mono">SEE YOUR SHOP'S WEB ADDRESS</span>
             </div>
             <div className="lp-subdomain-live-tag">
               <span className="lp-subdomain-live-dot" />
-              <span className="font-mono">Edge DNS Provisioning</span>
+              <span className="font-mono">Ready in seconds</span>
             </div>
           </div>
 
           <div className="lp-subdomain-box-content">
             <div className="lp-subdomain-input-side">
               <label className="lp-subdomain-input-label">
-                Type your brand or store name:
+                Type your shop or brand name:
               </label>
               <div className="lp-subdomain-input-wrap">
                 <Store size={18} color="#a3a3a3" />
@@ -129,7 +129,7 @@ export default function SubdomainArchitectureSection() {
                 />
               </div>
               <p className="lp-subdomain-input-hint">
-                Instantly provisioned on multi-tenant routing with automated SSL certificates.
+                This is your link the moment you type it — secure, and yours alone.
               </p>
             </div>
 

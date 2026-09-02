@@ -49,10 +49,10 @@ export default function InteractiveCalculator() {
       <div className="lp-container">
         {/* Header without pill */}
         <div className="lp-section-header-center lp-reveal">
-          <span className="lp-eyebrow">Unit Economics</span>
-          <h2 className="lp-h2">Calculate your actual profit advantage.</h2>
+          <span className="lp-eyebrow">What You'd Keep</span>
+          <h2 className="lp-h2">See how much more money stays in your pocket.</h2>
           <p className="lp-body" style={{ marginTop: '16px' }}>
-            See how much more revenue your business retains with direct storefronts and native dispatches versus 25–30% aggregator commissions.
+            Delivery apps take 25–30% off every order. See what you'd keep instead with your own storefront and Subtech's flat fee.
           </p>
 
           {/* Mode Switcher */}
@@ -154,31 +154,31 @@ export default function InteractiveCalculator() {
               <div className="lp-calc-results">
                 <div className="lp-calc-results-header">
                   <TrendingUp size={18} color="#2B7CFF" />
-                  <span className="lp-calc-results-eyebrow">Projected Annual Margin Retained</span>
+                  <span className="lp-calc-results-eyebrow">What You'd Keep In A Year</span>
                 </div>
 
                 <div className="lp-calc-big-stat">
                   <span className="lp-calc-big-num font-mono">
                     {formatNaira(merchantAnnualSavings)}
                   </span>
-                  <span className="lp-calc-big-sub">Retained per year with your Subtech storefront</span>
+                  <span className="lp-calc-big-sub">Extra money in your pocket every year</span>
                 </div>
 
                 <div className="lp-calc-breakdown">
                   <div className="lp-calc-breakdown-row">
-                    <span>Aggregator Cut (Lost Monthly):</span>
+                    <span>What delivery apps would take:</span>
                     <span className="font-mono" style={{ color: '#e11d48', fontWeight: 600 }}>
                       -{formatNaira(aggregatorLoss)}/mo
                     </span>
                   </div>
                   <div className="lp-calc-breakdown-row">
-                    <span>Subtech Platform Fee:</span>
+                    <span>Subtech's fee:</span>
                     <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 600 }}>
                       {formatNaira(subtechCost)}/mo
                     </span>
                   </div>
                   <div className="lp-calc-breakdown-total">
-                    <span>Net Monthly Profit Kept:</span>
+                    <span>What you keep each month:</span>
                     <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 800, fontSize: '17px' }}>
                       +{formatNaira(merchantMonthlySavings)}/mo
                     </span>
@@ -273,31 +273,31 @@ export default function InteractiveCalculator() {
               <div className="lp-calc-results">
                 <div className="lp-calc-results-header">
                   <Coins size={18} color="#2B7CFF" />
-                  <span className="lp-calc-results-eyebrow">Estimated Monthly Courier Payout</span>
+                  <span className="lp-calc-results-eyebrow">What You Could Earn Each Month</span>
                 </div>
 
                 <div className="lp-calc-big-stat">
                   <span className="lp-calc-big-num font-mono">
                     {formatNaira(riderTotalMonthly)}
                   </span>
-                  <span className="lp-calc-big-sub">Estimated net take-home earnings per month</span>
+                  <span className="lp-calc-big-sub">What you'd take home every month</span>
                 </div>
 
                 <div className="lp-calc-breakdown">
                   <div className="lp-calc-breakdown-row">
-                    <span>Trip Delivery Fares:</span>
+                    <span>Trip fares:</span>
                     <span className="font-mono" style={{ fontWeight: 600, color: 'var(--lp-text)' }}>
                       {formatNaira(riderMonthlyGross)}
                     </span>
                   </div>
                   <div className="lp-calc-breakdown-row">
-                    <span>Estimated Tips (100% Yours):</span>
+                    <span>Tips (100% yours):</span>
                     <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 600 }}>
                       +{formatNaira(estimatedTipsMonthly)}
                     </span>
                   </div>
                   <div className="lp-calc-breakdown-total">
-                    <span>Daily Average Rate:</span>
+                    <span>Average per day:</span>
                     <span className="font-mono" style={{ color: '#2B7CFF', fontWeight: 800, fontSize: '17px' }}>
                       {formatNaira(riderTotalMonthly / workingDays)} / day
                     </span>
