@@ -1,18 +1,21 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import {
   Plus,
   Search,
-  Box,
   Edit3,
   Trash2,
   ChevronDown,
   ChevronUp,
   Check,
-  X,
-  Package
+  Package,
+  ImagePlus,
+  Loader2
 } from 'lucide-react';
 import { STORE_CATEGORIES } from '../../lib/merchantConstants';
 import { formatNaira } from '../../lib/formatMoney';
+import Modal from '../../shared/ui/Modal';
+import DataTable from '../../shared/ui/DataTable';
+import Badge from '../../shared/ui/Badge';
 
 const emptyForm = {
   name: '',
@@ -20,7 +23,9 @@ const emptyForm = {
   price: '',
   cost: '',
   stock: '',
-  sku: ''
+  lowStockThreshold: 5,
+  sku: '',
+  imageUrl: ''
 };
 
 export default function MerchantProducts({
@@ -30,6 +35,7 @@ export default function MerchantProducts({
   onSaveProduct,
   onDeleteProduct,
   onSetProductActive,
+  onUploadImage,
   isAddModalOpen,
   onCloseAddModal,
   onOpenAddModal
@@ -39,10 +45,12 @@ export default function MerchantProducts({
   const [editingProduct, setEditingProduct] = useState(null);
   const [formData, setFormData] = useState(emptyForm);
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef(null);
 
   const activeProductsCount = products.filter((product) => product.isActive).length;
-  const lowStockCount = products.filter((product) => product.stock <= 5).length;
+  const lowStockCount = products.filter((product) => product.stock <= product.lowStockThreshold).length;
   const inventoryValue = products.reduce((sum, product) => sum + product.price * product.stock, 0);
 
   const filteredProducts = useMemo(() => {
@@ -64,7 +72,9 @@ export default function MerchantProducts({
       price: product.price,
       cost: product.cost,
       stock: product.stock,
-      sku: product.barcode || ''
+      lowStockThreshold: product.lowStockThreshold,
+      sku: product.barcode || '',
+      imageUrl: product.imageUrl || ''
     });
   };
 
@@ -73,6 +83,23 @@ export default function MerchantProducts({
     setError('');
     setFormData(emptyForm);
     if (onCloseAddModal) onCloseAddModal();
+  };
+
+  const handlePickPhoto = () => fileInputRef.current?.click();
+
+  const handlePhotoChange = async (event) => {
+    const file = event.target.files?.[0];
+    event.target.value = '';
+    if (!file || !onUploadImage) return;
+    setUploading(true);
+    setError('');
+    const result = await onUploadImage(file);
+    setUploading(false);
+    if (result?.error) {
+      setError(result.error);
+      return;
+    }
+    setFormData((current) => ({ ...current, imageUrl: result.data.url }));
   };
 
   const handleSave = async (event) => {
@@ -86,7 +113,9 @@ export default function MerchantProducts({
       price: formData.price,
       cost: formData.cost,
       stock: formData.stock,
+      lowStockThreshold: formData.lowStockThreshold,
       barcode: formData.sku,
+      imageUrl: formData.imageUrl,
       isActive: editingProduct ? editingProduct.isActive : true
     });
     setSaving(false);
@@ -100,34 +129,22 @@ export default function MerchantProducts({
   const isModalVisible = isAddModalOpen || editingProduct !== null;
 
   return (
-    <div style={{ paddingBottom: '40px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0a0a0a', margin: 0, letterSpacing: '-0.02em' }}>
-          All Product List
-        </h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', background: '#ffffff', border: '1.5px solid #e5e5e5', borderRadius: '8px', padding: '8px 14px', width: '260px' }}>
-            <Search size={16} color="#a3a3a3" />
+    <div style={{ paddingBottom: 40 }}>
+      <div className="merchant-page-header">
+        <h1>Product Catalog</h1>
+        <div className="merchant-page-header-actions">
+          <div className="merchant-search-wrap" style={{ width: 260 }}>
+            <Search size={16} color="var(--mx-text-3)" />
             <input
               type="text"
-              placeholder="Search product or barcode..."
+              className="merchant-search-input"
+              placeholder="Search product or barcode…"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
-              style={{ border: 'none', outline: 'none', background: 'transparent', width: '100%', fontSize: '13.5px' }}
             />
           </div>
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '8px 14px', background: '#ffffff', border: '1.5px solid #e5e5e5', borderRadius: '8px', fontSize: '13px', fontWeight: 600, color: '#525252' }}>
-            <span>Show All Products</span>
-            <span style={{ background: '#f0f0f0', padding: '2px 8px', borderRadius: '100px', fontSize: '11.5px', fontWeight: 700, color: '#0a0a0a' }}>
-              {products.length}
-            </span>
-          </div>
           {canManage && (
-            <button
-              className="merchant-btn-primary"
-              style={{ padding: '9px 18px', background: '#0a0a0a', borderColor: '#0a0a0a' }}
-              onClick={onOpenAddModal}
-            >
+            <button className="merchant-btn-primary" onClick={onOpenAddModal}>
               <Plus size={15} />
               <span>New Product</span>
             </button>
@@ -135,222 +152,224 @@ export default function MerchantProducts({
         </div>
       </div>
 
-      <div style={{ background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '16px', padding: '20px 24px', marginBottom: '24px', boxShadow: '0 1px 3px rgba(0,0,0,0.03)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer' }} onClick={() => setIsStatsOpen(!isStatsOpen)}>
-          <h3 style={{ fontSize: '15px', fontWeight: 700, margin: 0, color: '#0a0a0a' }}>Product Statistic</h3>
-          <button type="button" style={{ background: 'none', border: 'none', color: '#737373', cursor: 'pointer' }}>
+      <div className="mx-card">
+        <div className="merchant-stats-toggle" onClick={() => setIsStatsOpen(!isStatsOpen)}>
+          <h3 className="mx-card-title">Product Statistics</h3>
+          <button type="button" className="merchant-stats-toggle-btn">
             {isStatsOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
           </button>
         </div>
         {isStatsOpen && (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '20px', marginTop: '20px', paddingTop: '18px', borderTop: '1px solid #f0f0f0' }}>
+          <div className="merchant-stats-grid">
             <div>
-              <div style={{ fontSize: '12px', color: '#737373', fontWeight: 600 }}>Active Products</div>
-              <div className="font-mono" style={{ fontSize: '26px', fontWeight: 800, color: '#0a0a0a', marginTop: '4px' }}>{activeProductsCount}</div>
+              <div className="merchant-stat-label">Active Products</div>
+              <div className="merchant-stat-value font-mono">{activeProductsCount}</div>
             </div>
             <div>
-              <div style={{ fontSize: '12px', color: '#737373', fontWeight: 600 }}>Low / out of stock</div>
-              <div className="font-mono" style={{ fontSize: '26px', fontWeight: 800, color: '#0a0a0a', marginTop: '4px' }}>{lowStockCount}</div>
+              <div className="merchant-stat-label">Low / out of stock</div>
+              <div className="merchant-stat-value font-mono" style={{ color: lowStockCount > 0 ? 'var(--mx-danger)' : undefined }}>{lowStockCount}</div>
             </div>
             <div>
-              <div style={{ fontSize: '12px', color: '#737373', fontWeight: 600 }}>Shelf value</div>
-              <div className="font-mono" style={{ fontSize: '26px', fontWeight: 800, color: '#0a0a0a', marginTop: '4px' }}>{formatNaira(inventoryValue)}</div>
+              <div className="merchant-stat-label">Shelf value</div>
+              <div className="merchant-stat-value font-mono">{formatNaira(inventoryValue)}</div>
             </div>
           </div>
         )}
       </div>
 
-      {loading ? (
-        <div className="merchant-card" style={{ textAlign: 'center', padding: '48px', color: '#737373' }}>Loading catalog…</div>
-      ) : filteredProducts.length === 0 ? (
-        <div className="merchant-card" style={{ textAlign: 'center', padding: '56px 24px', color: '#737373' }}>
-          <Package size={36} color="#d4d4d4" style={{ margin: '0 auto 8px', display: 'block' }} />
-          <p style={{ fontWeight: 700, margin: '0 0 4px', color: '#0a0a0a' }}>
-            {products.length === 0 ? 'No products yet' : 'No matching products'}
-          </p>
-          <p style={{ fontSize: '13px', margin: 0 }}>
-            {products.length === 0
-              ? 'Add the items you sell. They are stored on your tenant only — other stores cannot see them.'
-              : 'Try a different search.'}
-          </p>
-        </div>
-      ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          {filteredProducts.map((product) => (
-            <div
-              key={product.id}
-              style={{
-                background: '#ffffff',
-                border: '1px solid #e5e5e5',
-                borderRadius: '16px',
-                padding: '16px 20px',
-                display: 'grid',
-                gridTemplateColumns: '2.2fr 1fr 1fr 0.8fr 0.8fr',
-                alignItems: 'center',
-                gap: '16px'
-              }}
-            >
-              <div style={{ minWidth: 0 }}>
-                <h4 style={{ fontSize: '14.5px', fontWeight: 700, color: '#0a0a0a', margin: '0 0 3px' }}>{product.name}</h4>
-                <div style={{ fontSize: '12px', color: '#737373' }}>
-                  {product.category}{product.barcode ? ` · ${product.barcode}` : ''}
+      <div className="mx-card" style={{ marginTop: 20 }}>
+        <DataTable
+          loading={loading}
+          rows={filteredProducts}
+          empty={{
+            icon: Package,
+            title: products.length === 0 ? 'No products yet' : 'No matching products',
+            desc: products.length === 0
+              ? 'Add the items you sell — they are stored on your store only, other stores cannot see them.'
+              : 'Try a different search.'
+          }}
+          columns={[
+            {
+              key: 'name',
+              header: 'Product',
+              render: (p) => (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  {p.imageUrl
+                    ? <img src={p.imageUrl} alt="" className="mx-table-thumb" />
+                    : <span className="mx-table-thumb-placeholder"><Package size={16} /></span>}
+                  <div>
+                    <div style={{ fontWeight: 700 }}>{p.name}</div>
+                    <div style={{ fontSize: 12, color: 'var(--mx-text-3)' }}>
+                      {p.category}{p.barcode ? ` · ${p.barcode}` : ''}
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div style={{ borderLeft: '1px solid #f0f0f0', paddingLeft: '16px' }}>
-                <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>Stock</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                  <Box size={14} color="#737373" />
-                  <span className="font-mono" style={{ fontSize: '14px', fontWeight: 700, color: product.stock <= 5 ? '#e11d48' : '#0a0a0a' }}>
-                    {product.stock}
-                  </span>
+              )
+            },
+            {
+              key: 'stock',
+              header: 'Stock',
+              render: (p) => (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <span className="font-mono" style={{ fontWeight: 700 }}>{p.stock}</span>
+                  {p.stock === 0
+                    ? <Badge tone="danger">Out</Badge>
+                    : p.stock <= p.lowStockThreshold
+                      ? <Badge tone="warning">Low</Badge>
+                      : null}
                 </div>
-              </div>
-              <div style={{ borderLeft: '1px solid #f0f0f0', paddingLeft: '16px' }}>
-                <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>Price</div>
-                <div className="font-mono" style={{ fontSize: '15px', fontWeight: 800, marginTop: '2px' }}>{formatNaira(product.price)}</div>
-              </div>
-              <div style={{ borderLeft: '1px solid #f0f0f0', paddingLeft: '16px' }}>
-                <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600, marginBottom: '4px' }}>On storefront</div>
-                <div
-                  onClick={() => canManage && onSetProductActive(product.id, !product.isActive)}
-                  style={{
-                    width: '38px',
-                    height: '22px',
-                    borderRadius: '100px',
-                    background: product.isActive ? '#0a0a0a' : '#e5e5e5',
-                    cursor: canManage ? 'pointer' : 'default',
-                    position: 'relative'
-                  }}
+              )
+            },
+            { key: 'price', header: 'Price', render: (p) => <span className="font-mono" style={{ fontWeight: 700 }}>{formatNaira(p.price)}</span> },
+            {
+              key: 'active',
+              header: 'On storefront',
+              render: (p) => (
+                <button
+                  type="button"
+                  className={`merchant-toggle${p.isActive ? ' on' : ''}`}
+                  disabled={!canManage}
+                  onClick={(e) => { e.stopPropagation(); canManage && onSetProductActive(p.id, !p.isActive); }}
+                  aria-label="Toggle storefront visibility"
                 >
-                  <div style={{
-                    width: '16px',
-                    height: '16px',
-                    borderRadius: '50%',
-                    background: '#ffffff',
-                    position: 'absolute',
-                    top: '3px',
-                    left: product.isActive ? '19px' : '3px',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
-                  }} />
+                  <span className="merchant-toggle-knob" />
+                </button>
+              )
+            },
+            ...(canManage ? [{
+              key: 'actions',
+              header: '',
+              align: 'right',
+              render: (p) => (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
+                  <button className="merchant-icon-btn" onClick={(e) => { e.stopPropagation(); handleOpenEdit(p); }} title="Edit"><Edit3 size={14} /></button>
+                  <button className="merchant-icon-btn danger" onClick={(e) => { e.stopPropagation(); onDeleteProduct(p.id); }} title="Delete"><Trash2 size={14} /></button>
                 </div>
-              </div>
-              {canManage && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '6px' }}>
-                  <button
-                    onClick={() => handleOpenEdit(product)}
-                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #e5e5e5', background: '#ffffff', cursor: 'pointer' }}
-                    title="Edit"
-                  >
-                    <Edit3 size={14} />
-                  </button>
-                  <button
-                    onClick={() => onDeleteProduct(product.id)}
-                    style={{ width: '32px', height: '32px', borderRadius: '8px', border: '1px solid #e5e5e5', background: '#ffffff', cursor: 'pointer', color: '#b91c1c' }}
-                    title="Delete"
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
+              )
+            }] : [])
+          ]}
+        />
+      </div>
+
+      <Modal
+        open={isModalVisible}
+        title={editingProduct ? 'Edit Product Details' : 'Add New Product'}
+        onClose={handleCloseModal}
+        footer={
+          <>
+            <button type="button" className="merchant-btn-secondary" onClick={handleCloseModal}>Cancel</button>
+            <button type="submit" form="product-form" className="merchant-btn-primary" disabled={saving}>
+              <Check size={14} />
+              <span>{saving ? 'Saving…' : editingProduct ? 'Update Product' : 'Publish Product'}</span>
+            </button>
+          </>
+        }
+      >
+        <form id="product-form" onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <div className="merchant-field-group">
+            <label className="merchant-field-label">Photo</label>
+            <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handlePhotoChange} />
+            <div className="merchant-photo-picker" onClick={handlePickPhoto}>
+              {uploading ? (
+                <Loader2 size={20} className="mx-spin" />
+              ) : formData.imageUrl ? (
+                <img src={formData.imageUrl} alt="" />
+              ) : (
+                <>
+                  <ImagePlus size={20} />
+                  <span>Click to add a photo</span>
+                </>
               )}
             </div>
-          ))}
-        </div>
-      )}
-
-      {isModalVisible && (
-        <div className="merchant-modal-overlay" onClick={handleCloseModal}>
-          <div className="merchant-modal-box" onClick={(event) => event.stopPropagation()}>
-            <div className="merchant-modal-header">
-              <h3 className="merchant-modal-title">
-                {editingProduct ? 'Edit Product Details' : 'Add New Product to Store'}
-              </h3>
-              <button type="button" onClick={handleCloseModal} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#737373' }}>
-                <X size={18} />
-              </button>
-            </div>
-            <form onSubmit={handleSave}>
-              <div className="merchant-modal-body">
-                <div className="merchant-field-group">
-                  <label className="merchant-field-label">Product Name *</label>
-                  <input
-                    type="text"
-                    required
-                    placeholder="e.g. Peak Milk 400g"
-                    value={formData.name}
-                    onChange={(event) => setFormData({ ...formData, name: event.target.value })}
-                    className="merchant-field-input"
-                  />
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div className="merchant-field-group">
-                    <label className="merchant-field-label">Category</label>
-                    <select
-                      value={formData.category}
-                      onChange={(event) => setFormData({ ...formData, category: event.target.value })}
-                      className="merchant-field-select"
-                    >
-                      {STORE_CATEGORIES.map((category) => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  </div>
-                  <div className="merchant-field-group">
-                    <label className="merchant-field-label">Shelf Stock (Units) *</label>
-                    <input
-                      type="number"
-                      required
-                      min="0"
-                      value={formData.stock}
-                      onChange={(event) => setFormData({ ...formData, stock: event.target.value })}
-                      className="merchant-field-input font-mono"
-                    />
-                  </div>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
-                  <div className="merchant-field-group">
-                    <label className="merchant-field-label">Selling Price (₦) *</label>
-                    <input
-                      type="number"
-                      required
-                      min="0"
-                      value={formData.price}
-                      onChange={(event) => setFormData({ ...formData, price: event.target.value })}
-                      className="merchant-field-input font-mono"
-                    />
-                  </div>
-                  <div className="merchant-field-group">
-                    <label className="merchant-field-label">Cost Price (₦)</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={formData.cost}
-                      onChange={(event) => setFormData({ ...formData, cost: event.target.value })}
-                      className="merchant-field-input font-mono"
-                    />
-                  </div>
-                </div>
-                <div className="merchant-field-group">
-                  <label className="merchant-field-label">Barcode / SKU</label>
-                  <input
-                    type="text"
-                    value={formData.sku}
-                    onChange={(event) => setFormData({ ...formData, sku: event.target.value })}
-                    className="merchant-field-input font-mono"
-                  />
-                </div>
-                {error && <div style={{ color: '#b91c1c', fontSize: '13px' }}>{error}</div>}
-              </div>
-              <div className="merchant-modal-footer">
-                <button type="button" className="merchant-btn-secondary" onClick={handleCloseModal}>Cancel</button>
-                <button type="submit" className="merchant-btn-primary" disabled={saving} style={{ background: '#0a0a0a', borderColor: '#0a0a0a' }}>
-                  <Check size={14} />
-                  <span>{saving ? 'Saving…' : editingProduct ? 'Update Product' : 'Publish Product'}</span>
-                </button>
-              </div>
-            </form>
           </div>
-        </div>
-      )}
+
+          <div className="merchant-field-group">
+            <label className="merchant-field-label">Product Name *</label>
+            <input
+              type="text"
+              required
+              placeholder="e.g. Peak Milk 400g"
+              value={formData.name}
+              onChange={(event) => setFormData({ ...formData, name: event.target.value })}
+              className="merchant-field-input"
+            />
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="merchant-field-group">
+              <label className="merchant-field-label">Category</label>
+              <select
+                value={formData.category}
+                onChange={(event) => setFormData({ ...formData, category: event.target.value })}
+                className="merchant-field-select"
+              >
+                {STORE_CATEGORIES.map((category) => (
+                  <option key={category} value={category}>{category}</option>
+                ))}
+              </select>
+            </div>
+            <div className="merchant-field-group">
+              <label className="merchant-field-label">Shelf Stock (Units) *</label>
+              <input
+                type="number"
+                required
+                min="0"
+                value={formData.stock}
+                onChange={(event) => setFormData({ ...formData, stock: event.target.value })}
+                className="merchant-field-input font-mono"
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="merchant-field-group">
+              <label className="merchant-field-label">Selling Price (₦) *</label>
+              <input
+                type="number"
+                required
+                min="0"
+                value={formData.price}
+                onChange={(event) => setFormData({ ...formData, price: event.target.value })}
+                className="merchant-field-input font-mono"
+              />
+            </div>
+            <div className="merchant-field-group">
+              <label className="merchant-field-label">Cost Price (₦)</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.cost}
+                onChange={(event) => setFormData({ ...formData, cost: event.target.value })}
+                className="merchant-field-input font-mono"
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+            <div className="merchant-field-group">
+              <label className="merchant-field-label">Low-stock alert at</label>
+              <input
+                type="number"
+                min="0"
+                value={formData.lowStockThreshold}
+                onChange={(event) => setFormData({ ...formData, lowStockThreshold: event.target.value })}
+                className="merchant-field-input font-mono"
+              />
+            </div>
+            <div className="merchant-field-group">
+              <label className="merchant-field-label">Barcode / SKU</label>
+              <input
+                type="text"
+                value={formData.sku}
+                onChange={(event) => setFormData({ ...formData, sku: event.target.value })}
+                className="merchant-field-input font-mono"
+              />
+            </div>
+          </div>
+
+          {error && <div className="merchant-form-error">{error}</div>}
+        </form>
+      </Modal>
     </div>
   );
 }

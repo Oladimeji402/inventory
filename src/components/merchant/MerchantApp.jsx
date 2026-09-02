@@ -1,15 +1,17 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import './Merchant.css';
 import MerchantNav from './MerchantNav';
 import MerchantOverview from './MerchantOverview';
 import MerchantAnalytics from './MerchantAnalytics';
 import MerchantProducts from './MerchantProducts';
 import MerchantOrders from './MerchantOrders';
+import MerchantCustomers from './MerchantCustomers';
 import MerchantNotifications from './MerchantNotifications';
 import MerchantSettings from './MerchantSettings';
 import { useMerchantStore } from '../../hooks/useMerchantStore';
 import { isActiveOrder } from '../../lib/formatMoney';
 import { BRAND } from '../../config/brand';
+import { ToastProvider } from '../../shared/ui/Toast';
 import {
   Store,
   Menu,
@@ -43,7 +45,7 @@ function buildNotifications(products, orders) {
       action: 'view_order'
     });
   });
-  products.filter((product) => product.stock <= 5).forEach((product) => {
+  products.filter((product) => product.stock <= product.lowStockThreshold).forEach((product) => {
     items.push({
       id: `stock-${product.id}`,
       type: 'stock',
@@ -59,10 +61,34 @@ function buildNotifications(products, orders) {
   return items;
 }
 
-export default function MerchantApp({
+function readNotifStorageKey(tenantId) {
+  return `subtech.merchant.notifs.read.${tenantId}`;
+}
+
+function loadReadIds(tenantId) {
+  if (!tenantId) return new Set();
+  try {
+    const raw = window.localStorage.getItem(readNotifStorageKey(tenantId));
+    return raw ? new Set(JSON.parse(raw)) : new Set();
+  } catch {
+    return new Set();
+  }
+}
+
+function saveReadIds(tenantId, ids) {
+  if (!tenantId) return;
+  try {
+    window.localStorage.setItem(readNotifStorageKey(tenantId), JSON.stringify(Array.from(ids)));
+  } catch {
+    // localStorage unavailable (private mode, etc.) — read state just won't persist
+  }
+}
+
+function MerchantAppInner({
   tenant,
   profile,
   membershipRole,
+  justOnboarded = false,
   onRefreshTenant,
   onSignOut,
   onOpenStorefront,
@@ -73,23 +99,43 @@ export default function MerchantApp({
   const [currentTab, setCurrentTab] = useState('overview');
   const [isAddProductOpen, setIsAddProductOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [clearedNotifs, setClearedNotifs] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(justOnboarded);
+  const [readIds, setReadIds] = useState(() => new Set());
+  const [openOrderId, setOpenOrderId] = useState(null);
 
-  const notifications = useMemo(
-    () => (clearedNotifs ? [] : buildNotifications(store.products, store.orders)),
-    [store.products, store.orders, clearedNotifs]
-  );
+  useEffect(() => {
+    setReadIds(loadReadIds(tenant?.id));
+  }, [tenant?.id]);
+
+  const notifications = useMemo(() => {
+    return buildNotifications(store.products, store.orders).map((item) => ({
+      ...item,
+      unread: item.unread && !readIds.has(item.id)
+    }));
+  }, [store.products, store.orders, readIds]);
+
+  const markAllNotifsRead = useCallback(() => {
+    setReadIds((current) => {
+      const next = new Set(current);
+      notifications.forEach((item) => next.add(item.id));
+      saveReadIds(tenant?.id, next);
+      return next;
+    });
+  }, [notifications, tenant?.id]);
+
   const unreadNotifsCount = notifications.filter((item) => item.unread).length;
   const pendingOrdersCount = store.orders.filter(isActiveOrder).length;
+
+  const goToTab = (tab) => {
+    setCurrentTab(tab);
+    setMobileMenuOpen(false);
+  };
 
   return (
     <div className="merchant-root">
       <MerchantNav
         currentTab={currentTab}
-        onSelectTab={(tab) => {
-          setCurrentTab(tab);
-          setMobileMenuOpen(false);
-        }}
+        onSelectTab={goToTab}
         storeProfile={store.storeProfile}
         orderCount={pendingOrdersCount}
         unreadNotifsCount={unreadNotifsCount}
@@ -111,7 +157,6 @@ export default function MerchantApp({
               className="merchant-store-link-pill font-mono"
               onClick={onOpenStorefront}
               title="Open public storefront"
-              style={{ cursor: 'pointer', background: '#fafafa', border: '1px solid #e5e5e5' }}
             >
               <Store size={14} color="#2B7CFF" />
               <span>
@@ -126,22 +171,11 @@ export default function MerchantApp({
             <button
               className="merchant-btn-secondary"
               style={{ padding: '8px', position: 'relative', borderRadius: '8px' }}
-              onClick={() => setCurrentTab('notifications')}
+              onClick={() => goToTab('notifications')}
               title="View notifications"
             >
               <Bell size={16} color={currentTab === 'notifications' ? '#2B7CFF' : '#525252'} />
-              {unreadNotifsCount > 0 && (
-                <span style={{
-                  position: 'absolute',
-                  top: '5px',
-                  right: '5px',
-                  width: '8px',
-                  height: '8px',
-                  borderRadius: '50%',
-                  background: '#2563eb',
-                  boxShadow: '0 0 0 2px #ffffff'
-                }} />
-              )}
+              {unreadNotifsCount > 0 && <span className="merchant-header-bell-dot" />}
             </button>
 
             {onSignOut && (
@@ -155,11 +189,7 @@ export default function MerchantApp({
               </button>
             )}
 
-            <button
-              className="merchant-btn-secondary"
-              onClick={onExitToLanding}
-              style={{ fontSize: '13px' }}
-            >
+            <button className="merchant-btn-secondary" onClick={onExitToLanding} style={{ fontSize: '13px' }}>
               <ArrowLeft size={14} />
               <span>Exit</span>
             </button>
@@ -167,11 +197,7 @@ export default function MerchantApp({
         </header>
 
         <main className="merchant-content">
-          {store.error && (
-            <div className="merchant-card" style={{ padding: '14px 18px', marginBottom: '16px', color: '#b91c1c' }}>
-              {store.error}
-            </div>
-          )}
+          {store.error && <div className="merchant-form-error" style={{ marginBottom: 16 }}>{store.error}</div>}
 
           {currentTab === 'overview' && (
             <MerchantOverview
@@ -179,12 +205,18 @@ export default function MerchantApp({
               products={store.products}
               orders={store.orders}
               loading={store.loading}
-              onNavigateTab={(tab) => setCurrentTab(tab)}
+              onNavigateTab={goToTab}
               onOpenAddProduct={() => {
-                setCurrentTab('products');
+                goToTab('products');
                 setIsAddProductOpen(true);
               }}
+              onOpenOrder={(orderId) => {
+                setOpenOrderId(orderId);
+                goToTab('orders');
+              }}
               onOpenStorefront={onOpenStorefront}
+              showWelcome={showWelcome}
+              onDismissWelcome={() => setShowWelcome(false)}
             />
           )}
 
@@ -192,7 +224,7 @@ export default function MerchantApp({
             <MerchantAnalytics
               products={store.products}
               orders={store.orders}
-              loading={store.loading}
+              customers={store.customers}
             />
           )}
 
@@ -204,6 +236,7 @@ export default function MerchantApp({
               onSaveProduct={store.saveProduct}
               onDeleteProduct={store.deleteProduct}
               onSetProductActive={store.setProductActive}
+              onUploadImage={store.uploadProductImage}
               isAddModalOpen={isAddProductOpen}
               onCloseAddModal={() => setIsAddProductOpen(false)}
               onOpenAddModal={() => setIsAddProductOpen(true)}
@@ -216,14 +249,26 @@ export default function MerchantApp({
               loading={store.loading}
               canManage={canManage}
               onUpdateOrderStatus={store.updateOrderStatus}
+              openOrderId={openOrderId}
+              onOrderOpened={() => setOpenOrderId(null)}
+            />
+          )}
+
+          {currentTab === 'customers' && (
+            <MerchantCustomers
+              customers={store.customers}
+              orders={store.orders}
+              loading={store.loading}
+              canManage={canManage}
+              onSaveCustomer={store.saveCustomer}
             />
           )}
 
           {currentTab === 'notifications' && (
             <MerchantNotifications
               notifications={notifications}
-              onClear={() => setClearedNotifs(true)}
-              onNavigateTab={(tab) => setCurrentTab(tab)}
+              onMarkAllRead={markAllNotifsRead}
+              onNavigateTab={goToTab}
             />
           )}
 
@@ -237,5 +282,13 @@ export default function MerchantApp({
         </main>
       </div>
     </div>
+  );
+}
+
+export default function MerchantApp(props) {
+  return (
+    <ToastProvider>
+      <MerchantAppInner {...props} />
+    </ToastProvider>
   );
 }

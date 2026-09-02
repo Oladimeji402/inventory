@@ -10,18 +10,44 @@ function mapProduct(row) {
     price: Number(row.price) || 0,
     cost: Number(row.cost) || 0,
     stock: Number(row.stock) || 0,
+    lowStockThreshold: Number.isFinite(Number(row.low_stock_threshold)) ? Number(row.low_stock_threshold) : 5,
+    imageUrl: row.image_url || '',
     barcode: row.barcode || '',
     isActive: row.is_active !== false,
     createdAt: row.created_at
   };
 }
 
-function mapOrder(row) {
+function mapOrderItem(row) {
   return {
     id: row.id,
+    productId: row.product_id,
+    productName: row.product_name,
+    quantity: Number(row.quantity) || 0,
+    unitPrice: Number(row.unit_price) || 0,
+    lineTotal: Number(row.line_total) || 0,
+    legacy: false
+  };
+}
+
+/** Legacy orders created before order_items existed only have a free-text summary. */
+function legacyLineFromSummary(summary) {
+  if (!summary) return [];
+  return [{ id: 'legacy', productName: summary, quantity: null, unitPrice: null, lineTotal: null, legacy: true }];
+}
+
+function mapOrder(row) {
+  const items = Array.isArray(row.order_items) && row.order_items.length > 0
+    ? row.order_items.map(mapOrderItem)
+    : legacyLineFromSummary(row.items_summary);
+
+  return {
+    id: row.id,
+    customerId: row.customer_id || null,
     customerName: row.customer_name || 'Customer',
     address: row.address || '',
     itemsSummary: row.items_summary || '',
+    lineItems: items,
     total: Number(row.total) || 0,
     status: row.status || 'pending',
     timeAgo: timeAgo(row.created_at),
@@ -34,6 +60,18 @@ function mapOrder(row) {
           otp: row.delivery_otp || ''
         }
       : null
+  };
+}
+
+function mapCustomer(row) {
+  return {
+    id: row.id,
+    fullName: row.full_name || '',
+    phone: row.phone || '',
+    email: row.email || '',
+    address: row.address || '',
+    notes: row.notes || '',
+    createdAt: row.created_at
   };
 }
 
@@ -79,6 +117,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
   const tenantId = tenant?.id || null;
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
+  const [customers, setCustomers] = useState([]);
   const [payout, setPayout] = useState({ bankName: '', accountNumber: '', accountName: '' });
   const [loading, setLoading] = useState(Boolean(tenantId));
   const [error, setError] = useState('');
@@ -87,6 +126,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     if (!isSupabaseConfigured || !tenantId) {
       setProducts([]);
       setOrders([]);
+      setCustomers([]);
       setPayout({ bankName: '', accountNumber: '', accountName: '' });
       setLoading(false);
       return;
@@ -95,7 +135,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     setLoading(true);
     setError('');
 
-    const [productRes, orderRes, payoutRes] = await Promise.all([
+    const [productRes, orderRes, customerRes, payoutRes] = await Promise.all([
       supabase
         .from('catalog_products')
         .select('*')
@@ -103,6 +143,11 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
         .order('created_at', { ascending: false }),
       supabase
         .from('store_orders')
+        .select('*, order_items(*)')
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false }),
+      supabase
+        .from('customers')
         .select('*')
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false }),
@@ -113,14 +158,20 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
         .maybeSingle()
     ]);
 
-    if (productRes.error || orderRes.error || payoutRes.error) {
-      setError(productRes.error?.message || orderRes.error?.message || payoutRes.error?.message);
+    if (productRes.error || orderRes.error || customerRes.error || payoutRes.error) {
+      setError(
+        productRes.error?.message
+        || orderRes.error?.message
+        || customerRes.error?.message
+        || payoutRes.error?.message
+      );
       setLoading(false);
       return;
     }
 
     setProducts((productRes.data || []).map(mapProduct));
     setOrders((orderRes.data || []).map(mapOrder));
+    setCustomers((customerRes.data || []).map(mapCustomer));
     setPayout(mapPayout(payoutRes.data));
     setLoading(false);
   }, [tenantId]);
@@ -141,6 +192,8 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
       price: Number(payload.price) || 0,
       cost: Number(payload.cost) || 0,
       stock: Math.max(0, parseInt(payload.stock, 10) || 0),
+      low_stock_threshold: Math.max(0, parseInt(payload.lowStockThreshold, 10) || 0),
+      image_url: payload.imageUrl ? String(payload.imageUrl).trim() : null,
       barcode: String(payload.barcode || payload.sku || '').trim() || null,
       is_active: payload.isActive !== false
     };
@@ -188,6 +241,65 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     return { data: mapped };
   }, [tenantId]);
 
+  const uploadProductImage = useCallback(async (file) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+    if (!file) return { error: 'Choose a photo to upload.' };
+
+    const ext = (file.name.split('.').pop() || 'jpg').toLowerCase();
+    const path = `${tenantId}/${Date.now()}-${Math.round(Math.random() * 1e6)}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('product-images')
+      .upload(path, file, { cacheControl: '3600', upsert: false });
+    if (uploadError) return { error: uploadError.message };
+
+    const { data } = supabase.storage.from('product-images').getPublicUrl(path);
+    return { data: { url: data.publicUrl } };
+  }, [tenantId]);
+
+  const saveCustomer = useCallback(async (payload) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+
+    const row = {
+      tenant_id: tenantId,
+      full_name: String(payload.fullName || '').trim(),
+      phone: String(payload.phone || '').trim() || null,
+      email: String(payload.email || '').trim() || null,
+      address: String(payload.address || '').trim() || null,
+      notes: String(payload.notes || '').trim() || null
+    };
+
+    if (!row.full_name) return { error: 'Enter the customer\'s name.' };
+
+    const query = payload.id
+      ? supabase.from('customers').update(row).eq('id', payload.id).eq('tenant_id', tenantId).select('*').single()
+      : supabase.from('customers').insert(row).select('*').single();
+
+    const { data, error: saveError } = await query;
+    if (saveError) {
+      if (saveError.code === '23505') return { error: 'A customer with that phone number already exists.' };
+      return { error: saveError.message };
+    }
+    const mapped = mapCustomer(data);
+    setCustomers((current) => {
+      const rest = current.filter((item) => item.id !== mapped.id);
+      return [mapped, ...rest];
+    });
+    return { data: mapped };
+  }, [tenantId]);
+
+  const deleteCustomer = useCallback(async (id) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+    const { error: deleteError } = await supabase
+      .from('customers')
+      .delete()
+      .eq('id', id)
+      .eq('tenant_id', tenantId);
+    if (deleteError) return { error: deleteError.message };
+    setCustomers((current) => current.filter((item) => item.id !== id));
+    return { ok: true };
+  }, [tenantId]);
+
   const updateOrderStatus = useCallback(async (orderId, status) => {
     if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
     const { data, error: updateError } = await supabase
@@ -195,7 +307,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
       .update({ status })
       .eq('id', orderId)
       .eq('tenant_id', tenantId)
-      .select('*')
+      .select('*, order_items(*)')
       .single();
     if (updateError) return { error: updateError.message };
     const mapped = mapOrder(data);
@@ -235,6 +347,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     storeProfile,
     products,
     orders,
+    customers,
     payout,
     loading,
     error,
@@ -242,6 +355,9 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     saveProduct,
     deleteProduct,
     setProductActive,
+    uploadProductImage,
+    saveCustomer,
+    deleteCustomer,
     updateOrderStatus,
     saveSettings
   };

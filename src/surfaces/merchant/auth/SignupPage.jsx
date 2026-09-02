@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { AlertCircle, MailCheck } from 'lucide-react';
 import AuthLayout from './AuthLayout';
 import Field from '../../../shared/ui/Field';
 import PasswordField from '../../../shared/ui/PasswordField';
@@ -69,10 +70,11 @@ export default function SignupPage({ onSubmit, initialError, intendedSlug = '' }
         visualCaption="Confirm the account, then finish store setup to keep your URL."
         imageSrc="/images/auth/counter.jpg"
       >
-        <p className="auth-form-lead" style={{ marginTop: 0 }}>
-          Sent to <strong>{form.email}</strong>.
-        </p>
-        <a className="auth-submit" href="/login">Go to login</a>
+        <div className="auth-success">
+          <MailCheck size={15} />
+          <span>Sent to <strong>{form.email}</strong>.</span>
+        </div>
+        <a className="auth-submit" href="/login" style={{ marginTop: 16 }}>Go to login</a>
       </AuthLayout>
     );
   }
@@ -144,7 +146,12 @@ export default function SignupPage({ onSubmit, initialError, intendedSlug = '' }
           value={form.confirmPassword}
           onChange={update('confirmPassword')}
         />
-        {error && <div className="auth-error">{error}</div>}
+        {error && (
+          <div className="auth-error" role="alert">
+            <AlertCircle size={15} />
+            <span>{error}</span>
+          </div>
+        )}
         <Button type="submit" disabled={submitting}>
           {submitting ? 'Creating account…' : 'Create account'}
         </Button>

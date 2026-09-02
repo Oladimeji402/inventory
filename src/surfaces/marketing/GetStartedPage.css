@@ -11,10 +11,11 @@
 }
 
 .get-started-title {
+  font-family: var(--lp-font-display);
   margin: 10px 0 0;
   font-size: clamp(32px, 5vw, 44px);
-  font-weight: 800;
-  letter-spacing: -0.04em;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   line-height: 1.15;
   color: var(--lp-text);
 }
@@ -55,20 +56,20 @@
 }
 
 .get-started-icon {
-  width: 44px;
-  height: 44px;
+  width: 28px;
+  height: 28px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 12px;
-  background: var(--lp-primary-light);
   color: var(--lp-primary);
 }
 
 .get-started-card h2 {
+  font-family: var(--lp-font-display);
   margin: 6px 0 0;
   font-size: 20px;
-  letter-spacing: -0.03em;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .get-started-card p {

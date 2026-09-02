@@ -2,8 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Globe2, CreditCard, MapPin, Check } from 'lucide-react';
 import { BRAND } from '../../config/brand';
 import { STORE_CATEGORIES, slugifyStoreName } from '../../lib/merchantConstants';
+import Card from '../../shared/ui/Card';
+import { useToast } from '../../shared/ui/Toast';
 
 export default function MerchantSettings({ storeProfile, canManage = true, onSaveSettings }) {
+  const showToast = useToast();
   const [formData, setFormData] = useState({
     name: storeProfile.name || '',
     slug: storeProfile.slug || '',
@@ -15,7 +18,6 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
     accountName: storeProfile.accountName || '',
     hasPhysicalStore: storeProfile.hasPhysicalStore ?? true
   });
-  const [savedSuccess, setSavedSuccess] = useState(false);
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -47,28 +49,19 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
       setError(result.error);
       return;
     }
-    setSavedSuccess(true);
-    window.setTimeout(() => setSavedSuccess(false), 3000);
+    showToast('Settings saved', 'success');
   };
 
   return (
     <div>
-      <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 800, color: '#0a0a0a', margin: '0 0 4px', letterSpacing: '-0.02em' }}>
-          Store Settings & Profile
-        </h1>
-        <p style={{ fontSize: '14px', color: '#737373', margin: 0 }}>
-          These fields save to your tenant. Changing the URL re-checks availability — it is not held for anyone else.
-        </p>
+      <div className="merchant-page-header">
+        <h1>Store Settings &amp; Profile</h1>
+        <p>These fields save to your tenant. Changing the URL re-checks availability — it is not held for anyone else.</p>
       </div>
 
       <form onSubmit={handleSubmit}>
-        <div className="merchant-card" style={{ padding: '28px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #f0f0f0' }}>
-            <Globe2 size={18} color="#2B7CFF" />
-            <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Store identity & URL</h3>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <Card title="Store identity & URL" action={<Globe2 size={18} color="var(--mx-primary)" />}>
+          <div className="merchant-settings-grid">
             <div className="merchant-field-group">
               <label className="merchant-field-label">Store brand name *</label>
               <input
@@ -82,7 +75,7 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
             </div>
             <div className="merchant-field-group">
               <label className="merchant-field-label">Custom subdomain *</label>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
+              <div className="merchant-domain-input">
                 <input
                   type="text"
                   required
@@ -90,11 +83,8 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
                   value={formData.slug}
                   onChange={(event) => setFormData({ ...formData, slug: slugifyStoreName(event.target.value) })}
                   className="merchant-field-input font-mono"
-                  style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
                 />
-                <span style={{ padding: '10px 14px', background: '#fafafa', border: '1.5px solid #e5e5e5', borderLeft: 'none', borderTopRightRadius: '6px', borderBottomRightRadius: '6px', fontSize: '13px', color: '#737373', fontWeight: 600 }}>
-                  .{BRAND.domain}
-                </span>
+                <span>.{BRAND.domain}</span>
               </div>
             </div>
             <div className="merchant-field-group">
@@ -111,17 +101,14 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
               </select>
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="merchant-card" style={{ padding: '28px', marginBottom: '24px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #f0f0f0' }}>
-            <CreditCard size={18} color="#2B7CFF" />
-            <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Payout account (NUBAN)</h3>
-          </div>
-          <p style={{ fontSize: '13px', color: '#737373', margin: '0 0 16px' }}>
-            Saved on your store record. Marketplace payouts stay off until a licensed partner completes KYC.
-          </p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <Card
+          title="Payout account (NUBAN)"
+          subtitle="Saved on your store record. Marketplace payouts stay off until a licensed partner completes KYC."
+          action={<CreditCard size={18} color="var(--mx-primary)" />}
+        >
+          <div className="merchant-settings-grid">
             <div className="merchant-field-group">
               <label className="merchant-field-label">Bank name</label>
               <input
@@ -154,14 +141,10 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
               />
             </div>
           </div>
-        </div>
+        </Card>
 
-        <div className="merchant-card" style={{ padding: '28px', marginBottom: '28px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '20px', paddingBottom: '14px', borderBottom: '1px solid #f0f0f0' }}>
-            <MapPin size={18} color="#2B7CFF" />
-            <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>Location & pickup</h3>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
+        <Card title="Location & pickup" action={<MapPin size={18} color="var(--mx-primary)" />}>
+          <div className="merchant-settings-grid">
             <div className="merchant-field-group">
               <label className="merchant-field-label">Physical store / dispatch address</label>
               <input
@@ -182,33 +165,22 @@ export default function MerchantSettings({ storeProfile, canManage = true, onSav
                 className="merchant-field-input font-mono"
               />
             </div>
-            <div className="merchant-field-group" style={{ gridColumn: 'span 2' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
-                <input
-                  type="checkbox"
-                  disabled={!canManage}
-                  checked={formData.hasPhysicalStore}
-                  onChange={(event) => setFormData({ ...formData, hasPhysicalStore: event.target.checked })}
-                  style={{ width: '18px', height: '18px', accentColor: '#2B7CFF' }}
-                />
-                <span style={{ fontSize: '14px', fontWeight: 600, color: '#0a0a0a' }}>
-                  Customers can pick up from a physical shop
-                </span>
-              </label>
-            </div>
+            <label className="merchant-checkbox-row" style={{ gridColumn: 'span 2' }}>
+              <input
+                type="checkbox"
+                disabled={!canManage}
+                checked={formData.hasPhysicalStore}
+                onChange={(event) => setFormData({ ...formData, hasPhysicalStore: event.target.checked })}
+              />
+              <span>Customers can pick up from a physical shop</span>
+            </label>
           </div>
-        </div>
+        </Card>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '12px' }}>
-          {error && <span style={{ color: '#b91c1c', fontSize: '13.5px' }}>{error}</span>}
-          {savedSuccess && (
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: '#2B7CFF', fontSize: '13.5px', fontWeight: 600 }}>
-              <Check size={16} />
-              <span>Settings saved</span>
-            </span>
-          )}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 12 }}>
+          {error && <span className="merchant-form-error">{error}</span>}
           {canManage && (
-            <button type="submit" className="merchant-btn-primary" disabled={saving} style={{ padding: '10px 24px', fontSize: '14px' }}>
+            <button type="submit" className="merchant-btn-primary" disabled={saving} style={{ padding: '10px 24px', fontSize: 14 }}>
               <Check size={16} />
               <span>{saving ? 'Saving…' : 'Save Store Settings'}</span>
             </button>

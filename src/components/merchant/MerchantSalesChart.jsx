@@ -85,7 +85,7 @@ export default function MerchantSalesChart({ orders = [] }) {
   const aov = currentSet.orderCount ? currentSet.total / currentSet.orderCount : 0;
 
   return (
-    <div className="merchant-card" style={{ padding: '24px', marginBottom: '28px' }}>
+    <div className="mx-card" style={{ padding: '24px', marginBottom: '28px' }}>
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px', marginBottom: '24px' }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -217,20 +217,12 @@ export default function MerchantSalesChart({ orders = [] }) {
         </div>
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginTop: '24px', paddingTop: '18px', borderTop: '1px solid #f0f0f0' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '16px', marginTop: '24px', paddingTop: '18px', borderTop: '1px solid #f0f0f0' }}>
         <div>
           <div style={{ fontSize: '11.5px', color: '#737373', fontWeight: 600 }}>Storefront orders</div>
           <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#0a0a0a', marginTop: '2px' }}>
             {formatNaira(currentSet.total)}
           </div>
-          <div style={{ fontSize: '11px', color: '#737373', fontWeight: 500 }}>100% until POS is live</div>
-        </div>
-        <div>
-          <div style={{ fontSize: '11.5px', color: '#737373', fontWeight: 600 }}>Counter POS sales</div>
-          <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#0a0a0a', marginTop: '2px' }}>
-            {formatNaira(0)}
-          </div>
-          <div style={{ fontSize: '11px', color: '#737373', fontWeight: 500 }}>Not connected yet</div>
         </div>
         <div>
           <div style={{ fontSize: '11.5px', color: '#737373', fontWeight: 600 }}>Average order value</div>

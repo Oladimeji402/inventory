@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AlertCircle } from 'lucide-react';
 import AuthLayout from './AuthLayout';
 import Field from '../../../shared/ui/Field';
 import PasswordField from '../../../shared/ui/PasswordField';
@@ -53,7 +54,12 @@ export default function LoginPage({ onSubmit, initialError }) {
         <div className="auth-row-between">
           <a className="auth-forgot" href="/forgot">Forgot Password?</a>
         </div>
-        {error && <div className="auth-error">{error}</div>}
+        {error && (
+          <div className="auth-error" role="alert">
+            <AlertCircle size={15} />
+            <span>{error}</span>
+          </div>
+        )}
         <Button type="submit" disabled={submitting}>
           {submitting ? 'Signing in…' : 'Login'}
         </Button>

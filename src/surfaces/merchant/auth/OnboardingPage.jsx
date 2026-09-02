@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
 import AuthLayout from './AuthLayout';
 import SearchableSelect from '../../../shared/ui/SearchableSelect';
 import { BRAND } from '../../../config/brand';
@@ -52,6 +52,7 @@ export default function OnboardingPage({
   const [slugTouched, setSlugTouched] = useState(Boolean(preferredSlug));
   const [slugStatus, setSlugStatus] = useState('');
   const [slugAvailable, setSlugAvailable] = useState(!preferredSlug);
+  const [slugChecking, setSlugChecking] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
   const { states, cities, citiesLoading, citiesError } = useNigeriaLocations(form.state);
@@ -71,9 +72,15 @@ export default function OnboardingPage({
   }, [form.tradingName, slugTouched]);
 
   useEffect(() => {
-    if (!form.slug || !onCheckSlug) return undefined;
+    if (!form.slug || !onCheckSlug) {
+      setSlugStatus('');
+      setSlugChecking(false);
+      return undefined;
+    }
+    setSlugChecking(true);
     const handle = window.setTimeout(async () => {
       const result = await onCheckSlug(form.slug);
+      setSlugChecking(false);
       if (result?.error) {
         setSlugAvailable(false);
         setSlugStatus(result.error);
@@ -315,8 +322,19 @@ export default function OnboardingPage({
                 />
                 <span className="auth-hint">
                   https://{form.slug || 'your-store'}.{BRAND.domain}
-                  {slugStatus ? ` — ${slugStatus}` : ''}
                 </span>
+                {slugChecking && (
+                  <span className="auth-status checking">
+                    <Loader2 size={13} className="spin" />
+                    Checking availability…
+                  </span>
+                )}
+                {!slugChecking && slugStatus && (
+                  <span className={`auth-status ${slugAvailable ? 'success' : 'error'}`}>
+                    {slugAvailable ? <CheckCircle2 size={13} /> : <AlertCircle size={13} />}
+                    {slugStatus}
+                  </span>
+                )}
               </div>
               <div className="auth-field">
                 <label htmlFor="store-description">What do you sell?</label>
@@ -377,7 +395,12 @@ export default function OnboardingPage({
             </>
           )}
 
-          {error && <div className="auth-error">{error}</div>}
+          {error && (
+            <div className="auth-error" role="alert">
+              <AlertCircle size={15} />
+              <span>{error}</span>
+            </div>
+          )}
 
           <div className="auth-back-row">
             {step > 1 && (

@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { AlertCircle, MailCheck } from 'lucide-react';
 import AuthLayout from './AuthLayout';
 import Field from '../../../shared/ui/Field';
 import Button from '../../../shared/ui/Button';
@@ -27,7 +28,7 @@ export default function ForgotPasswordPage({ onSubmit }) {
       title={sent ? 'Check your email' : 'Forgot password'}
       lead={
         sent ? (
-          <>If an account exists for {email}, we sent a reset link.</>
+          'Open the link we sent to choose a new password.'
         ) : (
           <>
             Remembered it? <a href="/login">Login</a>
@@ -39,7 +40,13 @@ export default function ForgotPasswordPage({ onSubmit }) {
       imageSrc="/images/auth/counter.jpg"
     >
       {sent ? (
-        <a className="auth-submit" href="/login">Back to login</a>
+        <>
+          <div className="auth-success">
+            <MailCheck size={15} />
+            <span>If an account exists for <strong>{email}</strong>, a reset link is on its way.</span>
+          </div>
+          <a className="auth-submit" href="/login" style={{ marginTop: 16 }}>Back to login</a>
+        </>
       ) : (
         <form className="auth-form" onSubmit={handleSubmit}>
           <Field id="merchant-reset-email" label="Email">
@@ -53,7 +60,12 @@ export default function ForgotPasswordPage({ onSubmit }) {
               onChange={(event) => setEmail(event.target.value)}
             />
           </Field>
-          {error && <div className="auth-error">{error}</div>}
+          {error && (
+            <div className="auth-error" role="alert">
+              <AlertCircle size={15} />
+              <span>{error}</span>
+            </div>
+          )}
           <Button type="submit" disabled={submitting}>
             {submitting ? 'Sending…' : 'Send reset link'}
           </Button>

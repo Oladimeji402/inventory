@@ -36,6 +36,7 @@ function slugFromQuery() {
 export default function MerchantRoot() {
   const auth = useMerchantAuth();
   const [path, setPath] = useState(currentPath);
+  const [justOnboarded, setJustOnboarded] = useState(false);
 
   useLayoutEffect(() => {
     const onPop = () => setPath(currentPath());
@@ -103,7 +104,11 @@ export default function MerchantRoot() {
         ownerName={auth.profile?.full_name || auth.user?.email}
         ownerMetadata={auth.user?.user_metadata}
         onCheckSlug={auth.checkSlug}
-        onComplete={auth.completeOnboarding}
+        onComplete={async (payload) => {
+          const result = await auth.completeOnboarding(payload);
+          if (!result?.error) setJustOnboarded(true);
+          return result;
+        }}
       />
     );
   }
@@ -113,6 +118,7 @@ export default function MerchantRoot() {
       tenant={auth.tenant}
       profile={auth.profile}
       membershipRole={auth.membershipRole}
+      justOnboarded={justOnboarded}
       onRefreshTenant={auth.refreshTenant}
       onSignOut={auth.signOut}
       onOpenStorefront={() => {
