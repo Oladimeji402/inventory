@@ -666,6 +666,44 @@
   border-color: #2B7CFF;
 }
 
+.merchant-radio-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px;
+  border: 1.5px solid var(--mx-border);
+  border-radius: var(--mx-radius-md);
+  cursor: pointer;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.merchant-radio-card.selected {
+  border-color: var(--mx-primary);
+  background: var(--mx-primary-light);
+}
+
+.merchant-radio-card input[type="radio"] {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  margin: 2px 0 0;
+  padding: 0;
+  border: 2px solid var(--mx-border-2);
+  border-radius: 50%;
+  background: #fff;
+  flex-shrink: 0;
+}
+
+.merchant-radio-card input[type="radio"]:checked {
+  border-color: var(--mx-primary);
+  background: radial-gradient(circle at center, var(--mx-primary) 0 5px, #fff 6px 100%);
+}
+
+.merchant-radio-card input[type="radio"]:focus-visible {
+  outline: 2px solid var(--mx-primary);
+  outline-offset: 2px;
+}
+
 .merchant-modal-footer {
   padding: 16px 24px;
   border-top: 1px solid #e5e5e5;

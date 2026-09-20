@@ -297,19 +297,6 @@ export async function addAuditEntry(entry) {
   return { entry, localResult, sync };
 }
 
-export async function resetDemoData() {
-  getLocalStorage()?.removeItem(STORAGE_KEY);
-  getLocalStorage()?.removeItem(QUEUE_KEY);
-  try {
-    getLocalStorage()?.removeItem('counterpoint:till-draft:v1');
-    getLocalStorage()?.removeItem('counterpoint:install-dismissed');
-  } catch {
-    // ignore
-  }
-  cache = null;
-  notifySyncListeners();
-}
-
 export async function syncPendingMutations() {
   return flushQueue();
 }

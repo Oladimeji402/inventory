@@ -7,6 +7,7 @@ import {
   Package,
   ShoppingBag,
   Users,
+  UserCog,
   Bell,
   Settings,
   ArrowLeft
@@ -26,6 +27,7 @@ export default function MerchantNav({
     { key: 'orders', label: 'Orders', icon: ShoppingBag, badge: orderCount > 0 ? String(orderCount) : null },
     { key: 'products', label: 'Products', icon: Package },
     { key: 'customers', label: 'Customers', icon: Users },
+    { key: 'employees', label: 'Employees', icon: UserCog },
     { key: 'notifications', label: 'Notifications', icon: Bell, badge: unreadNotifsCount > 0 ? String(unreadNotifsCount) : null, danger: true },
     { key: 'settings', label: 'Store Settings', icon: Settings }
   ];

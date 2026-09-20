@@ -36,7 +36,7 @@ function legacyLineFromSummary(summary) {
   return [{ id: 'legacy', productName: summary, quantity: null, unitPrice: null, lineTotal: null, legacy: true }];
 }
 
-function mapOrder(row) {
+export function mapOrder(row) {
   const items = Array.isArray(row.order_items) && row.order_items.length > 0
     ? row.order_items.map(mapOrderItem)
     : legacyLineFromSummary(row.items_summary);
@@ -71,6 +71,17 @@ function mapCustomer(row) {
     email: row.email || '',
     address: row.address || '',
     notes: row.notes || '',
+    createdAt: row.created_at
+  };
+}
+
+function mapEmployee(row) {
+  return {
+    id: row.id,
+    fullName: row.full_name || '',
+    employeeType: row.employee_type,
+    isActive: row.is_active !== false,
+    lockedUntil: row.pin_locked_until || null,
     createdAt: row.created_at
   };
 }
@@ -118,6 +129,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
   const [products, setProducts] = useState([]);
   const [orders, setOrders] = useState([]);
   const [customers, setCustomers] = useState([]);
+  const [employees, setEmployees] = useState([]);
   const [payout, setPayout] = useState({ bankName: '', accountNumber: '', accountName: '' });
   const [loading, setLoading] = useState(Boolean(tenantId));
   const [error, setError] = useState('');
@@ -127,6 +139,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
       setProducts([]);
       setOrders([]);
       setCustomers([]);
+      setEmployees([]);
       setPayout({ bankName: '', accountNumber: '', accountName: '' });
       setLoading(false);
       return;
@@ -135,7 +148,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     setLoading(true);
     setError('');
 
-    const [productRes, orderRes, customerRes, payoutRes] = await Promise.all([
+    const [productRes, orderRes, customerRes, employeeRes, payoutRes] = await Promise.all([
       supabase
         .from('catalog_products')
         .select('*')
@@ -152,17 +165,23 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false }),
       supabase
+        .from('employees')
+        .select('id, tenant_id, full_name, employee_type, is_active, failed_pin_attempts, pin_locked_until, created_at, updated_at')
+        .eq('tenant_id', tenantId)
+        .order('created_at', { ascending: false }),
+      supabase
         .from('merchant_payout_accounts')
         .select('*')
         .eq('tenant_id', tenantId)
         .maybeSingle()
     ]);
 
-    if (productRes.error || orderRes.error || customerRes.error || payoutRes.error) {
+    if (productRes.error || orderRes.error || customerRes.error || employeeRes.error || payoutRes.error) {
       setError(
         productRes.error?.message
         || orderRes.error?.message
         || customerRes.error?.message
+        || employeeRes.error?.message
         || payoutRes.error?.message
       );
       setLoading(false);
@@ -172,6 +191,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     setProducts((productRes.data || []).map(mapProduct));
     setOrders((orderRes.data || []).map(mapOrder));
     setCustomers((customerRes.data || []).map(mapCustomer));
+    setEmployees((employeeRes.data || []).map(mapEmployee));
     setPayout(mapPayout(payoutRes.data));
     setLoading(false);
   }, [tenantId]);
@@ -179,6 +199,29 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
   useEffect(() => {
     load();
   }, [load]);
+
+  // New/updated storefront orders show up live — no manual refresh needed.
+  useEffect(() => {
+    if (!isSupabaseConfigured || !tenantId) return undefined;
+
+    const channel = supabase
+      .channel(`store_orders:${tenantId}`)
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'store_orders', filter: `tenant_id=eq.${tenantId}` },
+        () => load()
+      )
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'order_items', filter: `tenant_id=eq.${tenantId}` },
+        () => load()
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tenantId, load]);
 
   const saveProduct = useCallback(async (payload) => {
     if (!isSupabaseConfigured || !tenantId) {
@@ -315,6 +358,53 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     return { data: mapped };
   }, [tenantId]);
 
+  const addEmployee = useCallback(async ({ fullName, employeeType, pin }) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+    const { data, error: rpcError } = await supabase.rpc('add_employee', {
+      p_full_name: fullName,
+      p_employee_type: employeeType,
+      p_pin: pin
+    });
+    if (rpcError) return { error: rpcError.message };
+    const mapped = mapEmployee(data);
+    setEmployees((current) => [mapped, ...current]);
+    return { data: mapped };
+  }, [tenantId]);
+
+  const resetEmployeePin = useCallback(async (employeeId, newPin) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+    const { error: rpcError } = await supabase.rpc('reset_employee_pin', {
+      p_employee_id: employeeId,
+      p_new_pin: newPin
+    });
+    if (rpcError) return { error: rpcError.message };
+    setEmployees((current) => current.map((item) => (
+      item.id === employeeId ? { ...item, lockedUntil: null } : item
+    )));
+    return { ok: true };
+  }, [tenantId]);
+
+  const setEmployeeActive = useCallback(async (employeeId, isActive) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+    const { error: rpcError } = await supabase.rpc('set_employee_active', {
+      p_employee_id: employeeId,
+      p_is_active: isActive
+    });
+    if (rpcError) return { error: rpcError.message };
+    setEmployees((current) => current.map((item) => (
+      item.id === employeeId ? { ...item, isActive, lockedUntil: null } : item
+    )));
+    return { ok: true };
+  }, [tenantId]);
+
+  const removeEmployee = useCallback(async (employeeId) => {
+    if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
+    const { error: rpcError } = await supabase.rpc('remove_employee', { p_employee_id: employeeId });
+    if (rpcError) return { error: rpcError.message };
+    setEmployees((current) => current.filter((item) => item.id !== employeeId));
+    return { ok: true };
+  }, [tenantId]);
+
   const saveSettings = useCallback(async (form) => {
     if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
     const { data, error: rpcError } = await supabase.rpc('update_merchant_store', {
@@ -348,6 +438,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     products,
     orders,
     customers,
+    employees,
     payout,
     loading,
     error,
@@ -358,6 +449,10 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     uploadProductImage,
     saveCustomer,
     deleteCustomer,
+    addEmployee,
+    resetEmployeePin,
+    setEmployeeActive,
+    removeEmployee,
     updateOrderStatus,
     saveSettings
   };

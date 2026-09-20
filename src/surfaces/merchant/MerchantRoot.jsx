@@ -1,7 +1,10 @@
 import { useLayoutEffect, useState } from 'react';
 import LoadingScreen from '../../components/LoadingScreen';
 import MerchantApp from '../../components/merchant/MerchantApp';
+import StaffOnlineOrdersView from '../../components/merchant/StaffOnlineOrdersView';
+import StaffCounterHandoff from '../../components/merchant/StaffCounterHandoff';
 import { useMerchantAuth } from '../../hooks/useMerchantAuth';
+import { useStaffSession } from '../../hooks/useStaffSession';
 import { appLinks } from '../../config/surfaces';
 import { readIntendedSlug } from '../../lib/intendedSlug';
 import { slugifyStoreName } from '../../lib/merchantConstants';
@@ -9,6 +12,7 @@ import ForgotPasswordPage from './auth/ForgotPasswordPage';
 import LoginPage from './auth/LoginPage';
 import OnboardingPage from './auth/OnboardingPage';
 import SignupPage from './auth/SignupPage';
+import StaffLoginPage from './auth/StaffLoginPage';
 
 function currentPath() {
   if (typeof window === 'undefined') return '/login';
@@ -35,6 +39,7 @@ function slugFromQuery() {
 
 export default function MerchantRoot() {
   const auth = useMerchantAuth();
+  const staffSession = useStaffSession();
   const [path, setPath] = useState(currentPath);
   const [justOnboarded, setJustOnboarded] = useState(false);
 
@@ -68,6 +73,16 @@ export default function MerchantRoot() {
       setPath('/dashboard');
     }
   }, [auth.loading, auth.session, auth.needsOnboarding, path]);
+
+  if (staffSession.staff) {
+    return staffSession.staff.employee_type === 'online_rep'
+      ? <StaffOnlineOrdersView staff={staffSession.staff} onSignOut={staffSession.signOut} />
+      : <StaffCounterHandoff staff={staffSession.staff} onSignOut={staffSession.signOut} />;
+  }
+
+  if (path === '/staff') {
+    return <StaffLoginPage onSubmit={staffSession.signIn} />;
+  }
 
   if (auth.loading || (auth.session && !auth.membershipReady)) return <LoadingScreen />;
 

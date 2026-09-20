@@ -8,12 +8,3 @@ export default function Logo({ size = 34 }) {
     </svg>
   );
 }
-
-export function Wordmark({ tagline }) {
-  return (
-    <div className="wordmark">
-      <span className="wordmark-text">{BRAND.name}</span>
-      {tagline && <span className="wordmark-tagline">{tagline}</span>}
-    </div>
-  );
-}

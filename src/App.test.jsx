@@ -56,25 +56,15 @@ describe('Counterpoint POS', () => {
     expect(screen.queryByRole('button', { name: /^Admin$/i })).not.toBeInTheDocument();
   });
 
-  it('shows the staff admin panel and allows store admin to deactivate/reactivate staff', async () => {
+  it('has no admin/staff-management tab — that now lives in the store dashboard', async () => {
     renderApp();
 
     fireEvent.change(await screen.findByLabelText(/^Name$/i), { target: { value: 'Kemi Yusuf' } });
     fireEvent.change(screen.getByLabelText(/^PIN$/i), { target: { value: '4444' } });
     fireEvent.click(screen.getByRole('button', { name: /Clock in/i }));
 
-    fireEvent.click(await screen.findByRole('button', { name: /^Admin$/i }));
-
-    expect(screen.getAllByText(/Staff directory/i).length).toBeGreaterThan(0);
-    expect(screen.getByLabelText(/Search staff/i)).toBeInTheDocument();
-    expect(screen.getByText('Ada Okafor')).toBeInTheDocument();
-
-    fireEvent.click(screen.getByText('Ada Okafor'));
-    expect(screen.getByRole('button', { name: /Show PIN/i })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Show PIN/i }));
-    expect(screen.getByText('1111')).toBeInTheDocument();
-
-    expect(screen.getByRole('button', { name: /^Deactivate$/i })).toBeInTheDocument();
+    await screen.findByRole('button', { name: /^Sales$/i });
+    expect(screen.queryByRole('button', { name: /^Admin$/i })).not.toBeInTheDocument();
   });
 
   it('supports card and transfer checkout and holding sales', async () => {

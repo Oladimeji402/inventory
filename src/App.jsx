@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { can, canSignIn, maxDiscount as maxDiscountFor, STAFF_ROLES, staffStatus } from './data/permissions';
+import { can, canSignIn, maxDiscount as maxDiscountFor } from './data/permissions';
 import { useAppData } from './hooks/useAppData';
 import { naira } from './lib/format';
 import { clearTillDraft, loadTillDraft, saveTillDraft } from './services/sessionDraft';
@@ -10,8 +10,6 @@ import ReceiptModal from './components/ReceiptModal';
 import SalesTab from './components/SalesTab';
 import InventoryTab from './components/InventoryTab';
 import ReportsTab from './components/ReportsTab';
-import AdminTab from './components/AdminTab';
-import { ArrowLeft } from 'lucide-react';
 import { appLinks } from './config/surfaces';
 
 function createInitialTillState() {
@@ -59,7 +57,6 @@ export default function App({ onExit }) {
 
   const role = session?.employee?.role;
   const roleMaxDiscount = maxDiscountFor(role);
-  const canManageStaff = can(role, 'manageStaff');
 
   const categories = useMemo(() => {
     const unique = Array.from(new Set(products.map((p) => p.category)));
@@ -410,162 +407,7 @@ export default function App({ onExit }) {
     return { ok: true, message, added, updated };
   }
 
-  function requireAdmin() {
-    if (!canManageStaff) {
-      flash('Only the store admin can manage staff.');
-      return false;
-    }
-    return true;
-  }
-
-  function nextEmployeeId() {
-    const numbers = employees
-      .map((employee) => Number(String(employee.id).replace(/\D/g, '')))
-      .filter((value) => !Number.isNaN(value));
-    const next = (numbers.length ? Math.max(...numbers) : 0) + 1;
-    return `E${next}`;
-  }
-
-  function addStaff({ name, pin, role: newRole }) {
-    if (!requireAdmin()) return { error: 'Only the store admin can manage staff.' };
-
-    const trimmed = name.trim();
-    if (employees.some((employee) => employee.name.trim().toLowerCase() === trimmed.toLowerCase())) {
-      return { error: 'A staff member with that name already exists.' };
-    }
-    if (!STAFF_ROLES.includes(newRole)) {
-      return { error: 'Choose a valid role.' };
-    }
-
-    const employee = {
-      id: nextEmployeeId(),
-      name: trimmed,
-      role: newRole,
-      pin,
-      status: 'active',
-      description: `${newRole} account.`
-    };
-
-    setEmployees([...employees, employee]);
-    logActivity(`${session.employee.name} added staff ${employee.name} (${employee.role})`, 'staff');
-    flash(`${employee.name} was added.`);
-    return { ok: true, employee };
-  }
-
-  function updateEmployee(id, patch, message) {
-    if (!requireAdmin()) return { error: 'Only the store admin can manage staff.' };
-
-    const isSelf = id === session.employee.id;
-    if (isSelf && (patch.status || patch.role)) {
-      flash('You cannot change your own role or status from this panel.');
-      return { error: 'You cannot change your own role or status from this panel.' };
-    }
-
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return { error: 'Staff member not found.' };
-
-    if (patch.role && target.role === 'Store Admin' && patch.role !== 'Store Admin') {
-      const otherAdmins = employees.filter(
-        (employee) => employee.id !== id && employee.role === 'Store Admin' && staffStatus(employee) === 'active'
-      );
-      if (otherAdmins.length === 0) {
-        flash('Keep at least one active store admin on the roster.');
-        return { error: 'Keep at least one active store admin on the roster.' };
-      }
-    }
-
-    if (patch.status && patch.status !== 'active' && target.role === 'Store Admin') {
-      const otherAdmins = employees.filter(
-        (employee) => employee.id !== id && employee.role === 'Store Admin' && staffStatus(employee) === 'active'
-      );
-      if (otherAdmins.length === 0) {
-        flash('Keep at least one active store admin on the roster.');
-        return { error: 'Keep at least one active store admin on the roster.' };
-      }
-    }
-
-    if (patch.name) {
-      const trimmed = patch.name.trim();
-      const clash = employees.some(
-        (employee) => employee.id !== id && employee.name.trim().toLowerCase() === trimmed.toLowerCase()
-      );
-      if (clash) {
-        return { error: 'Another staff member already uses that name.' };
-      }
-      patch = { ...patch, name: trimmed };
-    }
-
-    if (patch.pin !== undefined) {
-      const pin = String(patch.pin).replace(/\D/g, '');
-      if (pin.length < 4 || pin.length > 6) {
-        return { error: 'PIN must be 4 to 6 digits.' };
-      }
-      patch = { ...patch, pin };
-    }
-
-    const nextEmployees = employees.map((employee) => (employee.id === id ? { ...employee, ...patch } : employee));
-    setEmployees(nextEmployees);
-
-    if (isSelf && (patch.name || patch.pin)) {
-      setSession((current) => ({
-        ...current,
-        employee: { ...current.employee, ...patch }
-      }));
-    }
-
-    logActivity(message, 'staff');
-    flash(message);
-    return { ok: true };
-  }
-
-  function promoteStaff(id, nextRole) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target || target.role === nextRole) return;
-    updateEmployee(id, { role: nextRole }, `${session.employee.name} set ${target.name} to ${nextRole}`);
-  }
-
-  function renameStaff(id, nextName) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return { error: 'Staff member not found.' };
-    if (target.name === nextName.trim()) return { ok: true };
-    return updateEmployee(id, { name: nextName }, `${session.employee.name} renamed ${target.name} to ${nextName.trim()}`);
-  }
-
-  function resetPin(id, nextPin) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return { error: 'Staff member not found.' };
-    return updateEmployee(id, { pin: nextPin }, `${session.employee.name} reset PIN for ${target.name}`);
-  }
-
-  function blockStaff(id) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return;
-    updateEmployee(id, { status: 'blocked' }, `${session.employee.name} blocked ${target.name}`);
-  }
-
-  function unblockStaff(id) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return;
-    updateEmployee(id, { status: 'active' }, `${session.employee.name} unblocked ${target.name}`);
-  }
-
-  function fireStaff(id) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return;
-    updateEmployee(id, { status: 'fired' }, `${session.employee.name} deactivated ${target.name}`);
-  }
-
-  function reinstateStaff(id) {
-    const target = employees.find((employee) => employee.id === id);
-    if (!target) return;
-    updateEmployee(id, { status: 'active' }, `${session.employee.name} reactivated ${target.name}`);
-  }
-
   function changeTab(nextTab) {
-    if (nextTab === 'admin' && !canManageStaff) {
-      flash('Only the store admin can open the admin panel.');
-      return;
-    }
     setTab(nextTab);
   }
 
@@ -581,49 +423,20 @@ export default function App({ onExit }) {
   if (!session) {
     return (
       <div className="pos-login-wrapper">
-        <div className="pos-sandbox-top-banner">
-          <div className="flex items-center gap-2">
-            <span className="dot-live"></span>
-            <span className="text-xs font-semibold text-white">POS Till Sandbox (Retail Node)</span>
-            <span className="text-[11px] text-emerald-400 font-mono hidden sm:inline">&bull; spar-ikeja.counterpoint.app</span>
-          </div>
-          <button 
-            className="btn-back-to-landing"
-            onClick={leaveTill}
-          >
-            <ArrowLeft size={14} />
-            <span>{onExit ? 'Back to dashboard' : 'Back to website'}</span>
-          </button>
-        </div>
-        <LoginScreen employees={employees} onLogin={handleLogin} />
+        <LoginScreen employees={employees} setEmployees={setEmployees} onLogin={handleLogin} />
       </div>
     );
   }
 
   return (
     <div className="page-shell">
-      <div className="pos-sandbox-top-banner mb-3">
-        <div className="flex items-center gap-2">
-          <span className="dot-live"></span>
-          <span className="text-xs font-semibold text-white">Active Store POS Till</span>
-          <span className="text-[11px] text-emerald-400 font-mono hidden sm:inline">&bull; spar-ikeja.counterpoint.app</span>
-        </div>
-        <button 
-          className="btn-back-to-landing"
-          onClick={leaveTill}
-        >
-          <ArrowLeft size={14} />
-          <span>{onExit ? 'Back to dashboard' : 'Back to website'}</span>
-        </button>
-      </div>
-
       <Header
         session={session}
         tab={tab}
         onChangeTab={changeTab}
         onClockOut={clockOut}
+        onExit={leaveTill}
         lowStockCount={lowStock.length}
-        canManageStaff={canManageStaff}
       />
 
       {toast && <div className="toast">{toast}</div>}
@@ -692,20 +505,6 @@ export default function App({ onExit }) {
         />
       )}
 
-      {tab === 'admin' && canManageStaff && (
-        <AdminTab
-          employees={employees}
-          currentEmployeeId={session.employee.id}
-          onAddStaff={addStaff}
-          onPromote={promoteStaff}
-          onRename={renameStaff}
-          onResetPin={resetPin}
-          onBlock={blockStaff}
-          onUnblock={unblockStaff}
-          onFire={fireStaff}
-          onReinstate={reinstateStaff}
-        />
-      )}
     </div>
   );
 }

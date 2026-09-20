@@ -6,6 +6,7 @@ import MerchantAnalytics from './MerchantAnalytics';
 import MerchantProducts from './MerchantProducts';
 import MerchantOrders from './MerchantOrders';
 import MerchantCustomers from './MerchantCustomers';
+import MerchantEmployees from './MerchantEmployees';
 import MerchantNotifications from './MerchantNotifications';
 import MerchantSettings from './MerchantSettings';
 import { useMerchantStore } from '../../hooks/useMerchantStore';
@@ -261,6 +262,19 @@ function MerchantAppInner({
               loading={store.loading}
               canManage={canManage}
               onSaveCustomer={store.saveCustomer}
+            />
+          )}
+
+          {currentTab === 'employees' && (
+            <MerchantEmployees
+              employees={store.employees}
+              loading={store.loading}
+              canManage={canManage}
+              onAddEmployee={store.addEmployee}
+              onResetPin={store.resetEmployeePin}
+              onSetActive={store.setEmployeeActive}
+              onRemoveEmployee={store.removeEmployee}
+              storeSlug={store.storeProfile.slug}
             />
           )}
 

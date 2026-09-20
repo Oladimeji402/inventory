@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle } from 'lucide-react';
-import AuthLayout from './AuthLayout';
+import AuthLayout from '../../../shared/auth/AuthLayout';
 import Field from '../../../shared/ui/Field';
 import PasswordField from '../../../shared/ui/PasswordField';
 import Button from '../../../shared/ui/Button';
@@ -64,6 +64,9 @@ export default function LoginPage({ onSubmit, initialError }) {
           {submitting ? 'Signing in…' : 'Login'}
         </Button>
       </form>
+      <p className="auth-legal-note" style={{ marginTop: 16 }}>
+        Counter staff or online sales rep? <a href="/staff">Sign in here</a>.
+      </p>
     </AuthLayout>
   );
 }

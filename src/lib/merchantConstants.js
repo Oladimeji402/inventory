@@ -85,7 +85,7 @@ export const RESERVED_SLUGS = new Set([
   'shop', 'rider', 'marketplace', 'merchant', 'pos', 'mail', 'cdn',
   'support', 'help', 'blog', 'store', 'stores',
   'login', 'signup', 'forgot', 'start', 'dashboard', 'onboarding',
-  'settings', 'orders', 'products', 'analytics'
+  'settings', 'orders', 'products', 'analytics', 'staff', 'employees'
 ]);
 
 export function isValidStoreSlug(slug) {
