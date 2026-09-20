@@ -35,7 +35,7 @@ export default function GetStartedPage() {
             </span>
           </a>
 
-          <a className="get-started-card" href={appLinks.rider()}>
+          <a className="get-started-card" href={appLinks.riderSignup()}>
             <span className="get-started-icon">
               <Bike size={22} />
             </span>
@@ -52,7 +52,7 @@ export default function GetStartedPage() {
           Already have an account?{' '}
           <a href={appLinks.merchantLogin()}>Merchant sign in</a>
           <span aria-hidden="true"> · </span>
-          <a href={appLinks.rider()}>Rider sign in</a>
+          <a href={appLinks.riderLogin()}>Rider sign in</a>
         </p>
       </main>
     </div>

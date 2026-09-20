@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eaf2ff"/>
+      <stop offset="100%" stop-color="#dceafc"/>
+    </linearGradient>
+    <linearGradient id="jacket" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3d8bff"/>
+      <stop offset="100%" stop-color="#2b7cff"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="400" fill="url(#bg)"/>
+
+  <!-- motion streaks -->
+  <g stroke="#b7cff2" stroke-width="8" stroke-linecap="round" opacity="0.9">
+    <line x1="30" y1="150" x2="80" y2="150"/>
+    <line x1="20" y1="182" x2="90" y2="182"/>
+    <line x1="35" y1="214" x2="75" y2="214"/>
+  </g>
+
+  <!-- ground shadow -->
+  <ellipse cx="205" cy="322" rx="118" ry="14" fill="#0b1b33" opacity="0.10"/>
+
+  <!-- delivery box -->
+  <g>
+    <rect x="252" y="176" width="70" height="62" rx="10" fill="#0b1b33"/>
+    <rect x="258" y="182" width="58" height="50" rx="6" fill="#2b7cff"/>
+    <path d="M258 200 h58" stroke="#eaf2ff" stroke-width="4"/>
+    <path d="M287 182 v50" stroke="#eaf2ff" stroke-width="4"/>
+  </g>
+
+  <!-- rear wheel -->
+  <circle cx="280" cy="300" r="38" fill="#0b1b33"/>
+  <circle cx="280" cy="300" r="17" fill="#eaf2ff"/>
+  <circle cx="280" cy="300" r="5" fill="#0b1b33"/>
+
+  <!-- front wheel -->
+  <circle cx="132" cy="300" r="38" fill="#0b1b33"/>
+  <circle cx="132" cy="300" r="17" fill="#eaf2ff"/>
+  <circle cx="132" cy="300" r="5" fill="#0b1b33"/>
+
+  <!-- frame / body -->
+  <path d="M132 300 L172 244 L246 244 L280 300" fill="none" stroke="#0b1b33" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M172 244 L198 206" fill="none" stroke="#0b1b33" stroke-width="12" stroke-linecap="round"/>
+  <path d="M246 244 L236 216" fill="none" stroke="#0b1b33" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- seat -->
+  <rect x="222" y="234" width="46" height="14" rx="7" fill="#0b1b33"/>
+
+  <!-- handlebar + headlight -->
+  <path d="M188 206 L214 198" stroke="#0b1b33" stroke-width="10" stroke-linecap="round"/>
+  <circle cx="132" cy="262" r="9" fill="#ffd166"/>
+
+  <!-- footpeg -->
+  <line x1="196" y1="286" x2="216" y2="286" stroke="#0b1b33" stroke-width="8" stroke-linecap="round"/>
+
+  <!-- rider: back leg -->
+  <path d="M232 244 Q222 268 206 286" fill="none" stroke="#0b1b33" stroke-width="14" stroke-linecap="round"/>
+
+  <!-- rider: torso -->
+  <path d="M226 240 C214 210 208 176 214 148 C218 128 236 116 254 118 C266 120 274 132 272 146 C268 168 248 178 236 200 C232 214 230 228 226 240 Z" fill="url(#jacket)"/>
+
+  <!-- rider: arm to handlebar -->
+  <path d="M228 156 C210 168 196 182 190 202" fill="none" stroke="#2b7cff" stroke-width="16" stroke-linecap="round"/>
+  <circle cx="188" cy="204" r="8" fill="#0b1b33"/>
+
+  <!-- delivery bag strap -->
+  <path d="M238 128 L266 210" stroke="#0b1b33" stroke-width="6" stroke-linecap="round" opacity="0.5"/>
+
+  <!-- helmet -->
+  <circle cx="252" cy="96" r="38" fill="#0b1b33"/>
+  <path d="M218 96 a34 34 0 0 1 68 0" fill="#0b1b33"/>
+  <path d="M226 100 a26 22 0 0 0 52 0 Z" fill="#7fb1ff"/>
+  <circle cx="252" cy="96" r="38" fill="none" stroke="#eaf2ff" stroke-width="4"/>
+
+  <!-- location pin accent -->
+  <g transform="translate(322 96)">
+    <path d="M0 0 C14 0 24 10 24 23 C24 39 0 60 0 60 C0 60 -24 39 -24 23 C-24 10 -14 0 0 0 Z" fill="#2b7cff"/>
+    <circle cx="0" cy="22" r="9" fill="#eaf2ff"/>
+  </g>
+</svg>

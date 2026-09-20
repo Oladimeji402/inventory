@@ -33,6 +33,20 @@ describe('surface URLs', () => {
     );
   });
 
+  it('namespaces rider auth under /rider on platform hosts, since /login is already merchant', () => {
+    const location = loc({
+      hostname: 'inventory-grab.vercel.app',
+      protocol: 'https:',
+      port: '',
+      pathname: '/'
+    });
+    expect(surfaceUrl('rider', '/', location)).toBe('https://inventory-grab.vercel.app/rider');
+    expect(surfaceUrl('rider', '/login', location)).toBe('https://inventory-grab.vercel.app/rider/login');
+    expect(surfaceUrl('rider', '/signup', location)).toBe('https://inventory-grab.vercel.app/rider/signup');
+    expect(resolveSurface({ ...location, pathname: '/rider/login' })).toBe('rider');
+    expect(resolveSurface({ ...location, pathname: '/rider/onboarding' })).toBe('rider');
+  });
+
   it('uses product subdomains on the brand domain', () => {
     const location = loc({ hostname: 'stv.com', protocol: 'https:', port: '' });
     expect(surfaceUrl('merchant', '/login', location)).toBe('https://merchant.stv.com/login');

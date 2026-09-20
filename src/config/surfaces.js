@@ -1,8 +1,9 @@
 import { BRAND } from './brand';
+import { RESERVED_SLUGS } from '../lib/merchantConstants';
 
 export const SURFACES = ['marketing', 'merchant', 'rider', 'shop', 'till'];
 
-const MERCHANT_PATHS = new Set(['/login', '/signup', '/forgot', '/onboarding', '/dashboard']);
+const MERCHANT_PATHS = new Set(['/login', '/signup', '/forgot', '/onboarding', '/dashboard', '/staff']);
 const PLATFORM_HOSTS = ['.vercel.app', '.netlify.app', '.pages.dev', '.railway.app'];
 
 function readLocation(location) {
@@ -46,6 +47,26 @@ export function usesProductSubdomains(host = hostOf()) {
   return host === BRAND.domain || host.endsWith(`.${BRAND.domain}`);
 }
 
+/**
+ * Once a store has its own subdomain (apex-pharmacy.stv.com), that's where
+ * its slug lives — no need to ask staff to type it. Returns '' when we're on
+ * a fixed/reserved surface host, an apex domain, or a host that doesn't do
+ * per-tenant subdomains yet (localhost apex, Vercel platform host) — callers
+ * should fall back to letting the person type the store URL in that case.
+ *
+ * NOTE: resolveSurface() below doesn't yet route arbitrary tenant subdomains
+ * to the merchant surface — this only pays off once that routing exists
+ * (planned for after a real domain + wildcard DNS are set up).
+ */
+export function inferTenantSlugFromHost(location) {
+  const host = hostOf(location);
+  if (!usesProductSubdomains(host)) return '';
+  if (host === 'localhost' || host === BRAND.domain) return '';
+  const sub = host.split('.')[0];
+  if (!sub || RESERVED_SLUGS.has(sub)) return '';
+  return sub;
+}
+
 export function resolveSurface(location) {
   const forced = import.meta.env.VITE_APP_SURFACE;
   if (forced && forced !== 'auto') return forced;
@@ -56,11 +77,13 @@ export function resolveSurface(location) {
   if (sub === 'merchant' || sub === 'app') return 'merchant';
   if (sub === 'rider') return 'rider';
   if (sub === 'shop' || sub === 'store') return 'shop';
+  if (sub === 'till') return 'till';
 
   const path = pathOf(location);
   if (MERCHANT_PATHS.has(path)) return 'merchant';
   if (path === '/rider' || path.startsWith('/rider/')) return 'rider';
   if (path === '/shop' || path.startsWith('/shop/')) return 'shop';
+  if (path === '/till' || path.startsWith('/till/')) return 'till';
   return 'marketing';
 }
 
@@ -88,8 +111,47 @@ export function surfaceOrigin(surface, location) {
   return `${protocol}//${surface}.${apex}`;
 }
 
+/**
+ * On platform hosts (no subdomains yet), the rider surface lives under the
+ * `/rider` path prefix rather than owning bare paths like `/login` — those
+ * are already claimed by the merchant surface's path fallback. See
+ * resolveSurface() and RiderRoot for the matching read side.
+ */
+export function riderLocalPath(fullPath) {
+  const trimmed = (fullPath || '/').replace(/\/+$/, '') || '/';
+  if (trimmed === '/rider') return '/';
+  if (trimmed.startsWith('/rider/')) return trimmed.slice('/rider'.length) || '/';
+  return trimmed;
+}
+
+export function riderFullPath(localPath, location) {
+  const host = hostOf(location);
+  const normalized = localPath === '/' ? '' : (localPath.startsWith('/') ? localPath : `/${localPath}`);
+  if (usesProductSubdomains(host)) return normalized || '/';
+  return `/rider${normalized}` || '/rider';
+}
+
+/**
+ * The till shares its origin with marketing (see surfaceOrigin) — same
+ * "no dedicated subdomain yet" situation as rider, so it needs the same
+ * /till path-prefix treatment to stay distinguishable from bare `/`.
+ */
+export function tillFullPath(localPath, location) {
+  const host = hostOf(location);
+  const sub = host.split('.')[0];
+  const normalized = localPath === '/' ? '' : (localPath.startsWith('/') ? localPath : `/${localPath}`);
+  if (sub === 'till') return normalized || '/';
+  return `/till${normalized}` || '/till';
+}
+
 export function surfaceUrl(surface, path = '/', location) {
   const normalized = path.startsWith('/') ? path : `/${path}`;
+  if (surface === 'rider') {
+    return `${surfaceOrigin(surface, location)}${riderFullPath(normalized, location)}`;
+  }
+  if (surface === 'till') {
+    return `${surfaceOrigin(surface, location)}${tillFullPath(normalized, location)}`;
+  }
   return `${surfaceOrigin(surface, location)}${normalized}`;
 }
 
@@ -109,5 +171,9 @@ export const appLinks = {
   merchantForgot: (location) => surfaceUrl('merchant', '/forgot', location),
   start: (location) => surfaceUrl('marketing', '/start', location),
   rider: (location) => surfaceUrl('rider', '/', location),
-  shop: (location) => surfaceUrl('shop', '/', location)
+  riderLogin: (location) => surfaceUrl('rider', '/login', location),
+  riderSignup: (location) => surfaceUrl('rider', '/signup', location),
+  riderForgot: (location) => surfaceUrl('rider', '/forgot', location),
+  shop: (location) => surfaceUrl('shop', '/', location),
+  till: (location) => surfaceUrl('till', '/', location)
 };

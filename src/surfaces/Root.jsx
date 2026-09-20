@@ -1,10 +1,10 @@
 import LandingPage from '../components/landing/LandingPage';
 import MarketplaceApp from '../components/marketplace/MarketplaceApp';
-import RiderApp from '../components/rider/RiderApp';
 import TillApp from '../App';
 import { appLinks, resolveSurface } from '../config/surfaces';
 import GetStartedPage from './marketing/GetStartedPage';
 import MerchantRoot from './merchant/MerchantRoot';
+import RiderRoot from './rider/RiderRoot';
 
 function currentPath() {
   if (typeof window === 'undefined') return '/';
@@ -35,7 +35,7 @@ export default function Root() {
   if (surface === 'till') return <TillApp />;
 
   if (surface === 'rider') {
-    return <RiderApp onExitToLanding={() => { window.location.href = appLinks.marketing(); }} />;
+    return <RiderRoot />;
   }
 
   if (surface === 'shop') {
