@@ -1,4 +1,4 @@
-/* Split-card merchant auth — Subtech blue, Motoka-inspired layout */
+/* Split-card auth — shared by merchant, rider, and till sign-in */
 
 .auth-page {
   --auth-blue: #2b7cff;
@@ -399,13 +399,22 @@
 
 .auth-switch button,
 .auth-text-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   border: 0;
   background: none;
   color: var(--auth-blue);
   font: inherit;
+  font-size: 13px;
   font-weight: 700;
   cursor: pointer;
   padding: 0;
+}
+
+.auth-text-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .auth-steps {

@@ -1,5 +1,5 @@
-import BrandMark from '../../../shared/components/BrandMark';
-import { appLinks } from '../../../config/surfaces';
+import BrandMark from '../components/BrandMark';
+import { appLinks } from '../../config/surfaces';
 import './Auth.css';
 
 export default function AuthLayout({
@@ -8,12 +8,18 @@ export default function AuthLayout({
   visualTitle,
   visualCaption,
   imageSrc = '/images/auth/grocery.jpg',
+  brandHref,
+  onBrandClick,
   children
 }) {
   return (
     <div className="auth-page">
       <header className="auth-topbar">
-        <BrandMark href={appLinks.marketing()} showTagline={false} />
+        <BrandMark
+          href={brandHref ?? appLinks.marketing()}
+          onClick={onBrandClick}
+          showTagline={false}
+        />
       </header>
 
       <div className="auth-shell">

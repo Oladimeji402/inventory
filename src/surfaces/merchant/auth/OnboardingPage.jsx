@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { AlertCircle, ArrowRight, CheckCircle2, Loader2 } from 'lucide-react';
-import AuthLayout from './AuthLayout';
+import AuthLayout from '../../../shared/auth/AuthLayout';
 import SearchableSelect from '../../../shared/ui/SearchableSelect';
 import { BRAND } from '../../../config/brand';
 import { useNigeriaLocations } from '../../../hooks/useNigeriaLocations';

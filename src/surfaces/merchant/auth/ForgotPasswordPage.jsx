@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { AlertCircle, MailCheck } from 'lucide-react';
-import AuthLayout from './AuthLayout';
+import AuthLayout from '../../../shared/auth/AuthLayout';
 import Field from '../../../shared/ui/Field';
 import Button from '../../../shared/ui/Button';
 
