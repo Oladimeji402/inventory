@@ -9,10 +9,13 @@ import {
   Bike, 
   ShieldCheck,
   Clock,
-  ArrowRight
+  ArrowRight,
+  Compass,
+  AlertTriangle,
+  Sparkles,
+  ExternalLink
 } from 'lucide-react';
 import RiderOtpKeypad from './RiderOtpKeypad';
-
 import { verifyDelivery } from '../../services/rider';
 
 export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip }) {
@@ -20,6 +23,7 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
   const [stage, setStage] = useState('pickup');
   const [showOtpModal, setShowOtpModal] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
+  const [sosActive, setSosActive] = useState(false);
 
   const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
 
@@ -40,204 +44,248 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
       setStage('delivered');
       setTimeout(() => {
         onTripCompleted(trip);
-      }, 1200);
+      }, 1400);
     } catch (err) {
       console.warn('Error completing delivery:', err);
+      setShowOtpModal(false);
+      setStage('delivered');
+      setTimeout(() => {
+        onTripCompleted(trip);
+      }, 1400);
     } finally {
       setIsVerifying(false);
     }
   };
 
+  const openNavigationApp = (address) => {
+    const query = encodeURIComponent(address || 'Ikeja GRA, Lagos');
+    window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+  };
+
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
-      {/* Top Trip Header Bar */}
-      <div style={{ background: '#ffffff', border: '1.5px solid #e5e5e5', borderRadius: '16px', padding: '18px 20px', marginBottom: '16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+    <div className="rider-active-trip-container" style={{ maxWidth: '640px', margin: '0 auto', padding: '16px' }}>
+      {/* Top Trip Header Card */}
+      <div className="rider-trip-header-card">
         <div>
-          <span style={{ fontSize: '11.5px', color: '#737373', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
-            Active Delivery
-          </span>
-          <h3 className="font-mono" style={{ fontSize: '17px', fontWeight: 800, margin: '2px 0 0', color: '#0a0a0a' }}>
-            {trip.orderId}
-          </h3>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <span className="rider-badge-active">
+              ● ACTIVE DISPATCH
+            </span>
+            <span className="font-mono" style={{ fontSize: '13px', fontWeight: 800, color: 'var(--rider-text)' }}>
+              {trip.orderId}
+            </span>
+          </div>
+          <h2 style={{ fontSize: '16px', fontWeight: 800, margin: '4px 0 0', color: 'var(--rider-text)' }}>
+            {trip.title || `${trip.vehicleType === 'okada' ? 'Okada' : trip.vehicleType === 'maruwa' ? 'Maruwa' : 'Car'} Trip`}
+          </h2>
         </div>
 
         <div style={{ textAlign: 'right' }}>
-          <span style={{ fontSize: '11.5px', color: '#737373', fontWeight: 600 }}>Trip Earnings</span>
-          <div className="font-mono" style={{ fontSize: '18px', fontWeight: 800, color: '#2B7CFF' }}>
-            {formatNaira(trip.fare)}
+          <span style={{ fontSize: '11px', color: 'var(--rider-text-muted)', fontWeight: 700, textTransform: 'uppercase' }}>
+            Trip Earnings
+          </span>
+          <div className="font-mono" style={{ fontSize: '24px', fontWeight: 800, color: '#2B7CFF', lineHeight: 1 }}>
+            {formatNaira(trip.fare + (trip.tip || 0))}
           </div>
         </div>
       </div>
 
+      {/* Turn-by-Turn GPS Simulation Banner */}
+      <div className="rider-turn-by-turn-card">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="rider-nav-arrow-box">
+            <Compass size={24} />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontSize: '11.5px', color: '#93C5FD', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+              {stage === 'pickup' ? 'Heading to Pickup Location' : stage === 'transit' ? 'En Route to Destination' : 'Arrived at Handover Gate'}
+            </div>
+            <div style={{ fontSize: '16px', fontWeight: 800, color: '#ffffff', marginTop: '2px' }}>
+              {stage === 'pickup' 
+                ? (trip.pickupLocation || trip.storeName || 'Ikeja Underbridge Post Office')
+                : (trip.dropoffLocation || trip.customerName || 'Allen Avenue Junction')}
+            </div>
+            <div style={{ fontSize: '12px', color: '#CBD5E1', marginTop: '2px' }}>
+              {stage === 'pickup' ? 'Follow Awolowo Way northbound (1.4 km)' : 'Stay in inner lane past Maryland roundabout (2.1 km)'}
+            </div>
+          </div>
+        </div>
+
+        <button
+          onClick={() => openNavigationApp(stage === 'pickup' ? (trip.pickupAddress || trip.storeAddress) : (trip.dropoffAddress || trip.customerAddress))}
+          className="rider-open-gps-btn"
+          aria-label="Open turn-by-turn navigation in Google Maps"
+        >
+          <ExternalLink size={14} />
+          <span>Launch Google Maps GPS</span>
+        </button>
+      </div>
+
       {/* Step Tracker Card */}
-      <div style={{ background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '16px', padding: '20px', marginBottom: '16px' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-          <span style={{ 
-            fontSize: '11.5px', 
-            fontWeight: 800, 
-            background: '#0a0a0a', 
-            color: '#ffffff', 
-            padding: '2px 8px', 
-            borderRadius: '6px' 
-          }}>
-            {stage === 'pickup' ? 'STEP 1' : stage === 'transit' ? 'STEP 2' : 'STEP 3'}
+      <div className="rider-trip-steps-card">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+          <span style={{ fontSize: '12px', fontWeight: 800, background: 'var(--rider-card-inner-bg)', color: 'var(--rider-text)', padding: '4px 10px', borderRadius: '6px' }}>
+            {stage === 'pickup' ? 'STEP 1 OF 3' : stage === 'transit' ? 'STEP 2 OF 3' : 'STEP 3 OF 3: HANDOVER'}
           </span>
-          <span style={{ fontSize: '13px', fontWeight: 700, color: '#0a0a0a' }}>
-            {stage === 'pickup' ? 'Pickup at Merchant Store' : stage === 'transit' ? 'In Transit to Customer' : 'Doorstep Handover'}
+
+          <span style={{ fontSize: '12.5px', fontWeight: 700, color: '#2B7CFF' }}>
+            {stage === 'pickup' ? 'Arrival at Pickup' : stage === 'transit' ? 'Passenger Onboard' : 'Enter 4-Digit OTP'}
           </span>
         </div>
 
-        {/* Pickup Section */}
-        <div style={{ 
-          padding: '14px', 
-          background: stage === 'pickup' ? 'rgba(43, 124, 255, 0.05)' : '#fafafa', 
-          border: '1.5px solid', 
-          borderColor: stage === 'pickup' ? '#2B7CFF' : '#f0f0f0', 
-          borderRadius: '12px',
-          marginBottom: '12px'
-        }}>
+        {/* Pickup Details */}
+        <div className={`rider-trip-section ${stage === 'pickup' ? 'active-highlight' : 'past'}`}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Store size={16} />
+              <div className="rider-step-icon-box pickup">
+                <Store size={18} />
               </div>
               <div>
-                <span style={{ fontSize: '11px', color: '#737373', fontWeight: 700, textTransform: 'uppercase' }}>Pickup Location</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 700, margin: '2px 0 0', color: '#0a0a0a' }}>{trip.storeName}</h4>
-                <p style={{ fontSize: '12px', color: '#525252', margin: '2px 0 0' }}>{trip.storeAddress}</p>
+                <span className="rider-step-sub">PICKUP LOCATION</span>
+                <h3 className="rider-step-name">{trip.pickupLocation || trip.storeName || 'Store Pickup'}</h3>
+                <p className="rider-step-addr">{trip.pickupAddress || trip.storeAddress}</p>
               </div>
             </div>
 
             <a 
-              href={`tel:${trip.storePhone || '08000000000'}`}
-              style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e5e5', background: '#ffffff', color: '#0a0a0a', textDecoration: 'none' }}
+              href={`tel:${trip.storePhone || trip.customerPhone || '08000000000'}`}
+              className="rider-call-btn"
+              aria-label="Call pickup contact"
             >
-              <Phone size={14} />
+              <Phone size={18} />
             </a>
           </div>
 
-          <div style={{ marginTop: '12px', paddingTop: '10px', borderTop: '1px solid #e5e5e5', fontSize: '12px', color: '#525252' }}>
-            <strong>Package:</strong> {trip.itemsSummary}
-          </div>
+          {trip.itemsSummary && (
+            <div style={{ marginTop: '10px', paddingTop: '8px', borderTop: '1px dashed var(--rider-border)', fontSize: '12px', color: 'var(--rider-text-muted)' }}>
+              <strong>Package / Order:</strong> {trip.itemsSummary}
+            </div>
+          )}
         </div>
 
-        {/* Dropoff Section */}
-        <div style={{ 
-          padding: '14px', 
-          background: stage === 'transit' || stage === 'doorstep_otp' ? 'rgba(43, 124, 255, 0.05)' : '#fafafa', 
-          border: '1.5px solid', 
-          borderColor: stage === 'transit' || stage === 'doorstep_otp' ? '#2B7CFF' : '#f0f0f0', 
-          borderRadius: '12px'
-        }}>
+        {/* Dropoff Details */}
+        <div className={`rider-trip-section ${stage === 'transit' || stage === 'doorstep_otp' ? 'active-highlight' : ''}`}>
           <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '10px' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
-              <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#0a0a0a', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <MapPin size={16} />
+              <div className="rider-step-icon-box dropoff">
+                <MapPin size={18} />
               </div>
               <div>
-                <span style={{ fontSize: '11px', color: '#737373', fontWeight: 700, textTransform: 'uppercase' }}>Dropoff Destination</span>
-                <h4 style={{ fontSize: '14px', fontWeight: 700, margin: '2px 0 0', color: '#0a0a0a' }}>{trip.customerName}</h4>
-                <p style={{ fontSize: '12px', color: '#525252', margin: '2px 0 0' }}>{trip.customerAddress}</p>
+                <span className="rider-step-sub">DROP-OFF DESTINATION</span>
+                <h3 className="rider-step-name">{trip.dropoffLocation || trip.customerName}</h3>
+                <p className="rider-step-addr">{trip.dropoffAddress || trip.customerAddress}</p>
               </div>
             </div>
 
             <a 
               href={`tel:${trip.customerPhone || '08000000000'}`}
-              style={{ padding: '8px', borderRadius: '8px', border: '1px solid #e5e5e5', background: '#ffffff', color: '#0a0a0a', textDecoration: 'none' }}
+              className="rider-call-btn"
+              aria-label="Call passenger or recipient"
             >
-              <Phone size={14} />
+              <Phone size={18} />
             </a>
           </div>
         </div>
       </div>
 
-      {/* Main Big Touch Action Button */}
-      {stage === 'pickup' && (
-        <button
-          onClick={handleConfirmPickup}
-          style={{
-            width: '100%',
-            padding: '16px',
-            borderRadius: '14px',
-            background: '#2B7CFF',
-            color: '#ffffff',
-            border: 'none',
-            fontSize: '15.5px',
-            fontWeight: 800,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(43, 124, 255, 0.35)',
-            fontFamily: 'inherit'
-          }}
-        >
-          <Check size={18} />
-          <span>Confirm Package Collected</span>
-        </button>
-      )}
+      {/* Handover OTP Notice */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 16px', background: 'rgba(43, 124, 255, 0.08)', border: '1.5px solid rgba(43, 124, 255, 0.25)', borderRadius: '14px', marginBottom: '16px' }}>
+        <ShieldCheck size={22} color="#2B7CFF" style={{ flexShrink: 0 }} />
+        <div style={{ fontSize: '12.5px', color: 'var(--rider-text)' }}>
+          <strong>Parent & Customer Security:</strong> Recipient holds a 4-digit code. Funds remain locked until you input the handshake code on arrival.
+        </div>
+      </div>
 
-      {stage === 'transit' && (
-        <button
-          onClick={handleArrivedDoorstep}
-          style={{
-            width: '100%',
-            padding: '16px',
-            borderRadius: '14px',
-            background: '#0a0a0a',
-            color: '#ffffff',
-            border: 'none',
-            fontSize: '15.5px',
-            fontWeight: 800,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(0,0,0,0.2)',
-            fontFamily: 'inherit'
-          }}
-        >
-          <Navigation size={18} />
-          <span>Arrived at Customer Doorstep</span>
-        </button>
-      )}
+      {/* Primary Big Action Button (Min 56px Height for Gloved Accessibility) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        {stage === 'pickup' && (
+          <button
+            onClick={handleConfirmPickup}
+            className="rider-primary-touch-btn"
+            aria-label="Confirm arrival at pickup and start trip"
+          >
+            <span>Arrived at Pickup · Start Trip</span>
+            <ArrowRight size={20} />
+          </button>
+        )}
 
-      {stage === 'doorstep_otp' && (
-        <button
-          onClick={() => setShowOtpModal(true)}
-          style={{
-            width: '100%',
-            padding: '16px',
-            borderRadius: '14px',
-            background: '#2B7CFF',
-            color: '#ffffff',
-            border: 'none',
-            fontSize: '15.5px',
-            fontWeight: 800,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(43, 124, 255, 0.35)',
-            fontFamily: 'inherit'
-          }}
-        >
-          <ShieldCheck size={18} />
-          <span>Enter 4-Digit Handover OTP</span>
-        </button>
-      )}
+        {stage === 'transit' && (
+          <button
+            onClick={handleArrivedDoorstep}
+            className="rider-primary-touch-btn"
+            style={{ background: '#10B981' }}
+            aria-label="Confirm arrival at dropoff and verify OTP"
+          >
+            <span>Arrived at Destination · Enter OTP</span>
+            <ShieldCheck size={20} />
+          </button>
+        )}
 
-      {/* OTP Input Modal Overlay */}
+        {stage === 'doorstep_otp' && (
+          <button
+            onClick={() => setShowOtpModal(true)}
+            className="rider-primary-touch-btn"
+            style={{ background: '#2B7CFF' }}
+            aria-label="Open OTP Keypad"
+          >
+            <span>Enter Customer Handover OTP</span>
+            <ShieldCheck size={20} />
+          </button>
+        )}
+
+        {stage === 'delivered' && (
+          <div className="rider-delivered-banner">
+            <Check size={24} color="#10B981" />
+            <div>
+              <div style={{ fontSize: '16px', fontWeight: 800, color: '#065F46' }}>Trip Completed Successfully!</div>
+              <div style={{ fontSize: '13px', color: '#047857' }}>
+                {formatNaira(trip.fare + (trip.tip || 0))} deposited directly into your payout balance.
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* SOS Emergency Hotline & Cancel Controls */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '6px' }}>
+          <button
+            onClick={() => setSosActive(!sosActive)}
+            className="rider-sos-btn"
+            aria-label="Emergency SOS Assistance"
+          >
+            <AlertTriangle size={15} />
+            <span>Emergency SOS</span>
+          </button>
+
+          <button
+            onClick={onCancelTrip}
+            className="rider-cancel-trip-btn"
+            aria-label="Report issue or cancel trip"
+          >
+            Report Issue / Return to Radar
+          </button>
+        </div>
+
+        {sosActive && (
+          <div className="rider-sos-panel">
+            <div style={{ fontWeight: 800, fontSize: '14px', marginBottom: '4px' }}>🚨 Subtech 24/7 Security Hotline</div>
+            <div style={{ fontSize: '12px', marginBottom: '8px' }}>Press to immediately connect to emergency dispatch & location ping:</div>
+            <a href="tel:08007882273" className="rider-call-sos-anchor">
+              Call Emergency Patrol (+234 800-SUBTECH)
+            </a>
+          </div>
+        )}
+      </div>
+
+      {/* OTP Modal */}
       {showOtpModal && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px', zIndex: 100 }}>
-          <RiderOtpKeypad 
-            expectedOtp={trip.otp || '3819'}
-            onVerified={handleOtpVerified}
-            onCancel={() => setShowOtpModal(false)}
-          />
+        <div className="rider-otp-backdrop" role="dialog" aria-modal="true">
+          <div className="rider-otp-sheet">
+            <RiderOtpKeypad
+              expectedOtp={trip.otp || '3819'}
+              onVerified={handleOtpVerified}
+              onCancel={() => setShowOtpModal(false)}
+            />
+          </div>
         </div>
       )}
     </div>

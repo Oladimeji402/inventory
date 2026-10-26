@@ -1,37 +1,9 @@
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 
-const mockDispatches = [
-  {
-    orderId: 'ORD-9821',
-    storeName: 'Apex Health Pharmacy',
-    storeAddress: 'Plot 12, Isaac John St, Ikeja GRA',
-    storePhone: '+234 803 291 0029',
-    customerName: 'Amara Kalu',
-    customerAddress: 'Apt 4B, Admiralty Way, Lekki Phase 1',
-    customerPhone: '+234 802 119 4482',
-    distanceKm: '2.4 km',
-    estimatedMinutes: 18,
-    fare: 1850,
-    tip: 300,
-    itemsSummary: '1x Amoxicillin 500mg, 1x Vitamin C 1000mg',
-    otp: '3819'
-  },
-  {
-    orderId: 'ORD-9822',
-    storeName: 'GreenGrocer Organics',
-    storeAddress: '14 Joel Ogunnaike St, Ikeja GRA',
-    storePhone: '+234 802 334 1122',
-    customerName: 'Dr. Femi Doherty',
-    customerAddress: 'Plot 8, Oduduwa Crescent, Ikeja GRA',
-    customerPhone: '+234 803 445 6677',
-    distanceKm: '1.2 km',
-    estimatedMinutes: 12,
-    fare: 1600,
-    tip: 500,
-    itemsSummary: '2x Organic Avocado, 1x Fresh Almond Milk',
-    otp: '7214'
-  }
-];
+import { INITIAL_DISPATCHES } from '../components/rider/riderData';
+
+const mockDispatches = INITIAL_DISPATCHES;
+
 
 export async function fetchAvailableDispatches() {
   if (!isSupabaseConfigured) {

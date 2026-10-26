@@ -7,92 +7,147 @@ import {
   Award, 
   FileText, 
   ArrowLeft,
-  Check
+  Check,
+  AlertTriangle,
+  Sparkles,
+  ExternalLink,
+  Car
 } from 'lucide-react';
+import { RIDER_VEHICLE_PROFILES } from './riderData';
 
-export default function RiderProfile({ onExitToLanding }) {
+export default function RiderProfile({ profile, currentVehicle = 'okada', onVehicleChange, onExitToLanding }) {
+  const activeVehicle = RIDER_VEHICLE_PROFILES.find(v => v.id === currentVehicle) || RIDER_VEHICLE_PROFILES[0];
+
   return (
-    <div style={{ maxWidth: '600px', margin: '0 auto', padding: '20px' }}>
+    <div className="rider-profile-wrapper" style={{ maxWidth: '640px', margin: '0 auto', padding: '16px 16px 32px' }}>
       {/* Profile Header */}
-      <div style={{ background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '16px', padding: '24px', textAlign: 'center', marginBottom: '20px' }}>
-        <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px', fontWeight: 800, margin: '0 auto 12px' }}>
-          SO
+      <div className="rider-profile-card">
+        <div className="rider-profile-avatar-wrap">
+          <div className="rider-profile-avatar">
+            SO
+          </div>
+          <div className="rider-avatar-shield">
+            <ShieldCheck size={16} />
+          </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: 800, margin: 0, color: '#0a0a0a' }}>Samuel Olawale</h2>
-          <ShieldCheck size={18} color="#2B7CFF" />
-        </div>
-        <span className="font-mono" style={{ fontSize: '12px', color: '#737373', display: 'block', marginTop: '2px' }}>
-          Courier ID: RIDER-284 · Ikeja GRA Node
+        <h2 style={{ fontSize: '20px', fontWeight: 800, margin: '0 0 2px', color: 'var(--rider-text)' }}>
+          {profile?.full_name || 'Samuel Olawale'}
+        </h2>
+        <span className="font-mono" style={{ fontSize: '12px', color: 'var(--rider-text-muted)', display: 'block' }}>
+          Courier & Mobility Captain #RDR-284 · Verified Partner
         </span>
 
-        <div style={{ display: 'flex', justifyContent: 'center', gap: '16px', marginTop: '16px', paddingTop: '16px', borderTop: '1px solid #f0f0f0' }}>
-          <div>
-            <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>Lifetime Trips</div>
-            <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800 }}>642</div>
+        {/* Driver Vital Stats */}
+        <div className="rider-profile-stats-row">
+          <div className="rider-stat-col">
+            <span className="rider-col-label">LIFETIME TRIPS</span>
+            <span className="rider-col-val font-mono">1,420</span>
           </div>
-          <div style={{ width: '1px', background: '#e5e5e5' }} />
-          <div>
-            <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>Safety Rating</div>
-            <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#f59e0b' }}>4.95 ★</div>
+          <div className="rider-stat-divider" />
+          <div className="rider-stat-col">
+            <span className="rider-col-label">SAFETY RATING</span>
+            <span className="rider-col-val font-mono" style={{ color: '#F59E0B' }}>4.98 ★</span>
           </div>
-          <div style={{ width: '1px', background: '#e5e5e5' }} />
-          <div>
-            <div style={{ fontSize: '11px', color: '#737373', fontWeight: 600 }}>On-Time Rate</div>
-            <div className="font-mono" style={{ fontSize: '16px', fontWeight: 800, color: '#2B7CFF' }}>98.4%</div>
+          <div className="rider-stat-divider" />
+          <div className="rider-stat-col">
+            <span className="rider-col-label">ON-TIME RATE</span>
+            <span className="rider-col-val font-mono" style={{ color: '#2B7CFF' }}>98.9%</span>
           </div>
         </div>
       </div>
 
-      {/* Vehicle & Verification Card */}
-      <div style={{ background: '#ffffff', border: '1px solid #e5e5e5', borderRadius: '16px', padding: '20px', marginBottom: '20px' }}>
-        <h4 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 14px', color: '#0a0a0a' }}>
-          Vehicle & Compliance
-        </h4>
+      {/* Switch Active Operating Vehicle Mode */}
+      <div className="rider-vehicle-switch-card">
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+          <span style={{ fontSize: '12px', fontWeight: 800, color: 'var(--rider-text)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+            Active Operating Vehicle
+          </span>
+          <span style={{ fontSize: '11px', color: '#10B981', fontWeight: 700 }}>
+            ● Roadworthy Certified
+          </span>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '8px' }}>
+          {RIDER_VEHICLE_PROFILES.map(veh => {
+            const isSelected = veh.id === currentVehicle;
+            return (
+              <button
+                key={veh.id}
+                onClick={() => onVehicleChange && onVehicleChange(veh.id)}
+                className={`rider-veh-select-btn ${isSelected ? 'active' : ''}`}
+                aria-pressed={isSelected}
+              >
+                <span style={{ fontSize: '22px' }}>{veh.emoji}</span>
+                <span style={{ fontSize: '12px', fontWeight: 800, color: isSelected ? '#2B7CFF' : 'var(--rider-text)' }}>
+                  {veh.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ marginTop: '12px', padding: '10px 12px', background: 'var(--rider-card-inner-bg)', borderRadius: '10px', fontSize: '12.5px', color: 'var(--rider-text)' }}>
+          <div><strong>Registered Plate:</strong> {activeVehicle.registration}</div>
+          <div style={{ fontSize: '11.5px', color: 'var(--rider-text-muted)', marginTop: '2px' }}>{activeVehicle.safetyTag}</div>
+        </div>
+      </div>
+
+      {/* Verification & Compliance Badges */}
+      <div className="rider-compliance-card">
+        <h3 style={{ fontSize: '14px', fontWeight: 800, margin: '0 0 14px', color: 'var(--rider-text)' }}>
+          State Government & Fleet Compliance
+        </h3>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-            <span style={{ color: '#737373' }}>Vehicle Registered</span>
-            <strong>Yamaha YBR 125cc (Lagos: KJA-482-XD)</strong>
+          <div className="rider-compliance-row">
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--rider-text)' }}>Lagos State Riders Permit (LASDRI / VIS)</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--rider-text-muted)' }}>License ID: LAS-991829-R · Valid through Dec 2027</div>
+            </div>
+            <span className="rider-verified-badge">✓ Active</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-            <span style={{ color: '#737373' }}>Riders License</span>
-            <strong style={{ color: '#2B7CFF' }}>✓ Verified (Active)</strong>
+
+          <div className="rider-compliance-row">
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--rider-text)' }}>Police Criminal Background Clearance</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--rider-text-muted)' }}>Fingerprint biometric cleared for School Commutes</div>
+            </div>
+            <span className="rider-verified-badge">✓ Cleared</span>
           </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-            <span style={{ color: '#737373' }}>Thermal Delivery Box</span>
-            <strong style={{ color: '#2B7CFF' }}>✓ Inspected (Approved)</strong>
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-            <span style={{ color: '#737373' }}>Assigned Corridor</span>
-            <strong>Ikeja GRA · Maryland · Allen Avenue</strong>
+
+          <div className="rider-compliance-row">
+            <div>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--rider-text)' }}>Assigned Operational Corridor</div>
+              <div style={{ fontSize: '11.5px', color: 'var(--rider-text-muted)' }}>Ikeja GRA · Maryland · Allen Avenue · Airport Corridor</div>
+            </div>
+            <span className="rider-verified-badge" style={{ background: 'rgba(43, 124, 255, 0.1)', color: '#2B7CFF' }}>Primary Hub</span>
           </div>
         </div>
+      </div>
+
+      {/* Safety & SOS Support */}
+      <div style={{ padding: '16px', background: 'rgba(239, 68, 68, 0.06)', border: '1.5px solid rgba(239, 68, 68, 0.2)', borderRadius: '16px', marginBottom: '20px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+          <AlertTriangle size={16} color="#EF4444" />
+          <span style={{ fontSize: '13px', fontWeight: 800, color: '#DC2626' }}>24/7 Roadside Assistance & Emergency Patrol</span>
+        </div>
+        <p style={{ fontSize: '12px', color: '#7F1D1D', margin: '0 0 10px', lineHeight: 1.4 }}>
+          Tire puncture, road accident, or dispatch security concern? Our quick-response mobile patrol is stationed along Ikorodu Rd & Ikeja.
+        </p>
+        <a href="tel:08007882273" className="rider-sos-action-btn">
+          Call Subtech Dispatch Patrol (Free Toll)
+        </a>
       </div>
 
       {/* Exit Button */}
       <button
         onClick={onExitToLanding}
-        style={{
-          width: '100%',
-          padding: '14px',
-          borderRadius: '12px',
-          border: '1.5px solid #e5e5e5',
-          background: '#ffffff',
-          color: '#0a0a0a',
-          fontSize: '14px',
-          fontWeight: 700,
-          cursor: 'pointer',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '8px',
-          fontFamily: 'inherit'
-        }}
+        className="rider-exit-btn"
+        aria-label="Sign out and exit rider portal"
       >
         <ArrowLeft size={16} />
-        <span>Exit Rider Portal</span>
+        <span>Exit Rider Portal / Sign Out</span>
       </button>
     </div>
   );
