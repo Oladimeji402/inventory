@@ -3,11 +3,10 @@ import {
   ShoppingBag, 
   Mail, 
   Phone, 
-  MapPin, 
   CheckCircle, 
   ShieldCheck, 
   Lock, 
-  ArrowRight,
+  ArrowRight, 
   ExternalLink,
   Store,
   Truck
@@ -90,10 +89,6 @@ export default function MarketplaceFooter({
             </p>
             
             <div className="mp-footer-contacts">
-              <div className="mp-footer-contact-item">
-                <MapPin size={15} className="text-blue-400" />
-                <span>Plot 12, Isaac John Street, Ikeja GRA, Lagos</span>
-              </div>
               <div className="mp-footer-contact-item">
                 <Phone size={15} className="text-emerald-400" />
                 <span>+234 (0) 700 636 2278 · 24/7 Hotline</span>
