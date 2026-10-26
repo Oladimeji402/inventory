@@ -1,0 +1,539 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1320" width="1600" height="1320" style="background:#090d16; font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+  <defs>
+    <!-- Gradients -->
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#070a12"/>
+    </linearGradient>
+    <linearGradient id="cardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#141e33"/>
+      <stop offset="100%" stop-color="#0d1527"/>
+    </linearGradient>
+    <linearGradient id="brandGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+    <linearGradient id="greenGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#059669"/>
+      <stop offset="100%" stop-color="#10b981"/>
+    </linearGradient>
+    <linearGradient id="amberGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#d97706"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+    <linearGradient id="redGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#dc2626"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+
+    <!-- Filters & Shadows -->
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="115%" filterUnits="userSpaceOnUse">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+    <filter id="glowGreen" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#10b981" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glowAmber" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#f59e0b" flood-opacity="0.5"/>
+    </filter>
+    <filter id="glowRed" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#ef4444" flood-opacity="0.5"/>
+    </filter>
+
+    <!-- Markers -->
+    <marker id="arrowGreen" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#10b981" />
+    </marker>
+    <marker id="arrowAmber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#f59e0b" />
+    </marker>
+    <marker id="arrowRed" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#ef4444" />
+    </marker>
+    <marker id="arrowBlue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 9 5 L 0 9 z" fill="#3b82f6" />
+    </marker>
+  </defs>
+
+  <!-- Background Canvas with Dot Grid -->
+  <rect width="1600" height="1320" fill="url(#bgGrad)"/>
+  <g opacity="0.12">
+    <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.5" fill="#94a3b8" />
+    </pattern>
+    <rect width="1600" height="1320" fill="url(#grid)" />
+  </g>
+
+  <!-- ==================== HEADER ==================== -->
+  <g transform="translate(60, 45)">
+    <!-- Brand Logo Mark -->
+    <rect x="0" y="0" width="46" height="46" rx="12" fill="url(#brandGrad)" />
+    <text x="23" y="31" fill="#ffffff" font-size="22" font-weight="900" text-anchor="middle">S</text>
+
+    <!-- Title & Subtitle -->
+    <text x="62" y="24" fill="#ffffff" font-size="22" font-weight="800" letter-spacing="-0.02em">SUBTECH / COUNTERPOINT — ECOSYSTEM ARCHITECTURE &amp; AUDIT</text>
+    <text x="62" y="44" fill="#94a3b8" font-size="13.5" font-weight="500">Comprehensive Status Map: What Works, What is Disconnected, and The 6-Phase Delivery Roadmap</text>
+
+    <!-- Status Pill Legend (Top Right) -->
+    <g transform="translate(980, 5)">
+      <!-- Green Pill -->
+      <rect x="0" y="0" width="145" height="32" rx="16" fill="#064e3b" stroke="#059669" stroke-width="1.2"/>
+      <circle cx="16" cy="16" r="5" fill="#10b981" filter="url(#glowGreen)"/>
+      <text x="30" y="20" fill="#a7f3d0" font-size="11.5" font-weight="700">100% FUNCTIONAL</text>
+
+      <!-- Amber Pill -->
+      <rect x="155" y="0" width="160" height="32" rx="16" fill="#451a03" stroke="#b45309" stroke-width="1.2"/>
+      <circle cx="171" cy="16" r="5" fill="#f59e0b" filter="url(#glowAmber)"/>
+      <text x="185" y="20" fill="#fde68a" font-size="11.5" font-weight="700">MOCKED / UNCONNECTED</text>
+
+      <!-- Red Pill -->
+      <rect x="325" y="0" width="140" height="32" rx="16" fill="#450a0a" stroke="#b91c1c" stroke-width="1.2"/>
+      <circle cx="341" cy="16" r="5" fill="#ef4444" filter="url(#glowRed)"/>
+      <text x="355" y="20" fill="#fecaca" font-size="11.5" font-weight="700">NOT STARTED</text>
+    </g>
+  </g>
+
+  <!-- Horizontal divider -->
+  <line x1="60" y1="115" x2="1540" y2="115" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- ==================== SECTION 1: SYSTEM SURFACES & CURRENT STATE ==================== -->
+  <text x="60" y="148" fill="#38bdf8" font-size="13" font-weight="800" letter-spacing="0.08em">PART 1: THE 5+1 APPLICATION SURFACES (CURRENT CODEBASE STATE)</text>
+
+  <!-- 1. MARKETING SURFACE (GREEN) -->
+  <g transform="translate(60, 168)" filter="url(#shadow)">
+    <rect width="280" height="235" rx="16" fill="url(#cardGrad)" stroke="#059669" stroke-width="2"/>
+    <rect x="0" y="0" width="280" height="42" rx="16" fill="#064e3b" opacity="0.4"/>
+    <circle cx="24" cy="21" r="5" fill="#10b981" filter="url(#glowGreen)"/>
+    <text x="38" y="25" fill="#ffffff" font-size="13.5" font-weight="800">1. MARKETING SURFACE</text>
+    <rect x="200" y="10" width="68" height="22" rx="6" fill="#10b981" opacity="0.2"/>
+    <text x="234" y="25" fill="#34d399" font-size="10.5" font-weight="800" text-anchor="middle">WORKING</text>
+
+    <!-- Content Items -->
+    <g transform="translate(16, 56)" font-size="12" fill="#cbd5e1">
+      <text y="0" font-weight="700" fill="#f8fafc">Path: <tspan fill="#38bdf8" font-family="monospace">/ (LandingPage)</tspan></text>
+      <text y="24" fill="#a7f3d0">✔ Subdomain Check (API/Slug)</text>
+      <text y="46" fill="#a7f3d0">✔ Interactive Live Demo Widget</text>
+      <text y="68" fill="#a7f3d0">✔ Savings / Earnings Calculator</text>
+      <text y="90" fill="#a7f3d0">✔ Value Pillars, Pricing &amp; FAQs</text>
+      <text y="112" fill="#a7f3d0">✔ Direct Merchant Onboarding CTA</text>
+      <text y="134" fill="#94a3b8" font-size="11">Unit Tests: 8/8 tests passing (100%)</text>
+      <rect x="0" y="146" width="248" height="20" rx="4" fill="#047857" opacity="0.2"/>
+      <text x="124" y="160" fill="#6ee7b7" font-size="10.5" font-weight="700" text-anchor="middle">STATUS: READY FOR PRODUCTION</text>
+    </g>
+  </g>
+
+  <!-- 2. MERCHANT PORTAL (GREEN) -->
+  <g transform="translate(360, 168)" filter="url(#shadow)">
+    <rect width="280" height="235" rx="16" fill="url(#cardGrad)" stroke="#059669" stroke-width="2"/>
+    <rect x="0" y="0" width="280" height="42" rx="16" fill="#064e3b" opacity="0.4"/>
+    <circle cx="24" cy="21" r="5" fill="#10b981" filter="url(#glowGreen)"/>
+    <text x="38" y="25" fill="#ffffff" font-size="13.5" font-weight="800">2. MERCHANT DASHBOARD</text>
+    <rect x="200" y="10" width="68" height="22" rx="6" fill="#10b981" opacity="0.2"/>
+    <text x="234" y="25" fill="#34d399" font-size="10.5" font-weight="800" text-anchor="middle">WORKING</text>
+
+    <!-- Content Items -->
+    <g transform="translate(16, 56)" font-size="12" fill="#cbd5e1">
+      <text y="0" font-weight="700" fill="#f8fafc">Path: <tspan fill="#38bdf8" font-family="monospace">/dashboard (MerchantRoot)</tspan></text>
+      <text y="24" fill="#a7f3d0">✔ Supabase Auth &amp; 3-step Onboarding</text>
+      <text y="46" fill="#a7f3d0">✔ Product Catalog &amp; Image Storage</text>
+      <text y="68" fill="#a7f3d0">✔ Real-time Order Stream (Postgres)</text>
+      <text y="90" fill="#a7f3d0">✔ Employee PIN Hashing (pgcrypto)</text>
+      <text y="112" fill="#a7f3d0">✔ Customer CRM &amp; Dynamic Analytics</text>
+      <text y="134" fill="#94a3b8" font-size="11">DB Tables: tenants, products, orders</text>
+      <rect x="0" y="146" width="248" height="20" rx="4" fill="#047857" opacity="0.2"/>
+      <text x="124" y="160" fill="#6ee7b7" font-size="10.5" font-weight="700" text-anchor="middle">STATUS: REAL SUPABASE BACKEND</text>
+    </g>
+  </g>
+
+  <!-- 3. TILL / POS (AMBER) -->
+  <g transform="translate(660, 168)" filter="url(#shadow)">
+    <rect width="280" height="235" rx="16" fill="url(#cardGrad)" stroke="#d97706" stroke-width="2"/>
+    <rect x="0" y="0" width="280" height="42" rx="16" fill="#451a03" opacity="0.4"/>
+    <circle cx="24" cy="21" r="5" fill="#f59e0b" filter="url(#glowAmber)"/>
+    <text x="38" y="25" fill="#ffffff" font-size="13.5" font-weight="800">3. TILL / POINT OF SALE</text>
+    <rect x="180" y="10" width="88" height="22" rx="6" fill="#f59e0b" opacity="0.2"/>
+    <text x="224" y="25" fill="#fbbf24" font-size="10.5" font-weight="800" text-anchor="middle">DISCONNECTED</text>
+
+    <!-- Content Items -->
+    <g transform="translate(16, 56)" font-size="12" fill="#cbd5e1">
+      <text y="0" font-weight="700" fill="#f8fafc">Path: <tspan fill="#38bdf8" font-family="monospace">/till (App.jsx)</tspan></text>
+      <text y="24" fill="#a7f3d0">✔ Role-based PIN Clock-in (RPC)</text>
+      <text y="46" fill="#a7f3d0">✔ Fast Cart, Held Sales &amp; Discounts</text>
+      <text y="68" fill="#a7f3d0">✔ Cash Change Calc &amp; Receipt Modal</text>
+      <text y="90" fill="#fca5a5">✖ Products come from seed.json!</text>
+      <text y="112" fill="#fca5a5">✖ Sales save only to localStorage!</text>
+      <text y="134" fill="#f59e0b" font-size="11">GAP: Till does NOT update cloud stock!</text>
+      <rect x="0" y="146" width="248" height="20" rx="4" fill="#d97706" opacity="0.2"/>
+      <text x="124" y="160" fill="#fde68a" font-size="10.5" font-weight="700" text-anchor="middle">PHASE 1 FIX: HOOK TO SUPABASE</text>
+    </g>
+  </g>
+
+  <!-- 4. MARKETPLACE & STOREFRONT (AMBER) -->
+  <g transform="translate(960, 168)" filter="url(#shadow)">
+    <rect width="280" height="235" rx="16" fill="url(#cardGrad)" stroke="#d97706" stroke-width="2"/>
+    <rect x="0" y="0" width="280" height="42" rx="16" fill="#451a03" opacity="0.4"/>
+    <circle cx="24" cy="21" r="5" fill="#f59e0b" filter="url(#glowAmber)"/>
+    <text x="38" y="25" fill="#ffffff" font-size="13.5" font-weight="800">4. SHOP / STOREFRONT</text>
+    <rect x="180" y="10" width="88" height="22" rx="6" fill="#f59e0b" opacity="0.2"/>
+    <text x="224" y="25" fill="#fbbf24" font-size="10.5" font-weight="800" text-anchor="middle">UNMOUNTED</text>
+
+    <!-- Content Items -->
+    <g transform="translate(16, 56)" font-size="12" fill="#cbd5e1">
+      <text y="0" font-weight="700" fill="#f8fafc">Path: <tspan fill="#38bdf8" font-family="monospace">/shop (MarketplaceApp)</tspan></text>
+      <text y="24" fill="#a7f3d0">✔ Corridor Filters (Ikeja, Lekki, VI)</text>
+      <text y="46" fill="#a7f3d0">✔ Storefront UI &amp; CartDrawer coded</text>
+      <text y="68" fill="#fca5a5">✖ StorefrontApp is NEVER mounted!</text>
+      <text y="90" fill="#fca5a5">✖ onOpenStorefront() is a blank no-op</text>
+      <text y="112" fill="#fca5a5">✖ Cart uses setTimeout with fake order</text>
+      <text y="134" fill="#f59e0b" font-size="11">GAP: Shoppers cannot order online yet!</text>
+      <rect x="0" y="146" width="248" height="20" rx="4" fill="#d97706" opacity="0.2"/>
+      <text x="124" y="160" fill="#fde68a" font-size="10.5" font-weight="700" text-anchor="middle">PHASE 2 FIX: ROUTING &amp; REAL ORDERS</text>
+    </g>
+  </g>
+
+  <!-- 5. RIDER COURIER PORTAL (AMBER) -->
+  <g transform="translate(1260, 168)" filter="url(#shadow)">
+    <rect width="280" height="235" rx="16" fill="url(#cardGrad)" stroke="#d97706" stroke-width="2"/>
+    <rect x="0" y="0" width="280" height="42" rx="16" fill="#451a03" opacity="0.4"/>
+    <circle cx="24" cy="21" r="5" fill="#f59e0b" filter="url(#glowAmber)"/>
+    <text x="38" y="25" fill="#ffffff" font-size="13.5" font-weight="800">5. RIDER COURIER APP</text>
+    <rect x="180" y="10" width="88" height="22" rx="6" fill="#f59e0b" opacity="0.2"/>
+    <text x="224" y="25" fill="#fbbf24" font-size="10.5" font-weight="800" text-anchor="middle">SIMULATED</text>
+
+    <!-- Content Items -->
+    <g transform="translate(16, 56)" font-size="12" fill="#cbd5e1">
+      <text y="0" font-weight="700" fill="#f8fafc">Path: <tspan fill="#38bdf8" font-family="monospace">/rider (RiderRoot)</tspan></text>
+      <text y="24" fill="#a7f3d0">✔ Rider Auth &amp; KYC Saved to DB</text>
+      <text y="46" fill="#a7f3d0">✔ Duty Toggle &amp; Turn-by-turn UI</text>
+      <text y="68" fill="#a7f3d0">✔ Delivery OTP Keypad Verification</text>
+      <text y="90" fill="#fca5a5">✖ Radar uses mockIncomingTrip timer!</text>
+      <text y="112" fill="#fca5a5">✖ Wallet uses fake past trips list</text>
+      <text y="134" fill="#f59e0b" font-size="11">GAP: Not linked to dispatched store orders!</text>
+      <rect x="0" y="146" width="248" height="20" rx="4" fill="#d97706" opacity="0.2"/>
+      <text x="124" y="160" fill="#fde68a" font-size="10.5" font-weight="700" text-anchor="middle">PHASE 3 FIX: REAL DISPATCH STREAM</text>
+    </g>
+  </g>
+
+  <!-- ==================== PART 2: THE CENTRAL DATABASE LAYER ==================== -->
+  <g transform="translate(60, 440)">
+    <!-- Central Cloud Database Box -->
+    <rect width="1480" height="230" rx="18" fill="#0c1527" stroke="#1e293b" stroke-width="2"/>
+    
+    <!-- Top Bar -->
+    <rect width="1480" height="42" rx="18" fill="#1e293b" opacity="0.5"/>
+    <text x="24" y="26" fill="#38bdf8" font-size="13" font-weight="800" letter-spacing="0.05em">PART 2: CENTRAL POSTGRESQL DATABASE &amp; DATA FLOW CONNECTIVITY</text>
+
+    <!-- Supabase Core Tables Badge Container -->
+    <g transform="translate(24, 56)">
+      <!-- Database Icon & Name -->
+      <rect width="260" height="150" rx="12" fill="#111c33" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="20" y="30" fill="#ffffff" font-size="15" font-weight="800">SUPABASE POSTGRESQL</text>
+      <text x="20" y="48" fill="#94a3b8" font-size="11.5">Project: iuhapakiuugqvbedjhef</text>
+
+      <g transform="translate(20, 68)" font-size="11" fill="#cbd5e1" font-family="monospace">
+        <text y="0">• public.tenants</text>
+        <text y="18">• public.catalog_products</text>
+        <text y="36">• public.store_orders + items</text>
+        <text y="54">• public.employees + sessions</text>
+        <text y="72">• public.riders + kyc_submissions</text>
+      </g>
+    </g>
+
+    <!-- Flow Connectors Inside Diagram -->
+    <!-- 1. Merchant Dashboard to Supabase: GREEN SOLID -->
+    <g transform="translate(320, 56)">
+      <rect width="260" height="65" rx="10" fill="#064e3b" stroke="#059669" stroke-width="1.2" opacity="0.8"/>
+      <text x="14" y="24" fill="#34d399" font-size="12" font-weight="800">MERCHANT FLOW: CONNECTED</text>
+      <text x="14" y="42" fill="#a7f3d0" font-size="11">Realtime catalog CRUD, orders &amp; staff.</text>
+      <text x="14" y="56" fill="#6ee7b7" font-size="10">postgres_changes stream active.</text>
+    </g>
+
+    <!-- 2. Till to Supabase: RED DASHED -->
+    <g transform="translate(610, 56)">
+      <rect width="260" height="65" rx="10" fill="#450a0a" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <text x="14" y="24" fill="#f87171" font-size="12" font-weight="800">TILL FLOW: BROKEN / ISOLATED</text>
+      <text x="14" y="42" fill="#fca5a5" font-size="11">Till reads seed.json, writes to localStorage.</text>
+      <text x="14" y="56" fill="#f87171" font-size="10">Missing: Hook useAppData to Supabase.</text>
+    </g>
+
+    <!-- 3. Storefront to Supabase: RED DASHED -->
+    <g transform="translate(900, 56)">
+      <rect width="260" height="65" rx="10" fill="#450a0a" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <text x="14" y="24" fill="#f87171" font-size="12" font-weight="800">STOREFRONT: BROKEN / ISOLATED</text>
+      <text x="14" y="42" fill="#fca5a5" font-size="11">Checkout runs setTimeout mock orders.</text>
+      <text x="14" y="56" fill="#f87171" font-size="10">Missing: INSERT INTO store_orders.</text>
+    </g>
+
+    <!-- 4. Rider to Supabase: RED DASHED -->
+    <g transform="translate(1190, 56)">
+      <rect width="265" height="65" rx="10" fill="#450a0a" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="5 3"/>
+      <text x="14" y="24" fill="#f87171" font-size="12" font-weight="800">RIDER DISPATCH: BROKEN / ISOLATED</text>
+      <text x="14" y="42" fill="#fca5a5" font-size="11">Radar listens to fake 2.5s timer.</text>
+      <text x="14" y="56" fill="#f87171" font-size="10">Missing: Stream dispatched store_orders.</text>
+    </g>
+
+    <!-- Missing Foundation Services Bottom Row -->
+    <g transform="translate(320, 140)">
+      <rect width="550" height="65" rx="10" fill="#141e33" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="16" y="25" fill="#f87171" font-size="12" font-weight="800">MISSING: SUPER ADMIN PORTAL (admin.counterpoint.app)</text>
+      <text x="16" y="44" fill="#94a3b8" font-size="11.5">No platform overview, global GMV aggregation, merchant KYC review, or rider approval panel.</text>
+    </g>
+
+    <g transform="translate(900, 140)">
+      <rect width="555" height="65" rx="10" fill="#141e33" stroke="#ef4444" stroke-width="1.2" stroke-dasharray="4 3"/>
+      <text x="16" y="25" fill="#f87171" font-size="12" font-weight="800">MISSING: PAYMENT GATEWAYS (PAYSTACK / FLUTTERWAVE)</text>
+      <text x="16" y="44" fill="#94a3b8" font-size="11.5">No live card checkout on Storefront, no webhook verification, no SaaS subscription billing.</text>
+    </g>
+  </g>
+
+  <!-- Flow Arrows connecting Part 1 surfaces to Part 2 DB -->
+  <!-- Merchant solid green arrow -->
+  <path d="M 500 405 L 500 440" stroke="#10b981" stroke-width="2.5" fill="none" marker-end="url(#arrowGreen)"/>
+  <!-- Till dashed amber arrow -->
+  <path d="M 800 405 L 800 440" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6 4" fill="none" marker-end="url(#arrowRed)"/>
+  <!-- Storefront dashed amber arrow -->
+  <path d="M 1100 405 L 1100 440" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6 4" fill="none" marker-end="url(#arrowRed)"/>
+  <!-- Rider dashed amber arrow -->
+  <path d="M 1400 405 L 1400 440" stroke="#ef4444" stroke-width="2.5" stroke-dasharray="6 4" fill="none" marker-end="url(#arrowRed)"/>
+
+  <!-- ==================== PART 3: 6-PHASE STRUCTURED IMPLEMENTATION ROADMAP ==================== -->
+  <g transform="translate(60, 705)">
+    <text x="0" y="0" fill="#38bdf8" font-size="13" font-weight="800" letter-spacing="0.08em">PART 3: STRUCTURED DELIVERY ROADMAP (EXECUTION PLAN)</text>
+
+    <!-- Phase 1 Card (CRITICAL) -->
+    <g transform="translate(0, 20)" filter="url(#shadow)">
+      <rect width="235" height="520" rx="14" fill="url(#cardGrad)" stroke="#3b82f6" stroke-width="1.8"/>
+      <rect width="235" height="38" rx="14" fill="#1e3a8a" opacity="0.6"/>
+      <text x="14" y="24" fill="#ffffff" font-size="13" font-weight="800">PHASE 1: TILL SYNC</text>
+      <rect x="155" y="8" width="68" height="20" rx="4" fill="#ef4444"/>
+      <text x="189" y="22" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">CRITICAL</text>
+
+      <g transform="translate(14, 52)" font-size="11.5" fill="#cbd5e1">
+        <text y="0" font-weight="700" fill="#60a5fa">GOAL: Bridge Till &amp; Cloud</text>
+        
+        <text y="24" fill="#ffffff" font-weight="600">Tasks:</text>
+        <text y="42" fill="#94a3b8">1. Tenant Till Binding:</text>
+        <text y="58">Bind till session to logged-</text>
+        <text y="74">in store tenant_id.</text>
+
+        <text y="98" fill="#94a3b8">2. Live Catalog Fetch:</text>
+        <text y="114">Replace seed.json in</text>
+        <text y="130">useAppData with Supabase</text>
+        <text y="146">catalog_products query.</text>
+
+        <text y="170" fill="#94a3b8">3. Cloud Sales Record:</text>
+        <text y="186">Insert completed till sales</text>
+        <text y="202">into store_orders table</text>
+        <text y="218">with channel='counter'.</text>
+
+        <text y="242" fill="#94a3b8">4. Live Stock Deduction:</text>
+        <text y="258">Decrement product stock</text>
+        <text y="274">in DB on every sale.</text>
+
+        <text y="298" fill="#94a3b8">5. Offline Fallback:</text>
+        <text y="314">Queue offline sales in</text>
+        <text y="330">IndexedDB, sync on online.</text>
+
+        <rect x="0" y="415" width="207" height="42" rx="8" fill="#1e293b"/>
+        <text x="103" y="432" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">DELIVERABLE:</text>
+        <text x="103" y="448" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">Unified Till &amp; Cloud DB</text>
+      </g>
+    </g>
+
+    <!-- Phase 2 Card -->
+    <g transform="translate(250, 20)" filter="url(#shadow)">
+      <rect width="235" height="520" rx="14" fill="url(#cardGrad)" stroke="#1e293b" stroke-width="1.5"/>
+      <rect width="235" height="38" rx="14" fill="#1e293b" opacity="0.6"/>
+      <text x="14" y="24" fill="#ffffff" font-size="13" font-weight="800">PHASE 2: STOREFRONT</text>
+      <rect x="155" y="8" width="68" height="20" rx="4" fill="#f59e0b"/>
+      <text x="189" y="22" fill="#000000" font-size="10" font-weight="800" text-anchor="middle">HIGH</text>
+
+      <g transform="translate(14, 52)" font-size="11.5" fill="#cbd5e1">
+        <text y="0" font-weight="700" fill="#38bdf8">GOAL: Real Customer Orders</text>
+
+        <text y="24" fill="#ffffff" font-weight="600">Tasks:</text>
+        <text y="42" fill="#94a3b8">1. Mount Storefront App:</text>
+        <text y="58">Route /store/:slug and</text>
+        <text y="74">wire onOpenStorefront().</text>
+
+        <text y="98" fill="#94a3b8">2. Fetch Real Catalog:</text>
+        <text y="114">Load active products by</text>
+        <text y="130">tenant slug from Supabase.</text>
+
+        <text y="154" fill="#94a3b8">3. Real Order Insertion:</text>
+        <text y="170">StorefrontCartDrawer</text>
+        <text y="186">inserts to store_orders &amp;</text>
+        <text y="202">order_items in DB.</text>
+
+        <text y="226" fill="#94a3b8">4. Customer Notification:</text>
+        <text y="242">Display order confirmation</text>
+        <text y="258">with live tracking link.</text>
+
+        <text y="282" fill="#94a3b8">5. Corridor Discovery:</text>
+        <text y="298">Query active tenants in</text>
+        <text y="314">MarketplaceStoresGrid.</text>
+
+        <rect x="0" y="415" width="207" height="42" rx="8" fill="#1e293b"/>
+        <text x="103" y="432" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">DELIVERABLE:</text>
+        <text x="103" y="448" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">Live Online Storefronts</text>
+      </g>
+    </g>
+
+    <!-- Phase 3 Card -->
+    <g transform="translate(500, 20)" filter="url(#shadow)">
+      <rect width="235" height="520" rx="14" fill="url(#cardGrad)" stroke="#1e293b" stroke-width="1.5"/>
+      <rect width="235" height="38" rx="14" fill="#1e293b" opacity="0.6"/>
+      <text x="14" y="24" fill="#ffffff" font-size="13" font-weight="800">PHASE 3: DISPATCH LOOP</text>
+      <rect x="155" y="8" width="68" height="20" rx="4" fill="#f59e0b"/>
+      <text x="189" y="22" fill="#000000" font-size="10" font-weight="800" text-anchor="middle">HIGH</text>
+
+      <g transform="translate(14, 52)" font-size="11.5" fill="#cbd5e1">
+        <text y="0" font-weight="700" fill="#38bdf8">GOAL: Real Courier Network</text>
+
+        <text y="24" fill="#ffffff" font-weight="600">Tasks:</text>
+        <text y="42" fill="#94a3b8">1. Real Radar Stream:</text>
+        <text y="58">Query store_orders where</text>
+        <text y="74">status = 'dispatched' &amp;</text>
+        <text y="90">courier_id IS NULL.</text>
+
+        <text y="114" fill="#94a3b8">2. Accept Trip RPC:</text>
+        <text y="130">Assign rider_id, generate</text>
+        <text y="146">4-digit delivery OTP.</text>
+
+        <text y="170" fill="#94a3b8">3. OTP Handover:</text>
+        <text y="186">Rider verifies customer OTP</text>
+        <text y="202">before marking delivered.</text>
+
+        <text y="226" fill="#94a3b8">4. Real Driver Wallet:</text>
+        <text y="242">Credit delivery fee &amp; tip to</text>
+        <text y="258">rider balance in DB.</text>
+
+        <text y="282" fill="#94a3b8">5. Merchant View:</text>
+        <text y="298">Show rider name &amp; phone</text>
+        <text y="314">on MerchantOrders panel.</text>
+
+        <rect x="0" y="415" width="207" height="42" rx="8" fill="#1e293b"/>
+        <text x="103" y="432" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">DELIVERABLE:</text>
+        <text x="103" y="448" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">End-to-End Delivery Loop</text>
+      </g>
+    </g>
+
+    <!-- Phase 4 Card -->
+    <g transform="translate(750, 20)" filter="url(#shadow)">
+      <rect width="235" height="520" rx="14" fill="url(#cardGrad)" stroke="#1e293b" stroke-width="1.5"/>
+      <rect width="235" height="38" rx="14" fill="#1e293b" opacity="0.6"/>
+      <text x="14" y="24" fill="#ffffff" font-size="13" font-weight="800">PHASE 4: SHIFTS &amp; X/Z</text>
+      <rect x="155" y="8" width="68" height="20" rx="4" fill="#64748b"/>
+      <text x="189" y="22" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">MEDIUM</text>
+
+      <g transform="translate(14, 52)" font-size="11.5" fill="#cbd5e1">
+        <text y="0" font-weight="700" fill="#38bdf8">GOAL: Cash Reconciliation</text>
+
+        <text y="24" fill="#ffffff" font-weight="600">Tasks:</text>
+        <text y="42" fill="#94a3b8">1. Opening Float Modal:</text>
+        <text y="58">Prompt cashier for initial</text>
+        <text y="74">drawer float on clock-in.</text>
+
+        <text y="98" fill="#94a3b8">2. Mid-Shift Cash Drop:</text>
+        <text y="114">Record cash removed from</text>
+        <text y="130">drawer to store safe.</text>
+
+        <text y="154" fill="#94a3b8">3. End-of-Day Z-Report:</text>
+        <text y="170">Calculate expected cash</text>
+        <text y="186">(Float + Sales - Drops) vs</text>
+        <text y="202">actual counted physical cash.</text>
+
+        <text y="226" fill="#94a3b8">4. Discrepancy Flagging:</text>
+        <text y="242">Alert manager if cash</text>
+        <text y="258">is over or short.</text>
+
+        <text y="282" fill="#94a3b8">5. Stock Audit History:</text>
+        <text y="298">Log all stock adjustments</text>
+        <text y="314">with timestamp &amp; reason.</text>
+
+        <rect x="0" y="415" width="207" height="42" rx="8" fill="#1e293b"/>
+        <text x="103" y="432" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">DELIVERABLE:</text>
+        <text x="103" y="448" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">Auditable Cash Drawer</text>
+      </g>
+    </g>
+
+    <!-- Phase 5 Card -->
+    <g transform="translate(1000, 20)" filter="url(#shadow)">
+      <rect width="235" height="520" rx="14" fill="url(#cardGrad)" stroke="#1e293b" stroke-width="1.5"/>
+      <rect width="235" height="38" rx="14" fill="#1e293b" opacity="0.6"/>
+      <text x="14" y="24" fill="#ffffff" font-size="13" font-weight="800">PHASE 5: SUPER ADMIN</text>
+      <rect x="155" y="8" width="68" height="20" rx="4" fill="#64748b"/>
+      <text x="189" y="22" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">MEDIUM</text>
+
+      <g transform="translate(14, 52)" font-size="11.5" fill="#cbd5e1">
+        <text y="0" font-weight="700" fill="#38bdf8">GOAL: Platform Oversight</text>
+
+        <text y="24" fill="#ffffff" font-weight="600">Tasks:</text>
+        <text y="42" fill="#94a3b8">1. Route: admin.domain:</text>
+        <text y="58">Role: platform_admin</text>
+        <text y="74">in auth.users metadata.</text>
+
+        <text y="98" fill="#94a3b8">2. Platform KPI Metrics:</text>
+        <text y="114">Global GMV across all stores,</text>
+        <text y="130">active tenants, total orders.</text>
+
+        <text y="154" fill="#94a3b8">3. Tenant Directory:</text>
+        <text y="170">Inspect stores, suspend</text>
+        <text y="186">delinquent accounts, verify.</text>
+
+        <text y="210" fill="#94a3b8">4. Courier KYC Approvals:</text>
+        <text y="226">Review NIN, driver license,</text>
+        <text y="242">approve/reject riders.</text>
+
+        <text y="266" fill="#94a3b8">5. Impersonation Tool:</text>
+        <text y="282">Log in as store owner for</text>
+        <text y="298">instant customer support.</text>
+
+        <rect x="0" y="415" width="207" height="42" rx="8" fill="#1e293b"/>
+        <text x="103" y="432" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">DELIVERABLE:</text>
+        <text x="103" y="448" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">Central Control Panel</text>
+      </g>
+    </g>
+
+    <!-- Phase 6 Card -->
+    <g transform="translate(1245, 20)" filter="url(#shadow)">
+      <rect width="235" height="520" rx="14" fill="url(#cardGrad)" stroke="#1e293b" stroke-width="1.5"/>
+      <rect width="235" height="38" rx="14" fill="#1e293b" opacity="0.6"/>
+      <text x="14" y="24" fill="#ffffff" font-size="13" font-weight="800">PHASE 6: PAYMENTS &amp; BILLING</text>
+      <rect x="155" y="8" width="68" height="20" rx="4" fill="#64748b"/>
+      <text x="189" y="22" fill="#ffffff" font-size="10" font-weight="800" text-anchor="middle">EXPANSION</text>
+
+      <g transform="translate(14, 52)" font-size="11.5" fill="#cbd5e1">
+        <text y="0" font-weight="700" fill="#38bdf8">GOAL: Commercial Revenue</text>
+
+        <text y="24" fill="#ffffff" font-weight="600">Tasks:</text>
+        <text y="42" fill="#94a3b8">1. Paystack Checkout:</text>
+        <text y="58">Embed Paystack inline on</text>
+        <text y="74">StorefrontCartDrawer.</text>
+
+        <text y="98" fill="#94a3b8">2. Webhook Ingestion:</text>
+        <text y="114">Listen to charge.success to</text>
+        <text y="130">mark store_order as paid.</text>
+
+        <text y="154" fill="#94a3b8">3. Split Settlements:</text>
+        <text y="170">Automated payout to store</text>
+        <text y="186">bank account minus 1.5% fee.</text>
+
+        <text y="210" fill="#94a3b8">4. SaaS Subscriptions:</text>
+        <text y="226">Starter (Free) vs Pro (₦15k/m)</text>
+        <text y="242">recurring card charge.</text>
+
+        <text y="266" fill="#94a3b8">5. Multi-Branch Support:</text>
+        <text y="282">Add branches &amp; registers</text>
+        <text y="298">tables for retail chains.</text>
+
+        <rect x="0" y="415" width="207" height="42" rx="8" fill="#1e293b"/>
+        <text x="103" y="432" fill="#38bdf8" font-size="10.5" font-weight="700" text-anchor="middle">DELIVERABLE:</text>
+        <text x="103" y="448" fill="#e2e8f0" font-size="10" font-weight="600" text-anchor="middle">Automated SaaS Revenue</text>
+      </g>
+    </g>
+  </g>
+
+  <!-- Footer note -->
+  <text x="800" y="1285" fill="#64748b" font-size="12" font-weight="500" text-anchor="middle">Subtech SaaS Architecture · Built for Figma &amp; Draw.io Import · Updated Oct 2026</text>
+</svg>

@@ -11,6 +11,14 @@ export const EMPLOYEE_TYPES = [
   }
 ];
 
+export const TILL_ROLES = [
+  { value: 'Sales Representative', label: 'Sales Representative (Max 5% discount, sell only)' },
+  { value: 'Supervisor', label: 'Supervisor (Max 10% discount, inventory checks)' },
+  { value: 'Manager', label: 'Manager (Max 20% discount, void sales, manage stock)' },
+  { value: 'Store Admin', label: 'Store Admin (Full register & staff permissions)' }
+];
+
 export function isValidPin(pin) {
   return /^[0-9]{4,6}$/.test(String(pin || ''));
 }
+

@@ -67,20 +67,26 @@ export default function LoginScreen({ employees, setEmployees, onLogin }) {
         }
         if (!hostSlug) setTillStoreSlug(slug);
         if (result.data.trading_name) setTillStoreName(result.data.trading_name);
+        const assignedRole = result.data.till_role || 'Sales Representative';
         const shadow = localMatch
-          ? { ...localMatch, name: result.data.full_name }
+          ? {
+              ...localMatch,
+              name: result.data.full_name,
+              role: assignedRole,
+              token: result.data.token,
+              tenantId: result.data.tenant_id
+            }
           : {
               id: `sb-${result.data.employee_id}`,
               name: result.data.full_name,
-              // Store-dashboard staff have no till-specific role yet — Manager
-              // gives full standard operating rights (sell, void, discount,
-              // manage inventory) without a special "admin" label.
-              role: 'Manager',
+              role: assignedRole,
               pin: null,
               status: 'active',
               source: 'supabase',
               supabaseId: result.data.employee_id,
-              description: 'Synced from the store dashboard.'
+              token: result.data.token,
+              tenantId: result.data.tenant_id,
+              description: `Synced from ${result.data.trading_name || 'store dashboard'}.`
             };
         if (!localMatch) setEmployees([...employees, shadow]);
         setPin('');

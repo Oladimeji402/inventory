@@ -10,28 +10,41 @@
 .lp-brand-mark {
   width: 34px;
   height: 34px;
-  background: #2b7cff;
-  border-radius: 9px;
+  background: linear-gradient(180deg, #2B7CFF 0%, #1664e8 100%);
+  border-radius: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+  box-shadow: 0 4px 12px rgba(43, 124, 255, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.lp-brand:hover .lp-brand-mark {
+  transform: scale(1.05);
+  box-shadow: 0 6px 16px rgba(43, 124, 255, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+}
+
+.lp-brand:active .lp-brand-mark {
+  transform: scale(0.95);
 }
 
 .lp-brand-name {
-  font-size: 16px;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+  font-size: 16.5px;
   font-weight: 700;
-  color: #0a0a0a;
-  letter-spacing: -0.02em;
+  color: #1d1d1f;
+  letter-spacing: -0.025em;
 }
 
 .lp-brand-tag {
   font-size: 11px;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: #a3a3a3;
-  padding: 2px 7px;
-  border: 1px solid #e5e5e5;
-  border-radius: 5px;
+  color: #86868b;
+  padding: 3px 8px;
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 980px;
 }

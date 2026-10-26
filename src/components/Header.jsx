@@ -1,5 +1,18 @@
 import { useEffect, useState } from 'react';
-import { LogOut, ArrowLeft, Receipt, Package, ClipboardList, Download, WifiOff, CloudOff, Calendar, Clock } from 'lucide-react';
+import { 
+  LogOut, 
+  ArrowLeft, 
+  Receipt, 
+  Package, 
+  ClipboardList, 
+  Download, 
+  WifiOff, 
+  CloudOff, 
+  Calendar, 
+  Clock,
+  ArrowDownCircle,
+  FileSpreadsheet
+} from 'lucide-react';
 import Logo from './Logo';
 import { BRAND } from '../config/brand';
 import { appLinks } from '../config/surfaces';
@@ -13,7 +26,16 @@ function initialsOf(name) {
   return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
 }
 
-export default function Header({ session, tab, onChangeTab, onClockOut, onExit, lowStockCount }) {
+export default function Header({ 
+  session, 
+  tab, 
+  onChangeTab, 
+  onClockOut, 
+  onOpenCashDrop,
+  onOpenXReport,
+  onExit, 
+  lowStockCount 
+}) {
   const { isInstallable, isOffline, syncStatus, openInstallModal } = usePwa();
   const pendingSync = !isOffline && syncStatus?.pending > 0;
   const [now, setNow] = useState(() => new Date());
@@ -99,7 +121,18 @@ export default function Header({ session, tab, onChangeTab, onClockOut, onExit, 
           </div>
         </div>
 
-        <button className="pos-header-icon-btn" onClick={onClockOut} title="Clock out">
+        {onOpenCashDrop && (
+          <button className="pos-header-icon-btn" onClick={onOpenCashDrop} title="Safe Drop (Transfer cash to store safe)">
+            <ArrowDownCircle size={16} />
+          </button>
+        )}
+        {onOpenXReport && (
+          <button className="pos-header-icon-btn" onClick={onOpenXReport} title="Interim X-Report (Cash Drawer reading)">
+            <FileSpreadsheet size={16} />
+          </button>
+        )}
+
+        <button className="pos-header-icon-btn" onClick={onClockOut} title="Clock out & Close Shift (Z-Report)">
           <LogOut size={16} />
         </button>
         <button

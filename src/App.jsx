@@ -3,10 +3,21 @@ import { can, canSignIn, maxDiscount as maxDiscountFor } from './data/permission
 import { useAppData } from './hooks/useAppData';
 import { naira } from './lib/format';
 import { clearTillDraft, loadTillDraft, saveTillDraft } from './services/sessionDraft';
+import { clearActiveStaffSession } from './lib/staffAuth';
+import { 
+  openStaffShift, 
+  recordCashDrop, 
+  getCurrentShiftReport, 
+  closeStaffShift, 
+  getLocalShift 
+} from './services/shift';
 import LoadingScreen from './components/LoadingScreen';
 import LoginScreen from './components/LoginScreen';
 import Header from './components/Header';
 import ReceiptModal from './components/ReceiptModal';
+import ShiftModal from './components/till/ShiftModal';
+import CashDropModal from './components/till/CashDropModal';
+import XZReportModal from './components/till/XZReportModal';
 import SalesTab from './components/SalesTab';
 import InventoryTab from './components/InventoryTab';
 import ReportsTab from './components/ReportsTab';
@@ -26,6 +37,10 @@ function createInitialTillState() {
 }
 
 export default function App({ onExit }) {
+  const initialTill = useRef(createInitialTillState()).current;
+  const [session, setSession] = useState(null);
+  const sessionToken = session?.employee?.token || null;
+
   const {
     loading,
     products,
@@ -37,10 +52,7 @@ export default function App({ onExit }) {
     recordSale,
     removeSale,
     logActivity,
-  } = useAppData();
-
-  const initialTill = useRef(createInitialTillState()).current;
-  const [session, setSession] = useState(null);
+  } = useAppData(sessionToken);
   const [cart, setCart] = useState(initialTill.cart);
   const [search, setSearch] = useState('');
   const [tab, setTab] = useState('pos');
@@ -53,6 +65,10 @@ export default function App({ onExit }) {
   const [pendingVoidId, setPendingVoidId] = useState(null);
   const [lastReceipt, setLastReceipt] = useState(null);
   const [heldSales, setHeldSales] = useState(initialTill.heldSales);
+  const [showShiftModal, setShowShiftModal] = useState(false);
+  const [showCashDropModal, setShowCashDropModal] = useState(false);
+  const [xzModalMode, setXzModalMode] = useState(null);
+  const [shiftReport, setShiftReport] = useState({});
   const draftRestored = useRef(false);
 
   const role = session?.employee?.role;
@@ -177,12 +193,56 @@ export default function App({ onExit }) {
     setSession({ employee, clockIn: new Date() });
     logActivity(`${employee.name} clocked in`, 'shift');
     flash(`Welcome, ${employee.name}`);
+    if (!getLocalShift()) {
+      setShowShiftModal(true);
+    }
+  }
+
+  async function handleConfirmOpenShift(floatAmt) {
+    await openStaffShift(sessionToken, floatAmt);
+    setShowShiftModal(false);
+    flash(`Opening float of ${naira(floatAmt)} recorded. Shift active.`);
+  }
+
+  function handleOpenCashDrop() {
+    setShowCashDropModal(true);
+  }
+
+  async function handleConfirmCashDrop({ amount, reason, authorizedBy }) {
+    await recordCashDrop(sessionToken, amount, reason, authorizedBy);
+    setShowCashDropModal(false);
+    logActivity(`${session.employee.name} recorded safe drop of ${naira(amount)}`, 'shift');
+    flash(`Safe drop of ${naira(amount)} recorded.`);
+  }
+
+  async function handleOpenXReport() {
+    const res = await getCurrentShiftReport(sessionToken, sales);
+    setShiftReport(res?.data || {});
+    setXzModalMode('X');
+  }
+
+  async function handlePromptClockOut() {
+    const activeShift = getLocalShift();
+    if (activeShift) {
+      const res = await getCurrentShiftReport(sessionToken, sales);
+      setShiftReport(res?.data || {});
+      setXzModalMode('Z');
+    } else {
+      clockOut();
+    }
+  }
+
+  async function handleConfirmCloseShift(actualCash, notes) {
+    await closeStaffShift(sessionToken, actualCash, notes, sales);
+    setXzModalMode(null);
+    clockOut();
   }
 
   function clockOut() {
     if (!session) return;
     logActivity(`${session.employee.name} clocked out`, 'shift');
     setSession(null);
+    clearActiveStaffSession();
     resetSaleForm();
     setHeldSales([]);
     setCategoryFilter('All');
@@ -248,6 +308,7 @@ export default function App({ onExit }) {
       const item = cart.find((entry) => entry.id === product.id);
       return item ? { ...product, stock: product.stock - item.qty } : product;
     });
+
     setProducts(nextProducts);
 
     const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
@@ -269,7 +330,7 @@ export default function App({ onExit }) {
       savedOffline: offline
     };
 
-    recordSale(sale);
+    recordSale(sale, sessionToken);
     logActivity(
       `${session.employee.name} completed ${sale.id} for ${naira(total)}${offline ? ' (saved offline on this device)' : ''}`,
       'sale'
@@ -434,7 +495,9 @@ export default function App({ onExit }) {
         session={session}
         tab={tab}
         onChangeTab={changeTab}
-        onClockOut={clockOut}
+        onClockOut={handlePromptClockOut}
+        onOpenCashDrop={handleOpenCashDrop}
+        onOpenXReport={handleOpenXReport}
         onExit={leaveTill}
         lowStockCount={lowStock.length}
       />
@@ -442,6 +505,31 @@ export default function App({ onExit }) {
       {toast && <div className="toast">{toast}</div>}
 
       <ReceiptModal receipt={lastReceipt} onClose={() => setLastReceipt(null)} />
+
+      {showShiftModal && (
+        <ShiftModal
+          cashierName={session?.employee?.name || 'Cashier'}
+          onOpenShift={handleConfirmOpenShift}
+        />
+      )}
+
+      {showCashDropModal && (
+        <CashDropModal
+          onConfirmDrop={handleConfirmCashDrop}
+          onCancel={() => setShowCashDropModal(false)}
+          currentExpectedCash={shiftReport?.expectedCash || 10000}
+        />
+      )}
+
+      {xzModalMode && (
+        <XZReportModal
+          mode={xzModalMode}
+          reportData={shiftReport}
+          cashierName={session?.employee?.name || 'Cashier'}
+          onClose={() => setXzModalMode(null)}
+          onConfirmCloseShift={handleConfirmCloseShift}
+        />
+      )}
 
       {tab === 'pos' && (
         <SalesTab

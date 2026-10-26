@@ -15,19 +15,26 @@ import {
   Bike
 } from 'lucide-react';
 
-export default function RiderApp({ onExitToLanding }) {
+import { acceptDispatch } from '../../services/rider';
+
+export default function RiderApp({ rider, profile, onExitToLanding }) {
   const [currentTab, setCurrentTab] = useState('radar'); // 'radar' | 'trip' | 'wallet' | 'profile'
   const [isOnline, setIsOnline] = useState(true);
   const [activeTrip, setActiveTrip] = useState(null);
   const [walletBalance, setWalletBalance] = useState(18450);
 
-  const handleAcceptTrip = (trip) => {
-    setActiveTrip(trip);
+  const handleAcceptTrip = async (trip) => {
+    try {
+      const res = await acceptDispatch(trip.orderId);
+      setActiveTrip(res?.data || trip);
+    } catch {
+      setActiveTrip(trip);
+    }
     setCurrentTab('trip');
   };
 
   const handleTripCompleted = (trip) => {
-    setWalletBalance(prev => prev + trip.fare + trip.tip);
+    setWalletBalance(prev => prev + (trip.fare || 1850) + (trip.tip || 0));
     setActiveTrip(null);
     setCurrentTab('wallet');
   };

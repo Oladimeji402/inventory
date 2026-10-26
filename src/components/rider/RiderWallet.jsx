@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Wallet, 
   CreditCard, 
@@ -17,23 +17,52 @@ const mockPastTrips = [
   { id: 'TRIP-398', store: 'Apex Health Pharmacy', customer: 'Tolu A. (Bourdillon Rd)', fare: 1950, tip: 400, time: '8:50 AM' },
 ];
 
+import { fetchRiderWallet, cashoutRiderWallet } from '../../services/rider';
+
 export default function RiderWallet({ walletBalance = 18450, onCashoutSuccess }) {
   const [balance, setBalance] = useState(walletBalance);
-  const [trips, setTrips] = useState(mockPastTrips);
+  const [trips, setTrips] = useState([]);
+  const [bankInfo, setBankInfo] = useState({ bankName: 'Guaranty Trust Bank', accountNumber: '0192837465' });
   const [isCashingOut, setIsCashingOut] = useState(false);
   const [cashoutDone, setCashoutDone] = useState(false);
 
   const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
 
-  const handleCashout = () => {
+  useEffect(() => {
+    let isMounted = true;
+    async function loadWallet() {
+      const res = await fetchRiderWallet();
+      if (!isMounted) return;
+      if (res?.data) {
+        setBalance(res.data.balance ?? walletBalance);
+        if (res.data.trips?.length > 0) {
+          setTrips(res.data.trips);
+        } else {
+          setTrips(mockPastTrips);
+        }
+        if (res.data.bankName) {
+          setBankInfo({ bankName: res.data.bankName, accountNumber: res.data.accountNumber });
+        }
+      }
+    }
+    loadWallet();
+    return () => { isMounted = false; };
+  }, [walletBalance]);
+
+  const handleCashout = async () => {
     if (balance <= 0) return;
     setIsCashingOut(true);
-    setTimeout(() => {
+    try {
+      await cashoutRiderWallet(bankInfo.bankName, bankInfo.accountNumber);
       setIsCashingOut(false);
       setCashoutDone(true);
       setBalance(0);
+      if (onCashoutSuccess) onCashoutSuccess();
       setTimeout(() => setCashoutDone(false), 4000);
-    }, 1200);
+    } catch (err) {
+      console.warn('Cashout error:', err);
+      setIsCashingOut(false);
+    }
   };
 
   return (

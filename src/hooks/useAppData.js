@@ -10,33 +10,37 @@ const initialState = {
   syncStatus: store.getSyncStatus()
 };
 
-export function useAppData() {
+export function useAppData(sessionToken = null) {
   const [state, setState] = useState(initialState);
 
+  const loadData = useCallback(async (token) => {
+    try {
+      const [products, employees, sales, auditLog] = await Promise.all([
+        store.getProducts(token),
+        store.getEmployees(),
+        store.getSales(),
+        store.getAuditLog()
+      ]);
+      setState((current) => ({
+        ...current,
+        loading: false,
+        products,
+        employees,
+        sales,
+        auditLog,
+        syncStatus: store.getSyncStatus()
+      }));
+    } catch (error) {
+      console.error('Failed to load till data', error);
+      setState((current) => ({ ...current, loading: false, syncStatus: store.getSyncStatus() }));
+    }
+  }, []);
+
   useEffect(() => {
-    let cancelled = false;
-    Promise.all([store.getProducts(), store.getEmployees(), store.getSales(), store.getAuditLog()])
-      .then(([products, employees, sales, auditLog]) => {
-        if (cancelled) return;
-        setState((current) => ({
-          ...current,
-          loading: false,
-          products,
-          employees,
-          sales,
-          auditLog,
-          syncStatus: store.getSyncStatus()
-        }));
-      })
-      .catch((error) => {
-        console.error('Failed to load local till data', error);
-        if (!cancelled) {
-          setState((current) => ({ ...current, loading: false, syncStatus: store.getSyncStatus() }));
-        }
-      });
+    loadData(sessionToken);
 
     const unsubscribe = store.subscribeSyncStatus((syncStatus) => {
-      if (!cancelled) setState((current) => ({ ...current, syncStatus }));
+      setState((current) => ({ ...current, syncStatus }));
     });
 
     const flush = () => {
@@ -45,11 +49,10 @@ export function useAppData() {
     window.addEventListener('online', flush);
 
     return () => {
-      cancelled = true;
       unsubscribe();
       window.removeEventListener('online', flush);
     };
-  }, []);
+  }, [sessionToken, loadData]);
 
   const setProducts = useCallback((next) => {
     store.saveProducts(next);
@@ -61,15 +64,16 @@ export function useAppData() {
     setState((current) => ({ ...current, employees: next, syncStatus: store.getSyncStatus() }));
   }, []);
 
-  const recordSale = useCallback(async (sale) => {
-    const result = await store.addSale(sale);
+  const recordSale = useCallback(async (sale, tokenOverride = null) => {
+    const token = tokenOverride || sessionToken;
+    const result = await store.addSale(sale, token);
     setState((current) => ({
       ...current,
       sales: [sale, ...current.sales],
       syncStatus: store.getSyncStatus()
     }));
     return result;
-  }, []);
+  }, [sessionToken]);
 
   const removeSale = useCallback((saleId) => {
     store.deleteSale(saleId);

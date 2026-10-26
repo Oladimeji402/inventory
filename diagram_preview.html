@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subtech Architecture &amp; Delivery Roadmap</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #070a12;
+      color: #f8fafc;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+    header {
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #2563eb, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 18px;
+      color: #fff;
+    }
+    .title-group h1 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+    .title-group p {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .btn {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid transparent;
+    }
+    .btn-primary {
+      background: #2563eb;
+      color: #fff;
+    }
+    .btn-primary:hover { background: #1d4ed8; }
+    .btn-secondary {
+      background: #1e293b;
+      color: #cbd5e1;
+      border-color: #334155;
+    }
+    .btn-secondary:hover { background: #334155; color: #fff; }
+    .instructions-bar {
+      background: #0b1329;
+      border-bottom: 1px solid #1e3a8a;
+      padding: 10px 24px;
+      font-size: 12.5px;
+      color: #93c5fd;
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+    .instructions-bar strong { color: #fff; }
+    .viewport {
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 30px;
+      overflow: auto;
+      background: radial-gradient(circle at 50% 20%, #0d1830 0%, #070a12 70%);
+    }
+    .svg-container {
+      background: #090d16;
+      border-radius: 20px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.7), 0 0 0 1px #1e293b;
+      overflow: hidden;
+      max-width: 1600px;
+      width: 100%;
+    }
+    .svg-container svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <div class="brand-mark">S</div>
+      <div class="title-group">
+        <h1>Subtech Ecosystem Audit &amp; 6-Phase Delivery Roadmap</h1>
+        <p>Interactive System Architecture Diagram</p>
+      </div>
+    </div>
+    <div class="actions">
+      <a href="https://app.diagrams.net/" target="_blank" class="btn btn-primary">
+        <span>Open in Draw.io</span> →
+      </a>
+      <a href="./counterpoint_architecture_roadmap.drawio" download class="btn btn-secondary">
+        ⬇ Download .drawio File
+      </a>
+      <a href="./counterpoint_architecture_roadmap.svg" download class="btn btn-secondary">
+        ⬇ Download .svg (for Figma)
+      </a>
+    </div>
+  </header>
+
+  <div class="instructions-bar">
+    <div><strong>🎨 To open in Figma:</strong> Drag and drop <code>counterpoint_architecture_roadmap.svg</code> directly onto any Figma canvas — all shapes, text, and colors are 100% editable layers.</div>
+    <div><strong>📐 To open in Draw.io:</strong> Visit <a href="https://app.diagrams.net" target="_blank" style="color:#60a5fa;">app.diagrams.net</a> and choose <em>"Open Existing Diagram"</em> &gt; select <code>counterpoint_architecture_roadmap.drawio</code>.</div>
+  </div>
+
+  <div class="viewport">
+    <div class="svg-container">
+      <!-- Directly embed the visual SVG -->
+      <object data="./counterpoint_architecture_roadmap.svg" type="image/svg+xml" style="width:100%; height:auto; display:block;"></object>
+    </div>
+  </div>
+</body>
+</html>

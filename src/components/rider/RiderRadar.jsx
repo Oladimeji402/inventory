@@ -11,21 +11,7 @@ import {
   Sparkles
 } from 'lucide-react';
 
-const mockIncomingTrip = {
-  orderId: 'ORD-9821',
-  storeName: 'Apex Health Pharmacy',
-  storeAddress: 'Plot 12, Isaac John St, Ikeja GRA',
-  storePhone: '+234 803 291 0029',
-  customerName: 'Amara Kalu',
-  customerAddress: 'Apt 4B, Admiralty Way, Lekki Phase 1',
-  customerPhone: '+234 802 119 4482',
-  distanceKm: '2.4 km',
-  estimatedMinutes: 18,
-  fare: 1850,
-  tip: 300,
-  itemsSummary: '1x Amoxicillin 500mg, 1x Vitamin C 1000mg',
-  otp: '3819'
-};
+import { fetchAvailableDispatches } from '../../services/rider';
 
 export default function RiderRadar({ isOnline, onAcceptTrip }) {
   const [incomingOffer, setIncomingOffer] = useState(null);
@@ -33,19 +19,31 @@ export default function RiderRadar({ isOnline, onAcceptTrip }) {
 
   const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
 
-  // Simulate an incoming trip after rider goes online
+  // Scan for real/mock dispatches when online
   useEffect(() => {
     if (!isOnline) {
       setIncomingOffer(null);
       return;
     }
 
-    const timer = setTimeout(() => {
-      setIncomingOffer(mockIncomingTrip);
-      setCountdown(30);
-    }, 2500);
+    let isMounted = true;
+    const checkDispatches = async () => {
+      const res = await fetchAvailableDispatches();
+      if (!isMounted) return;
+      if (res?.data && res.data.length > 0) {
+        setIncomingOffer(res.data[0]);
+        setCountdown(30);
+      }
+    };
 
-    return () => clearTimeout(timer);
+    const initialTimer = setTimeout(checkDispatches, 2000);
+    const interval = setInterval(checkDispatches, 15000);
+
+    return () => {
+      isMounted = false;
+      clearTimeout(initialTimer);
+      clearInterval(interval);
+    };
   }, [isOnline]);
 
   // Countdown timer for incoming trip offer

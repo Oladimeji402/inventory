@@ -103,16 +103,41 @@ const defaultCatalog = [
   }
 ];
 
+import { fetchStorefrontStore, fetchStorefrontCatalog } from '../../services/storefront';
+
 export default function StorefrontApp({ 
+  storeSlug = 'apex-pharmacy',
   storeProfile = defaultStoreProfile, 
   onExitToLanding 
 }) {
+  const [profile, setProfile] = useState(storeProfile);
   const [catalog, setCatalog] = useState(defaultCatalog);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [confirmedOrder, setConfirmedOrder] = useState(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function loadStore() {
+      if (!storeSlug) return;
+      setLoading(true);
+      const [remoteStore, remoteProducts] = await Promise.all([
+        fetchStorefrontStore(storeSlug),
+        fetchStorefrontCatalog(storeSlug)
+      ]);
+      if (cancelled) return;
+      if (remoteStore) setProfile(prev => ({ ...prev, ...remoteStore }));
+      if (Array.isArray(remoteProducts) && remoteProducts.length > 0) {
+        setCatalog(remoteProducts);
+      }
+      setLoading(false);
+    }
+    loadStore();
+    return () => { cancelled = true; };
+  }, [storeSlug]);
 
   // Cart operations
   const handleAddToCart = (product) => {
@@ -166,7 +191,7 @@ export default function StorefrontApp({
     <div className="storefront-root">
       {/* Sticky Top Header */}
       <StorefrontHeader 
-        storeProfile={storeProfile}
+        storeProfile={profile}
         cartCount={totalCartCount}
         onOpenCart={() => setIsCartOpen(true)}
         onExitToLanding={onExitToLanding}
@@ -178,32 +203,32 @@ export default function StorefrontApp({
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ fontSize: '12px', fontWeight: 700, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '3px 10px', borderRadius: '100px' }}>
-                {storeProfile.category}
+                {profile.category}
               </span>
               <span style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '12.5px', fontWeight: 700, color: '#f59e0b' }}>
                 <Star size={13} fill="#f59e0b" color="#f59e0b" />
-                {storeProfile.rating} ({storeProfile.reviewsCount}+ reviews)
+                {profile.rating || '4.9'} ({profile.reviewsCount || '140'}+ reviews)
               </span>
             </div>
 
             <h2 style={{ fontSize: '22px', fontWeight: 800, margin: '8px 0 2px', letterSpacing: '-0.02em', color: '#0a0a0a' }}>
-              {storeProfile.name}
+              {profile.name}
             </h2>
 
             <div className="sf-banner-meta">
               <div className="sf-banner-meta-item">
                 <MapPin size={13} color="#2B7CFF" />
-                <span>{storeProfile.address}</span>
+                <span>{profile.address}</span>
               </div>
               <div className="sf-banner-meta-item">
                 <Clock size={13} color="#2B7CFF" />
-                <span>Delivery: {storeProfile.deliveryTime}</span>
+                <span>Delivery: {profile.deliveryTime}</span>
               </div>
             </div>
           </div>
 
           <a 
-            href={`https://wa.me/${storeProfile.whatsapp.replace(/[^0-9]/g, '')}`} 
+            href={`https://wa.me/${(profile.whatsapp || '').replace(/[^0-9]/g, '')}`} 
             target="_blank" 
             rel="noopener noreferrer"
             style={{
@@ -299,6 +324,8 @@ export default function StorefrontApp({
         onUpdateQuantity={handleUpdateQuantity}
         onClearCart={handleClearCart}
         onCheckoutComplete={handleCheckoutComplete}
+        storeSlug={storeSlug}
+        storeProfile={profile}
       />
 
       {/* Order Confirmed & Real-Time Tracking Modal */}

@@ -5,6 +5,7 @@ import { appLinks } from '../../config/surfaces';
 
 const links = [
   { label: 'Platform',  href: '#ecosystem' },
+  { label: 'Marketplace', href: '/shop', isRoute: true },
   { label: 'Live Demo', href: '#live-demo' },
   { label: 'Pricing',   href: '#pricing' },
   { label: 'FAQ',       href: '#faq' },
@@ -20,10 +21,11 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
-  const smooth = (e, href) => {
+  const smooth = (e, link) => {
+    if (link.isRoute) return; // allow normal link navigation
     e.preventDefault();
     setOpen(false);
-    document.querySelector(href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelector(link.href)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   };
 
   return (
@@ -41,13 +43,17 @@ export default function Navbar() {
           <ul className="lp-nav-links">
             {links.map(l => (
               <li key={l.label}>
-                <a href={l.href} onClick={e => smooth(e, l.href)}>{l.label}</a>
+                <a href={l.href} onClick={e => smooth(e, l)}>{l.label}</a>
               </li>
             ))}
           </ul>
 
           {/* Desktop actions */}
           <div className="lp-nav-actions">
+            <div className="lp-nav-status-badge">
+              <span className="lp-nav-status-dot" />
+              <span>Live Network · 99.98% SLA</span>
+            </div>
             <a
               className="lp-btn-primary"
               style={{ padding: '9px 20px', fontSize: 14 }}
@@ -73,7 +79,7 @@ export default function Navbar() {
       {open && (
         <div className="lp-mobile-drawer">
           {links.map(l => (
-            <a key={l.label} href={l.href} onClick={e => smooth(e, l.href)}>
+            <a key={l.label} href={l.href} onClick={e => smooth(e, l)}>
               {l.label}
             </a>
           ))}

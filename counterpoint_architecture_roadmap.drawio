@@ -1,0 +1,139 @@
+<mxfile host="app.diagrams.net" modified="2026-10-24T13:42:00.000Z" agent="Subtech" version="24.0.0" type="device">
+  <diagram id="subtech-roadmap" name="Subtech Architecture &amp; Delivery Roadmap">
+    <mxGraphModel dx="1600" dy="1200" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1300" background="#0B1120" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+
+        <!-- HEADER TITLE -->
+        <mxCell id="header_title" value="&lt;b&gt;SUBTECH / COUNTERPOINT — ARCHITECTURE AUDIT &amp;amp; 6-PHASE ROADMAP&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#94A3B8&quot;&gt;Current System State, Data Disconnects, and Complete Execution Plan&lt;/font&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=18;fontColor=#FFFFFF;" vertex="1" parent="1">
+          <mxGeometry x="50" y="30" width="800" height="50" as="geometry" />
+        </mxCell>
+
+        <!-- LEGEND PILLS -->
+        <mxCell id="leg_working" value="&lt;b&gt;● 100% WORKING&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#064E3B;strokeColor=#10B981;fontColor=#A7F3D0;fontSize=11;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="980" y="35" width="150" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_mocked" value="&lt;b&gt;▲ MOCKED / DISCONNECTED&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#451A03;strokeColor=#F59E0B;fontColor=#FDE68A;fontSize=11;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1145" y="35" width="180" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="leg_missing" value="&lt;b&gt;✕ NOT STARTED&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#450A0A;strokeColor=#EF4444;fontColor=#FECACA;fontSize=11;strokeWidth=1.5;" vertex="1" parent="1">
+          <mxGeometry x="1340" y="35" width="140" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- SECTION 1 HEADER -->
+        <mxCell id="sec1_title" value="&lt;b&gt;PART 1: THE 5 APPLICATION SURFACES (CURRENT CODEBASE STATE)&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#38BDF8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="95" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- 1. MARKETING SURFACE -->
+        <mxCell id="card_marketing" value="&lt;b&gt;1. MARKETING &amp;amp; PUBLIC&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#34D399&quot;&gt;[STATUS: 100% WORKING]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;• &lt;b&gt;LandingPage&lt;/b&gt; (/)&lt;br&gt;• Hero Subdomain Claim Check&lt;br&gt;• Interactive Live Demo Widget&lt;br&gt;• Savings / Earnings Calculator&lt;br&gt;• Pricing, Testimonials, FAQ&lt;br&gt;• 8/8 Test Suites Passing (100%)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#10B981;fontColor=#CBD5E1;fontSize=12;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="50" y="130" width="260" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- 2. MERCHANT DASHBOARD -->
+        <mxCell id="card_merchant" value="&lt;b&gt;2. MERCHANT DASHBOARD&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#34D399&quot;&gt;[STATUS: SUPABASE CONNECTED]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;• &lt;b&gt;MerchantRoot&lt;/b&gt; (/dashboard)&lt;br&gt;• Supabase Auth &amp;amp; Store Setup&lt;br&gt;• Real Catalog CRUD &amp;amp; Image Bucket&lt;br&gt;• Live Order Stream (Postgres)&lt;br&gt;• Staff PIN Management (pgcrypto)&lt;br&gt;• Customer CRM &amp;amp; Dynamic Analytics&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#10B981;fontColor=#CBD5E1;fontSize=12;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="340" y="130" width="260" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- 3. TILL / POS -->
+        <mxCell id="card_till" value="&lt;b&gt;3. TILL / POINT OF SALE&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#F59E0B&quot;&gt;[STATUS: DISCONNECTED FROM DB]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;• &lt;b&gt;TillApp&lt;/b&gt; (/till)&lt;br&gt;• PIN Clock-in (Supabase RPC)&lt;br&gt;• Fast Cart, Held Sales &amp;amp; Discounts&lt;br&gt;• Cash Denominations &amp;amp; Receipts&lt;br&gt;&lt;font color=&quot;#EF4444&quot;&gt;✖ Products load from seed.json!&lt;br&gt;✖ Sales write only to localStorage!&lt;br&gt;✖ Does NOT deduct cloud stock!&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#F59E0B;fontColor=#CBD5E1;fontSize=12;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="630" y="130" width="260" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- 4. STOREFRONT -->
+        <mxCell id="card_shop" value="&lt;b&gt;4. MARKETPLACE &amp;amp; STOREFRONT&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#F59E0B&quot;&gt;[STATUS: UNMOUNTED &amp;amp; MOCKED]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;• &lt;b&gt;MarketplaceApp&lt;/b&gt; (/shop)&lt;br&gt;• Corridor Discovery (Ikeja, Lekki)&lt;br&gt;&lt;font color=&quot;#EF4444&quot;&gt;✖ StorefrontApp is NEVER mounted!&lt;br&gt;✖ onOpenStorefront() is a blank no-op&lt;br&gt;✖ Hardcoded catalog &amp;amp; store profile&lt;br&gt;✖ Checkout uses setTimeout mock!&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#F59E0B;fontColor=#CBD5E1;fontSize=12;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="920" y="130" width="260" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- 5. RIDER COURIER -->
+        <mxCell id="card_rider" value="&lt;b&gt;5. RIDER COURIER APP&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#F59E0B&quot;&gt;[STATUS: SIMULATED RADAR]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;• &lt;b&gt;RiderRoot&lt;/b&gt; (/rider)&lt;br&gt;• Rider Auth &amp;amp; KYC in Supabase&lt;br&gt;• Duty Switch &amp;amp; OTP Keypad UI&lt;br&gt;&lt;font color=&quot;#EF4444&quot;&gt;✖ Radar uses mock 2.5s timer offer!&lt;br&gt;✖ Wallet uses fake past trips list&lt;br&gt;✖ Not linked to real store_orders!&lt;/font&gt;&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#F59E0B;fontColor=#CBD5E1;fontSize=12;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="1210" y="130" width="260" height="200" as="geometry" />
+        </mxCell>
+
+        <!-- SECTION 2: CENTRAL POSTGRESQL DATABASE -->
+        <mxCell id="sec2_title" value="&lt;b&gt;PART 2: CENTRAL POSTGRESQL DATABASE (SUPABASE) &amp;amp; LIVE DATA FLOWS&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#38BDF8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="360" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <mxCell id="db_main" value="&lt;b&gt;SUPABASE CLOUD POSTGRESQL ENGINE&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#94A3B8&quot;&gt;Project ID: iuhapakiuugqvbedjhef · Multi-Tenant Tenant Scoped RLS&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;• &lt;b&gt;tenants&lt;/b&gt; (Store Identity, Slug, Category, Bank Payout)&lt;br&gt;• &lt;b&gt;catalog_products&lt;/b&gt; (Stock, Price, Cost, Threshold, Image Bucket)&lt;br&gt;• &lt;b&gt;store_orders &amp;amp; order_items&lt;/b&gt; (Online + Counter Transactions)&lt;br&gt;• &lt;b&gt;employees &amp;amp; sessions&lt;/b&gt; (Bcrypt PINs, Role Permissions, Shifts)&lt;br&gt;• &lt;b&gt;riders &amp;amp; kyc_submissions&lt;/b&gt; (Couriers, Vehicles, Corridors, Wallet)&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#0C1527;strokeColor=#2563EB;fontColor=#FFFFFF;fontSize=12;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=12;spacingRight=12;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="1420" height="150" as="geometry" />
+        </mxCell>
+
+        <!-- FLOW CONNECTORS -->
+        <!-- Merchant to DB: GREEN CONNECTED -->
+        <mxCell id="conn_merchant" value="&lt;b&gt;LIVE POSTGRES STREAM&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.29;entryY=0;entryDx=0;entryDy=0;strokeColor=#10B981;strokeWidth=3;fontColor=#34D399;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="card_merchant" target="db_main">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Till to DB: RED DASHED -->
+        <mxCell id="conn_till" value="&lt;b&gt;DISCONNECTED (Uses localStorage)&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;strokeColor=#EF4444;strokeWidth=2.5;dashed=1;fontColor=#F87171;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="card_till" target="db_main">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Storefront to DB: RED DASHED -->
+        <mxCell id="conn_shop" value="&lt;b&gt;DISCONNECTED (Uses setTimeout mock)&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.71;entryY=0;entryDx=0;entryDy=0;strokeColor=#EF4444;strokeWidth=2.5;dashed=1;fontColor=#F87171;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="card_shop" target="db_main">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- Rider to DB: RED DASHED -->
+        <mxCell id="conn_rider" value="&lt;b&gt;DISCONNECTED (Simulated trip timer)&lt;/b&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.92;entryY=0;entryDx=0;entryDy=0;strokeColor=#EF4444;strokeWidth=2.5;dashed=1;fontColor=#F87171;fontSize=10;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" edge="1" parent="1" source="card_rider" target="db_main">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+        <!-- SECTION 3: 6-PHASE ROADMAP -->
+        <mxCell id="sec3_title" value="&lt;b&gt;PART 3: 6-PHASE STRUCTURED IMPLEMENTATION ROADMAP&lt;/b&gt;" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=13;fontColor=#38BDF8;fontStyle=1;" vertex="1" parent="1">
+          <mxGeometry x="50" y="580" width="600" height="30" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 1 -->
+        <mxCell id="p1" value="&lt;b&gt;PHASE 1: TILL SYNC&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#EF4444&quot;&gt;[CRITICAL PRIORITY]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Goal: Bridge Till &amp;amp; DB&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Bind till session to logged-in tenant_id.&lt;br&gt;2. Replace seed.json in useAppData with live catalog_products fetch.&lt;br&gt;3. Record completed till sales to store_orders (channel='counter').&lt;br&gt;4. Deduct cloud stock on checkout.&lt;br&gt;5. Offline queue fallback.&lt;br&gt;&lt;br&gt;&lt;b&gt;Deliverable:&lt;/b&gt;&lt;br&gt;Unified Till &amp;amp; Merchant DB&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#3B82F6;fontColor=#CBD5E1;fontSize=11;strokeWidth=2;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="50" y="620" width="225" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 2 -->
+        <mxCell id="p2" value="&lt;b&gt;PHASE 2: STOREFRONT&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#F59E0B&quot;&gt;[HIGH PRIORITY]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Goal: Real Customer Orders&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Mount StorefrontApp in router (/store/:slug).&lt;br&gt;2. Wire onOpenStorefront in MarketplaceApp.&lt;br&gt;3. Query active products by store slug.&lt;br&gt;4. Insert real orders into store_orders &amp;amp; items.&lt;br&gt;5. Live customer order confirmation screen.&lt;br&gt;&lt;br&gt;&lt;b&gt;Deliverable:&lt;/b&gt;&lt;br&gt;Working Online Storefronts&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#1E293B;fontColor=#CBD5E1;fontSize=11;strokeWidth=1.5;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="290" y="620" width="225" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 3 -->
+        <mxCell id="p3" value="&lt;b&gt;PHASE 3: DISPATCH LOOP&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#F59E0B&quot;&gt;[HIGH PRIORITY]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Goal: Real Courier Fleet&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Stream real dispatched orders to RiderRadar.&lt;br&gt;2. Rider Accept Trip RPC (assigns rider_id).&lt;br&gt;3. Customer 4-digit OTP handover verification.&lt;br&gt;4. Real Rider Wallet earnings credit in DB.&lt;br&gt;5. Real-time courier status on MerchantOrders.&lt;br&gt;&lt;br&gt;&lt;b&gt;Deliverable:&lt;/b&gt;&lt;br&gt;End-to-End Delivery Flow&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#1E293B;fontColor=#CBD5E1;fontSize=11;strokeWidth=1.5;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="530" y="620" width="225" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 4 -->
+        <mxCell id="p4" value="&lt;b&gt;PHASE 4: SHIFTS &amp;amp; X/Z&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#94A3B8&quot;&gt;[MEDIUM PRIORITY]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Goal: Cash Drawer Audit&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Cashier opening float prompt on clock-in.&lt;br&gt;2. Mid-shift cash drop to store safe.&lt;br&gt;3. End-of-day Z-Report reconciliation (Float + Sales - Drops vs Counted Cash).&lt;br&gt;4. Manager discrepancy alerts.&lt;br&gt;5. Immutable stock audit movement log.&lt;br&gt;&lt;br&gt;&lt;b&gt;Deliverable:&lt;/b&gt;&lt;br&gt;Auditable Cash Drawer&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#1E293B;fontColor=#CBD5E1;fontSize=11;strokeWidth=1.5;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="770" y="620" width="225" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 5 -->
+        <mxCell id="p5" value="&lt;b&gt;PHASE 5: SUPER ADMIN&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#94A3B8&quot;&gt;[MEDIUM PRIORITY]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Goal: Platform Operations&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. admin.counterpoint.app route with platform_admin role.&lt;br&gt;2. Global GMV &amp;amp; multi-store analytics.&lt;br&gt;3. Tenant directory, activation &amp;amp; suspension.&lt;br&gt;4. Courier KYC review &amp;amp; approval.&lt;br&gt;5. Support login impersonation.&lt;br&gt;&lt;br&gt;&lt;b&gt;Deliverable:&lt;/b&gt;&lt;br&gt;Super Admin Platform Portal&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#1E293B;fontColor=#CBD5E1;fontSize=11;strokeWidth=1.5;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="1010" y="620" width="225" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- Phase 6 -->
+        <mxCell id="p6" value="&lt;b&gt;PHASE 6: PAYMENTS&lt;/b&gt;&lt;br&gt;&lt;font color=&quot;#94A3B8&quot;&gt;[EXPANSION PRIORITY]&lt;/font&gt;&lt;hr&gt;&lt;div align=&quot;left&quot;&gt;&lt;b&gt;Goal: Automated Revenue&lt;/b&gt;&lt;br&gt;&lt;br&gt;1. Paystack inline card checkout on Storefront.&lt;br&gt;2. Webhook ingestion for payment verification.&lt;br&gt;3. Split settlement payouts minus 1.5% commission.&lt;br&gt;4. SaaS recurring subscription plans (Starter vs Pro).&lt;br&gt;5. Multi-branch &amp;amp; multi-register support.&lt;br&gt;&lt;br&gt;&lt;b&gt;Deliverable:&lt;/b&gt;&lt;br&gt;Live Monetization &amp;amp; Scale&lt;/div&gt;" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#141E33;strokeColor=#1E293B;fontColor=#CBD5E1;fontSize=11;strokeWidth=1.5;align=center;verticalAlign=top;spacingTop=10;spacingLeft=8;spacingRight=8;" vertex="1" parent="1">
+          <mxGeometry x="1250" y="620" width="225" height="360" as="geometry" />
+        </mxCell>
+
+        <!-- Phase Connectors -->
+        <mxCell id="conn_p1_p2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#3B82F6;strokeWidth=2;fontColor=#3B82F6;" edge="1" parent="1" source="p1" target="p2">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn_p2_p3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748B;strokeWidth=2;fontColor=#64748B;" edge="1" parent="1" source="p2" target="p3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn_p3_p4" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748B;strokeWidth=2;fontColor=#64748B;" edge="1" parent="1" source="p3" target="p4">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn_p4_p5" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748B;strokeWidth=2;fontColor=#64748B;" edge="1" parent="1" source="p4" target="p5">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="conn_p5_p6" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#64748B;strokeWidth=2;fontColor=#64748B;" edge="1" parent="1" source="p5" target="p6">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

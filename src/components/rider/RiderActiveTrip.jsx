@@ -13,10 +13,13 @@ import {
 } from 'lucide-react';
 import RiderOtpKeypad from './RiderOtpKeypad';
 
+import { verifyDelivery } from '../../services/rider';
+
 export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip }) {
   // Stages: 'pickup' -> 'transit' -> 'doorstep_otp' -> 'delivered'
   const [stage, setStage] = useState('pickup');
   const [showOtpModal, setShowOtpModal] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
 
   const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
 
@@ -29,12 +32,20 @@ export default function RiderActiveTrip({ trip, onTripCompleted, onCancelTrip })
     setShowOtpModal(true);
   };
 
-  const handleOtpVerified = () => {
-    setShowOtpModal(false);
-    setStage('delivered');
-    setTimeout(() => {
-      onTripCompleted(trip);
-    }, 1200);
+  const handleOtpVerified = async (enteredPin) => {
+    setIsVerifying(true);
+    try {
+      await verifyDelivery(trip.orderId, enteredPin || trip.otp);
+      setShowOtpModal(false);
+      setStage('delivered');
+      setTimeout(() => {
+        onTripCompleted(trip);
+      }, 1200);
+    } catch (err) {
+      console.warn('Error completing delivery:', err);
+    } finally {
+      setIsVerifying(false);
+    }
   };
 
   return (

@@ -80,11 +80,13 @@ function mapEmployee(row) {
     id: row.id,
     fullName: row.full_name || '',
     employeeType: row.employee_type,
+    tillRole: row.till_role || 'Sales Representative',
     isActive: row.is_active !== false,
     lockedUntil: row.pin_locked_until || null,
     createdAt: row.created_at
   };
 }
+
 
 function mapPayout(row) {
   if (!row) {
@@ -166,7 +168,7 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
         .order('created_at', { ascending: false }),
       supabase
         .from('employees')
-        .select('id, tenant_id, full_name, employee_type, is_active, failed_pin_attempts, pin_locked_until, created_at, updated_at')
+        .select('id, tenant_id, full_name, employee_type, till_role, is_active, failed_pin_attempts, pin_locked_until, created_at, updated_at')
         .eq('tenant_id', tenantId)
         .order('created_at', { ascending: false }),
       supabase
@@ -358,12 +360,13 @@ export function useMerchantStore(tenant, { onTenantUpdated } = {}) {
     return { data: mapped };
   }, [tenantId]);
 
-  const addEmployee = useCallback(async ({ fullName, employeeType, pin }) => {
+  const addEmployee = useCallback(async ({ fullName, employeeType, pin, tillRole }) => {
     if (!isSupabaseConfigured || !tenantId) return { error: 'Store is not connected.' };
     const { data, error: rpcError } = await supabase.rpc('add_employee', {
       p_full_name: fullName,
       p_employee_type: employeeType,
-      p_pin: pin
+      p_pin: pin,
+      p_till_role: tillRole || 'Sales Representative'
     });
     if (rpcError) return { error: rpcError.message };
     const mapped = mapEmployee(data);

@@ -89,6 +89,8 @@ export default function RiderRoot() {
 
   return (
     <RiderApp
+      rider={auth.rider}
+      profile={auth.profile}
       onExitToLanding={async () => {
         await auth.signOut();
         window.location.href = appLinks.riderLogin();

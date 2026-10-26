@@ -1,12 +1,13 @@
 import seed from '../data/seed.json';
+import { fetchTillProducts, submitTillCheckout } from '../lib/staffAuth';
 
 /**
  * Offline-first data access layer for Counterpoint.
  *
  * Source of truth on the till is always localStorage. Sales, stock, staff and
  * audit entries are written locally first so a network drop cannot interrupt
- * checkout. When VITE_API_BASE_URL is set, mutations are also queued and
- * flushed to the remote API when the browser is back online.
+ * checkout. When VITE_API_BASE_URL or Supabase is configured, mutations are also
+ * queued and flushed to the cloud when the browser is back online.
  */
 
 const STORAGE_KEY = 'counterpoint:v2';
@@ -155,10 +156,14 @@ async function flushQueue() {
   const remaining = [];
   for (const mutation of queue) {
     try {
-      await request(mutation.path, {
-        method: mutation.method,
-        body: mutation.body ? JSON.stringify(mutation.body) : undefined
-      });
+      if (mutation.token && mutation.path === '/sales' && mutation.method === 'POST') {
+        await submitTillCheckout(mutation.token, mutation.body);
+      } else {
+        await request(mutation.path, {
+          method: mutation.method,
+          body: mutation.body ? JSON.stringify(mutation.body) : undefined
+        });
+      }
     } catch (error) {
       console.warn('Sync mutation failed; will retry later', mutation, error);
       remaining.push(mutation);
@@ -201,7 +206,21 @@ function ensureOnlineFlush() {
 
 ensureOnlineFlush();
 
-export async function getProducts() {
+export async function getProducts(token) {
+  if (token && isBrowserOnline()) {
+    try {
+      const cloudProducts = await fetchTillProducts(token);
+      if (Array.isArray(cloudProducts) && cloudProducts.length > 0) {
+        const state = loadState();
+        state.products = cloudProducts;
+        persist();
+        return clone(cloudProducts);
+      }
+    } catch (err) {
+      console.warn('Could not fetch products for till from Supabase, using cache', err);
+    }
+  }
+
   const local = clone(loadState().products);
   if (!isRemote || !isBrowserOnline()) return local;
   try {
@@ -259,10 +278,27 @@ export async function getSales() {
   }
 }
 
-export async function addSale(sale) {
+export async function addSale(sale, token) {
   const state = loadState();
   state.sales = [sale, ...state.sales];
   const localResult = persist();
+
+  if (token) {
+    if (isBrowserOnline()) {
+      try {
+        const cloudResult = await submitTillCheckout(token, sale);
+        return { sale, localResult, sync: { savedLocally: true, synced: true, cloudResult } };
+      } catch (err) {
+        console.warn('Remote till sale sync failed, queued for later:', err);
+        enqueue({ path: '/sales', method: 'POST', body: sale, token });
+        return { sale, localResult, sync: { savedLocally: true, synced: false, queued: true } };
+      }
+    } else {
+      enqueue({ path: '/sales', method: 'POST', body: sale, token });
+      return { sale, localResult, sync: { savedLocally: true, synced: false, queued: true } };
+    }
+  }
+
   const sync = await syncMutation('/sales', 'POST', sale);
   return { sale, localResult, sync };
 }

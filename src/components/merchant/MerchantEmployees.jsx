@@ -3,10 +3,10 @@ import { Plus, Users, Check, KeyRound, Ban, CheckCircle2, Trash2 } from 'lucide-
 import DataTable from '../../shared/ui/DataTable';
 import Modal from '../../shared/ui/Modal';
 import Badge from '../../shared/ui/Badge';
-import { EMPLOYEE_TYPES, isValidPin } from '../../lib/employeeConstants';
+import { EMPLOYEE_TYPES, TILL_ROLES, isValidPin } from '../../lib/employeeConstants';
 import { BRAND } from '../../config/brand';
 
-const emptyForm = { fullName: '', employeeType: 'counter', pin: '', confirmPin: '' };
+const emptyForm = { fullName: '', employeeType: 'counter', tillRole: 'Sales Representative', pin: '', confirmPin: '' };
 
 function typeLabel(value) {
   return EMPLOYEE_TYPES.find((item) => item.value === value)?.label || value;
@@ -72,6 +72,7 @@ export default function MerchantEmployees({
     const result = await onAddEmployee({
       fullName: formData.fullName,
       employeeType: formData.employeeType,
+      tillRole: formData.employeeType === 'counter' ? formData.tillRole : undefined,
       pin: formData.pin
     });
     setSaving(false);
@@ -161,7 +162,14 @@ export default function MerchantEmployees({
             {
               key: 'type',
               header: 'Role',
-              render: (e) => <Badge tone={e.employeeType === 'online_rep' ? 'info' : 'neutral'}>{typeLabel(e.employeeType)}</Badge>
+              render: (e) => (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
+                  <Badge tone={e.employeeType === 'online_rep' ? 'info' : 'neutral'}>{typeLabel(e.employeeType)}</Badge>
+                  {e.employeeType === 'counter' && e.tillRole && (
+                    <span style={{ fontSize: 11.5, color: 'var(--mx-text-3)', fontWeight: 600 }}>{e.tillRole}</span>
+                  )}
+                </div>
+              )
             },
             {
               key: 'status',
@@ -281,6 +289,25 @@ export default function MerchantEmployees({
                 ))}
               </div>
             </div>
+            {formData.employeeType === 'counter' && (
+              <div className="merchant-field-group">
+                <label className="merchant-field-label">Till Role / Register Permissions</label>
+                <select
+                  className="merchant-field-input"
+                  value={formData.tillRole}
+                  onChange={(event) => setFormData({ ...formData, tillRole: event.target.value })}
+                >
+                  {TILL_ROLES.map((role) => (
+                    <option key={role.value} value={role.value}>
+                      {role.label}
+                    </option>
+                  ))}
+                </select>
+                <span style={{ fontSize: 11.5, color: 'var(--mx-text-3)', marginTop: 4 }}>
+                  Controls discount limits (5% to 20%), sale void rights, and register management.
+                </span>
+              </div>
+            )}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
               <div className="merchant-field-group">
                 <label className="merchant-field-label">PIN *</label>
