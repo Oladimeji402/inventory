@@ -8,6 +8,7 @@ import GetStartedPage from './marketing/GetStartedPage';
 import MerchantRoot from './merchant/MerchantRoot';
 import RiderRoot from './rider/RiderRoot';
 import AdminRoot from './admin/AdminRoot';
+import RidesApp from '../components/rides/RidesApp';
 
 function currentPath() {
   if (typeof window === 'undefined') return '/';
@@ -88,6 +89,17 @@ export default function Root() {
           setPath(next);
         }}
         onExitToLanding={() => { window.location.href = appLinks.marketing(); }}
+      />
+    );
+  }
+
+  if (surface === 'rides') {
+    return (
+      <RidesApp
+        onExitToLanding={() => {
+          window.history.pushState({}, '', '/');
+          setPath('/');
+        }}
       />
     );
   }

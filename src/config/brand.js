@@ -28,5 +28,6 @@ export const BRAND = {
 /** Convenience helpers */
 export const storeUrl   = (slug) => `https://${slug}.${BRAND.domain}`;
 export const shopUrl    = `https://shop.${BRAND.domain}`;
+export const ridesUrl   = `https://rides.${BRAND.domain}`;
 export const riderUrl   = `https://rider.${BRAND.domain}`;
 export const adminUrl   = `https://admin.${BRAND.domain}`;

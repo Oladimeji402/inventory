@@ -6,6 +6,7 @@ import { appLinks } from '../../config/surfaces';
 const links = [
   { label: 'Platform',  href: '#ecosystem' },
   { label: 'Marketplace', href: '/shop', isRoute: true },
+  { label: 'Rides & Errands', href: '/rides', isRoute: true },
   { label: 'Live Demo', href: '#live-demo' },
   { label: 'Pricing',   href: '#pricing' },
   { label: 'FAQ',       href: '#faq' },

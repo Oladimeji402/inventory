@@ -195,6 +195,13 @@ export default function MarketplaceNavbar({
             <Truck size={14} />
             <span>Track Order</span>
           </button>
+
+          <a
+            href="/rides"
+            className="mp-nav-item"
+          >
+            <span>🛺 Rides & Errands</span>
+          </a>
         </div>
 
         {/* Right: Clean Sell on Subtech CTA */}

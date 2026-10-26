@@ -189,6 +189,15 @@ export default function MarketplaceMobileDrawer({
               <span>Daily Best Sales</span>
             </button>
 
+            <a
+              href="/rides"
+              className="mp-mobile-nav-link"
+              onClick={onClose}
+            >
+              <span className="text-base">🛺</span>
+              <span>Rides & Errands (Okada, Maruwa, Cars)</span>
+            </a>
+
             <button
               type="button"
               className="mp-mobile-nav-link"

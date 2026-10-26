@@ -1,7 +1,7 @@
 import { BRAND } from './brand';
 import { RESERVED_SLUGS } from '../lib/merchantConstants';
 
-export const SURFACES = ['marketing', 'merchant', 'rider', 'shop', 'till', 'admin'];
+export const SURFACES = ['marketing', 'merchant', 'rider', 'shop', 'till', 'admin', 'rides'];
 
 const MERCHANT_PATHS = new Set(['/login', '/signup', '/forgot', '/onboarding', '/dashboard', '/staff']);
 const PLATFORM_HOSTS = ['.vercel.app', '.netlify.app', '.pages.dev', '.railway.app'];
@@ -77,6 +77,7 @@ export function resolveSurface(location) {
   if (sub === 'merchant' || sub === 'app') return 'merchant';
   if (sub === 'rider') return 'rider';
   if (sub === 'shop' || sub === 'store') return 'shop';
+  if (sub === 'rides' || sub === 'ride') return 'rides';
   if (sub === 'till') return 'till';
   if (sub === 'admin') return 'admin';
 
@@ -85,6 +86,7 @@ export function resolveSurface(location) {
   if (path === '/admin' || path.startsWith('/admin/')) return 'admin';
   if (path === '/rider' || path.startsWith('/rider/')) return 'rider';
   if (path === '/shop' || path.startsWith('/shop/')) return 'shop';
+  if (path === '/rides' || path.startsWith('/rides/')) return 'rides';
   if (path === '/till' || path.startsWith('/till/')) return 'till';
   return 'marketing';
 }
@@ -177,6 +179,7 @@ export const appLinks = {
   riderSignup: (location) => surfaceUrl('rider', '/signup', location),
   riderForgot: (location) => surfaceUrl('rider', '/forgot', location),
   shop: (location) => surfaceUrl('shop', '/', location),
+  rides: (location) => surfaceUrl('rides', '/', location),
   till: (location) => surfaceUrl('till', '/', location),
   admin: (location) => surfaceUrl('admin', '/', location)
 };
