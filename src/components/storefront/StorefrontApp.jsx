@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import './Storefront.css';
 import StorefrontHeader from './StorefrontHeader';
 import StorefrontProductCard from './StorefrontProductCard';
@@ -16,103 +16,17 @@ import {
   Store
 } from 'lucide-react';
 
-const defaultStoreProfile = {
-  name: 'Apex Health Pharmacy',
-  slug: 'apex-pharmacy',
-  category: 'Pharmacy & Healthcare',
-  rating: '4.9',
-  reviewsCount: '340',
-  address: 'Plot 12, Isaac John St, Ikeja GRA, Lagos',
-  deliveryTime: '18–25 mins',
-  minOrder: '₦1,500',
-  whatsapp: '+234 803 291 0029'
-};
-
-const defaultCatalog = [
-  {
-    id: 'PROD-01',
-    name: 'Amoxicillin 500mg (20 Capsules)',
-    category: 'Antibiotics',
-    price: 3800,
-    stock: 45,
-    rating: '4.9',
-    emoji: '💊'
-  },
-  {
-    id: 'PROD-02',
-    name: 'Paracetamol Extra (Pack of 10)',
-    category: 'Pain Relief',
-    price: 1200,
-    stock: 60,
-    rating: '4.8',
-    emoji: '💊'
-  },
-  {
-    id: 'PROD-03',
-    name: 'Vitamin C 1000mg Effervescent (20s)',
-    category: 'Supplements',
-    price: 4500,
-    stock: 14,
-    rating: '4.9',
-    emoji: '🍊'
-  },
-  {
-    id: 'PROD-04',
-    name: 'Baby Care Gentle Moisturizer (500ml)',
-    category: 'Personal Care',
-    price: 6200,
-    stock: 22,
-    rating: '4.7',
-    emoji: '🧴'
-  },
-  {
-    id: 'PROD-05',
-    name: 'Digital Blood Pressure Monitor',
-    category: 'Medical Devices',
-    price: 24500,
-    stock: 6,
-    rating: '4.9',
-    emoji: '🩺'
-  },
-  {
-    id: 'PROD-06',
-    name: 'First Aid Antiseptic Liquid (250ml)',
-    category: 'First Aid',
-    price: 2100,
-    stock: 18,
-    rating: '4.6',
-    emoji: '🩹'
-  },
-  {
-    id: 'PROD-07',
-    name: 'Omega-3 Triple Strength Fish Oil (60s)',
-    category: 'Supplements',
-    price: 8900,
-    stock: 12,
-    rating: '4.8',
-    emoji: '🐟'
-  },
-  {
-    id: 'PROD-08',
-    name: 'Hydrating Facial Sunscreen SPF 50+',
-    category: 'Personal Care',
-    price: 7400,
-    stock: 9,
-    rating: '4.9',
-    emoji: '☀️'
-  }
-];
-
 import { fetchStorefrontStore, fetchStorefrontCatalog } from '../../services/storefront';
 
-export default function StorefrontApp({ 
-  storeSlug = 'apex-pharmacy',
-  storeProfile = defaultStoreProfile, 
-  onExitToLanding 
+export default function StorefrontApp({
+  storeSlug,
+  onExitToLanding,
+  customer = null,
+  onTrackOrder
 }) {
-  const [profile, setProfile] = useState(storeProfile);
-  const [catalog, setCatalog] = useState(defaultCatalog);
-  const [loading, setLoading] = useState(false);
+  const [profile, setProfile] = useState(null);
+  const [catalog, setCatalog] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [cart, setCart] = useState([]);
@@ -129,10 +43,8 @@ export default function StorefrontApp({
         fetchStorefrontCatalog(storeSlug)
       ]);
       if (cancelled) return;
-      if (remoteStore) setProfile(prev => ({ ...prev, ...remoteStore }));
-      if (Array.isArray(remoteProducts) && remoteProducts.length > 0) {
-        setCatalog(remoteProducts);
-      }
+      setProfile(remoteStore || null);
+      setCatalog(Array.isArray(remoteProducts) ? remoteProducts : []);
       setLoading(false);
     }
     loadStore();
@@ -187,6 +99,23 @@ export default function StorefrontApp({
 
   const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
 
+  if (loading) {
+    return <div className="storefront-root" aria-busy="true" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', color: '#737373' }}>Loading store…</div>;
+  }
+
+  if (!profile) {
+    return (
+      <div className="storefront-root" style={{ minHeight: '100vh', display: 'grid', placeItems: 'center', padding: 24, textAlign: 'center' }}>
+        <div>
+          <Store size={36} color="#a3a3a3" />
+          <h1 style={{ fontSize: 22, margin: '12px 0 6px' }}>This store is not available</h1>
+          <p style={{ color: '#737373', margin: '0 0 18px' }}>It may be closed, suspended, or the link may be wrong.</p>
+          {onExitToLanding && <button type="button" className="sf-cart-btn" onClick={onExitToLanding}>Back</button>}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="storefront-root">
       {/* Sticky Top Header */}
@@ -205,10 +134,6 @@ export default function StorefrontApp({
               <span style={{ fontSize: '12px', fontWeight: 700, color: '#2B7CFF', background: 'rgba(43, 124, 255, 0.1)', padding: '3px 10px', borderRadius: '100px' }}>
                 {profile.category}
               </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '12.5px', fontWeight: 700, color: '#f59e0b' }}>
-                <Star size={13} fill="#f59e0b" color="#f59e0b" />
-                {profile.rating || '4.9'} ({profile.reviewsCount || '140'}+ reviews)
-              </span>
             </div>
 
             <h2 style={{ fontSize: '22px', fontWeight: 800, margin: '8px 0 2px', letterSpacing: '-0.02em', color: '#0a0a0a' }}>
@@ -220,13 +145,16 @@ export default function StorefrontApp({
                 <MapPin size={13} color="#2B7CFF" />
                 <span>{profile.address}</span>
               </div>
-              <div className="sf-banner-meta-item">
-                <Clock size={13} color="#2B7CFF" />
-                <span>Delivery: {profile.deliveryTime}</span>
-              </div>
+              {profile.deliveryTime && (
+                <div className="sf-banner-meta-item">
+                  <Clock size={13} color="#2B7CFF" />
+                  <span>Delivery: {profile.deliveryTime}</span>
+                </div>
+              )}
             </div>
           </div>
 
+          {(profile.whatsapp || '').replace(/[^0-9]/g, '') && (
           <a 
             href={`https://wa.me/${(profile.whatsapp || '').replace(/[^0-9]/g, '')}`} 
             target="_blank" 
@@ -247,6 +175,7 @@ export default function StorefrontApp({
             <Phone size={14} />
             <span>Chat on WhatsApp</span>
           </a>
+          )}
         </div>
       </div>
 
@@ -257,7 +186,7 @@ export default function StorefrontApp({
           <Search size={16} color="#a3a3a3" />
           <input
             type="text"
-            placeholder="Search catalog items (e.g. Paracetamol, Vitamin C)..."
+            placeholder="Search products"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="sf-search-input"
@@ -280,6 +209,11 @@ export default function StorefrontApp({
 
       {/* Product Catalog Grid */}
       <main className="sf-products-container">
+        {filteredProducts.length === 0 && (
+          <p style={{ textAlign: 'center', color: '#737373', padding: '48px 0' }}>
+            {catalog.length === 0 ? 'This store has no products in stock right now.' : 'No products match your search.'}
+          </p>
+        )}
         <div className="sf-product-grid">
           {filteredProducts.map((p) => {
             const cartItem = cart.find(i => i.id === p.id);
@@ -326,12 +260,14 @@ export default function StorefrontApp({
         onCheckoutComplete={handleCheckoutComplete}
         storeSlug={storeSlug}
         storeProfile={profile}
+        customer={customer}
       />
 
       {/* Order Confirmed & Real-Time Tracking Modal */}
       {confirmedOrder && (
         <StorefrontOrderSuccess
           order={confirmedOrder}
+          onTrackOrder={customer && onTrackOrder ? () => onTrackOrder(confirmedOrder.id) : null}
           onClose={() => setConfirmedOrder(null)}
           onBackToStore={() => setConfirmedOrder(null)}
         />

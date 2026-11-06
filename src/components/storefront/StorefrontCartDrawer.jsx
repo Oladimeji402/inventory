@@ -15,7 +15,8 @@ import {
   Building2,
   AlertCircle
 } from 'lucide-react';
-import { submitStorefrontOrder } from '../../services/storefront';
+import { submitStorefrontOrder, verifyStorefrontPayment, releaseUnpaidOrder } from '../../services/storefront';
+import { BRAND } from '../../config/brand';
 import { openPaystackPopup } from '../../lib/paystack';
 
 export default function StorefrontCartDrawer({ 
@@ -25,13 +26,15 @@ export default function StorefrontCartDrawer({
   onUpdateQuantity, 
   onClearCart,
   onCheckoutComplete,
-  storeSlug = 'apex-pharmacy',
-  storeProfile = null
+  storeSlug,
+  storeProfile = null,
+  customer = null
 }) {
   const [fulfillmentType, setFulfillmentType] = useState('delivery'); // 'delivery' | 'pickup'
-  const [customerName, setCustomerName] = useState('Amara Kalu');
-  const [customerPhone, setCustomerPhone] = useState('+234 803 291 0029');
-  const [deliveryAddress, setDeliveryAddress] = useState('Apt 4B, Admiralty Way, Lekki Phase 1, Lagos');
+  const [customerName, setCustomerName] = useState(customer?.profile?.full_name || '');
+  const [customerPhone, setCustomerPhone] = useState(customer?.profile?.phone || '');
+  const defaultAddress = customer?.addresses?.find((a) => a.is_default) || customer?.addresses?.[0];
+  const [deliveryAddress, setDeliveryAddress] = useState(defaultAddress?.address || '');
   const [paymentMethod, setPaymentMethod] = useState('card'); // 'card' | 'transfer' (no cash on delivery)
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
@@ -46,7 +49,7 @@ export default function StorefrontCartDrawer({
 
   const handlePay = async (e) => {
     e.preventDefault();
-    if (cartItems.length === 0) return;
+    if (cartItems.length === 0 || isProcessing) return;
     setError('');
 
     if (!customerName.trim()) {
@@ -64,72 +67,78 @@ export default function StorefrontCartDrawer({
 
     setIsProcessing(true);
 
+    // Prices, stock and the delivery fee are decided by the server; only ids and
+    // quantities are trusted from the cart.
+    const reference = `SF-${crypto.randomUUID()}`;
     const orderPayload = {
       customerName: customerName.trim(),
       customerPhone: customerPhone.trim(),
       address: fulfillmentType === 'delivery' ? deliveryAddress.trim() : 'Store Counter Pickup',
-      items: cartItems,
-      itemsSummary: cartItems.map(i => `${i.quantity}x ${i.name}`).join(', '),
-      total,
+      items: cartItems.map((item) => ({ id: item.id, quantity: item.quantity })),
       fulfillmentType,
-      paymentMethod: paymentMethod === 'card' ? 'Card' : 'Transfer'
+      paymentMethod: paymentMethod === 'card' ? 'Card' : 'Transfer',
+      paymentReference: paymentMethod === 'card' ? reference : null
     };
 
-    const executeOrderSubmission = async (payload) => {
-      try {
-        const result = await submitStorefrontOrder(storeSlug, payload);
-        setIsProcessing(false);
-        const newOrder = {
-          id: result?.order_id || ('ORD-' + Math.floor(1000 + Math.random() * 9000)),
-          customerName,
-          customerPhone,
-          address: payload.address,
-          items: cartItems,
-          itemsSummary: payload.itemsSummary,
-          total,
-          fulfillmentType,
-          paymentMethod: payload.paymentMethod,
-          status: 'pending',
-          timeAgo: 'Just now',
-          courierInfo: result?.delivery_otp ? { otp: result.delivery_otp, etaMinutes: result.eta_minutes || 25 } : null
-        };
-        onCheckoutComplete(newOrder);
-      } catch (err) {
-        console.warn('Real order submit error, falling back locally:', err);
-        setIsProcessing(false);
-        const newOrder = {
-          id: 'ORD-' + Math.floor(1000 + Math.random() * 9000),
-          customerName,
-          customerPhone,
-          address: payload.address,
-          items: cartItems,
-          itemsSummary: payload.itemsSummary,
-          total,
-          fulfillmentType,
-          paymentMethod: payload.paymentMethod,
-          status: 'pending',
-          timeAgo: 'Just now'
-        };
-        onCheckoutComplete(newOrder);
-      }
-    };
-
-    if (paymentMethod === 'card') {
-      await openPaystackPopup({
-        email: `${customerName.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
-        amountInNaira: total,
-        onSuccess: async (paystackRes) => {
-          orderPayload.paymentReference = paystackRes.reference;
-          await executeOrderSubmission(orderPayload);
-        },
-        onClose: () => {
-          setIsProcessing(false);
-        }
-      });
+    let result;
+    try {
+      result = await submitStorefrontOrder(storeSlug, orderPayload);
+    } catch (err) {
+      setIsProcessing(false);
+      setError(err.message || 'We could not place your order. Please try again.');
       return;
     }
 
-    await executeOrderSubmission(orderPayload);
+    const orderId = result?.order_id;
+    const placed = {
+      id: orderId,
+      customerName,
+      customerPhone,
+      address: orderPayload.address,
+      items: cartItems,
+      itemsSummary: cartItems.map((i) => `${i.quantity}x ${i.name}`).join(', '),
+      total: Number(result?.total) || 0,
+      fulfillmentType,
+      paymentMethod: orderPayload.paymentMethod,
+      status: 'pending',
+      timeAgo: 'Just now',
+      courierInfo: result?.delivery_otp ? { otp: result.delivery_otp, etaMinutes: result.eta_minutes || 25 } : null
+    };
+
+    if (paymentMethod !== 'card') {
+      setIsProcessing(false);
+      onCheckoutComplete({ ...placed, paymentStatus: 'awaiting_transfer' });
+      return;
+    }
+
+    await openPaystackPopup({
+      email: `${customerPhone.replace(/\D/g, '') || 'customer'}@${BRAND.domain}`,
+      amountInNaira: placed.total,
+      reference,
+      metadata: { orderId },
+      onSuccess: async () => {
+        try {
+          await verifyStorefrontPayment(orderId, reference);
+          setIsProcessing(false);
+          onCheckoutComplete({ ...placed, paymentStatus: 'paid' });
+        } catch (err) {
+          setIsProcessing(false);
+          setError(
+            `We could not confirm your payment yet. If you were charged, contact the store with order ${orderId}. (${err.message})`
+          );
+        }
+      },
+      onClose: async () => {
+        await releaseUnpaidOrder(orderId);
+        setIsProcessing(false);
+        setError('Payment was cancelled. Your order was not placed.');
+      },
+      onError: async (message) => {
+        await releaseUnpaidOrder(orderId);
+        setIsProcessing(false);
+        setError(message);
+      }
+    });
   };
 
   return (
