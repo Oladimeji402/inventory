@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import LandingPage from '../components/landing/LandingPage';
-import MarketplaceApp from '../components/marketplace/MarketplaceApp';
+import ShopRoot from './shop/ShopRoot';
 import StorefrontApp from '../components/storefront/StorefrontApp';
 import TillApp from '../App';
 import { appLinks, resolveSurface, inferTenantSlugFromHost } from '../config/surfaces';
@@ -8,7 +8,7 @@ import GetStartedPage from './marketing/GetStartedPage';
 import MerchantRoot from './merchant/MerchantRoot';
 import RiderRoot from './rider/RiderRoot';
 import AdminRoot from './admin/AdminRoot';
-import RidesApp from '../components/rides/RidesApp';
+import RidesRoot from './rides/RidesRoot';
 
 function currentPath() {
   if (typeof window === 'undefined') return '/';
@@ -63,39 +63,14 @@ export default function Root() {
     return <AdminRoot />;
   }
 
-  // Store direct URL pattern (e.g. /store/apex-pharmacy or /shop/store/apex-pharmacy)
-  const storeSlugMatch = path.match(/^\/(?:shop\/)?store\/([a-zA-Z0-9_-]+)/);
-  const selectedSlug = storeSlugMatch ? storeSlugMatch[1] : null;
+  if (surface === 'shop') return <ShopRoot />;
 
-  if (selectedSlug) {
+  // Direct store link for guests (e.g. /store/apex-pharmacy)
+  const storeSlugMatch = path.match(/^\/store\/([a-zA-Z0-9_-]+)/);
+  if (storeSlugMatch) {
     return (
       <StorefrontApp
-        storeSlug={selectedSlug}
-        onExitToLanding={() => {
-          const backPath = surface === 'shop' ? '/shop' : '/';
-          window.history.pushState({}, '', backPath);
-          setPath(backPath);
-        }}
-      />
-    );
-  }
-
-  if (surface === 'shop') {
-    return (
-      <MarketplaceApp
-        onOpenStorefront={(slug) => {
-          const next = `/shop/store/${slug}`;
-          window.history.pushState({}, '', next);
-          setPath(next);
-        }}
-        onExitToLanding={() => { window.location.href = appLinks.marketing(); }}
-      />
-    );
-  }
-
-  if (surface === 'rides') {
-    return (
-      <RidesApp
+        storeSlug={storeSlugMatch[1]}
         onExitToLanding={() => {
           window.history.pushState({}, '', '/');
           setPath('/');
@@ -103,6 +78,8 @@ export default function Root() {
       />
     );
   }
+
+  if (surface === 'rides') return <RidesRoot />;
 
   if (path === '/start') return <GetStartedPage />;
 

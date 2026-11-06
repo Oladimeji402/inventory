@@ -75,14 +75,18 @@ export function useAppData(sessionToken = null) {
     return result;
   }, [sessionToken]);
 
-  const removeSale = useCallback((saleId) => {
-    store.deleteSale(saleId);
+  const voidSale = useCallback((saleId, details = {}) => {
+    store.voidSale(saleId, { token: sessionToken, ...details });
     setState((current) => ({
       ...current,
-      sales: current.sales.filter((entry) => entry.id !== saleId),
+      sales: current.sales.map((entry) =>
+        entry.id === saleId
+          ? { ...entry, status: 'voided', voidedAt: new Date().toISOString(), voidedBy: details.by, voidReason: details.reason }
+          : entry
+      ),
       syncStatus: store.getSyncStatus()
     }));
-  }, []);
+  }, [sessionToken]);
 
   const logActivity = useCallback((text, type) => {
     const entry = { time: new Date().toISOString(), text, type };
@@ -94,5 +98,5 @@ export function useAppData(sessionToken = null) {
     }));
   }, []);
 
-  return { ...state, setProducts, setEmployees, recordSale, removeSale, logActivity };
+  return { ...state, setProducts, setEmployees, recordSale, voidSale, logActivity };
 }

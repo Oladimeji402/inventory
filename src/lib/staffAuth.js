@@ -83,3 +83,14 @@ export async function submitTillCheckout(token, salePayload) {
   }
 }
 
+
+export async function voidTillSale(token, saleId, reason) {
+  if (!isSupabaseConfigured || !token) return null;
+  const { data, error } = await supabase.rpc('staff_void_sale', {
+    p_token: token,
+    p_client_sale_id: saleId,
+    p_reason: reason || null
+  });
+  if (error) throw new Error(error.message);
+  return data;
+}

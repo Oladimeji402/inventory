@@ -1,5 +1,5 @@
 import seed from '../data/seed.json';
-import { fetchTillProducts, submitTillCheckout } from '../lib/staffAuth';
+import { fetchTillProducts, submitTillCheckout, voidTillSale } from '../lib/staffAuth';
 
 /**
  * Offline-first data access layer for Counterpoint.
@@ -158,6 +158,8 @@ async function flushQueue() {
     try {
       if (mutation.token && mutation.path === '/sales' && mutation.method === 'POST') {
         await submitTillCheckout(mutation.token, mutation.body);
+      } else if (mutation.token && mutation.rpc === 'staff_void_sale') {
+        await voidTillSale(mutation.token, mutation.body.saleId, mutation.body.reason);
       } else {
         await request(mutation.path, {
           method: mutation.method,
@@ -303,12 +305,37 @@ export async function addSale(sale, token) {
   return { sale, localResult, sync };
 }
 
-export async function deleteSale(saleId) {
+/**
+ * Voiding keeps the sale (status = 'voided') so reports and the audit trail still
+ * show it; the server restocks it and marks the order cancelled.
+ */
+export async function voidSale(saleId, { token = null, by = '', reason = '' } = {}) {
   const state = loadState();
-  state.sales = state.sales.filter((entry) => entry.id !== saleId);
+  state.sales = state.sales.map((entry) =>
+    entry.id === saleId
+      ? { ...entry, status: 'voided', voidedAt: new Date().toISOString(), voidedBy: by, voidReason: reason }
+      : entry
+  );
   const localResult = persist();
-  const sync = await syncMutation(`/sales/${saleId}`, 'DELETE');
-  return { localResult, sync };
+
+  if (!token) {
+    const sync = await syncMutation(`/sales/${saleId}/void`, 'POST', { reason, by });
+    return { localResult, sync };
+  }
+
+  const body = { saleId, reason };
+  if (!isBrowserOnline()) {
+    enqueue({ rpc: 'staff_void_sale', method: 'POST', token, body });
+    return { localResult, sync: { savedLocally: true, synced: false, queued: true } };
+  }
+  try {
+    await voidTillSale(token, saleId, reason);
+    return { localResult, sync: { savedLocally: true, synced: true } };
+  } catch (error) {
+    console.warn('Remote void failed; queued for later:', error);
+    enqueue({ rpc: 'staff_void_sale', method: 'POST', token, body });
+    return { localResult, sync: { savedLocally: true, synced: false, queued: true } };
+  }
 }
 
 export async function getAuditLog() {

@@ -50,7 +50,7 @@ export default function App({ onExit }) {
     setProducts,
     setEmployees,
     recordSale,
-    removeSale,
+    voidSale,
     logActivity,
   } = useAppData(sessionToken);
   const [cart, setCart] = useState(initialTill.cart);
@@ -313,7 +313,8 @@ export default function App({ onExit }) {
 
     const offline = typeof navigator !== 'undefined' && navigator.onLine === false;
     const sale = {
-      id: `TXN-${(sales.length + 1).toString().padStart(4, '0')}`,
+      // Unique per sale (not derived from the local count) so two tills can never collide.
+      id: `TXN-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
       items: cart,
       subtotal,
       discount: discountAmount,
@@ -353,13 +354,13 @@ export default function App({ onExit }) {
 
   function confirmVoid(saleId) {
     const sale = sales.find((entry) => entry.id === saleId);
-    if (!sale) return;
+    if (!sale || sale.status === 'voided') return;
     const restocked = products.map((product) => {
       const item = sale.items.find((entry) => entry.id === product.id);
       return item ? { ...product, stock: product.stock + item.qty } : product;
     });
     setProducts(restocked);
-    removeSale(saleId);
+    voidSale(saleId, { by: session.employee.name, reason: 'Voided at till' });
     logActivity(`${session.employee.name} VOIDED ${saleId}`, 'void');
     setPendingVoidId(null);
     flash(`${saleId} was voided.`);
