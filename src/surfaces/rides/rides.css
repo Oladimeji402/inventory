@@ -1,0 +1,44 @@
+/* Passenger rides app. Builds on the shop styles (sh-*) and the app tokens. */
+.rd-vehicles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+.rd-vehicle { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 14px 8px; border-radius: 16px; border: 1.5px solid var(--line-strong); background: #fff; cursor: pointer; font-family: inherit; text-align: center; transition: border-color .15s, background .15s, transform .1s; }
+.rd-vehicle:hover { border-color: var(--primary); }
+.rd-vehicle:active { transform: scale(.98); }
+.rd-vehicle.active { border-color: var(--primary); background: var(--primary-light); box-shadow: 0 0 0 3px rgba(43,124,255,.15); }
+.rd-vehicle .emoji { font-size: 2rem; line-height: 1.2; }
+.rd-vehicle strong { font-size: 0.9rem; }
+.rd-vehicle span { font-size: 0.72rem; color: var(--muted); }
+.rd-route { position: relative; padding-left: 28px; }
+.rd-route .sh-field { position: relative; }
+.rd-route .rd-dot { left: -25px; top: 34px; }
+.rd-route::before { content: ''; position: absolute; left: 9px; top: 40px; bottom: 28px; width: 2px; background: repeating-linear-gradient(to bottom, var(--line-strong) 0 4px, transparent 4px 8px); }
+.rd-dot { position: absolute; left: 3px; width: 14px; height: 14px; border-radius: 50%; border: 3px solid var(--primary); background: #fff; }
+.rd-dot.drop { border-radius: 4px; border-color: var(--ink); }
+.rd-saved { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.rd-saved button { min-height: 30px; padding: 0 10px; border-radius: 999px; border: 1px solid var(--line-strong); background: #fff; font: 600 0.76rem 'Inter', sans-serif; color: #475569; cursor: pointer; }
+.rd-saved button:hover { border-color: var(--primary); color: var(--primary); }
+.rd-price { display: flex; align-items: center; justify-content: center; gap: 14px; padding: 14px; background: #f8fafc; border: 1px solid var(--line); border-radius: 16px; }
+.rd-price button { width: 44px; height: 44px; border-radius: 50%; border: 1.5px solid var(--line-strong); background: #fff; font-size: 1.4rem; line-height: 1; cursor: pointer; color: var(--text); }
+.rd-price button:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+.rd-price button:disabled { opacity: .4; cursor: not-allowed; }
+.rd-price output { font-family: var(--font-display); font-weight: 700; font-size: 2rem; letter-spacing: -0.03em; min-width: 140px; text-align: center; }
+.rd-when { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.rd-when button { min-height: 44px; border-radius: 12px; border: 1.5px solid var(--line-strong); background: #fff; font: 700 0.88rem 'Inter', sans-serif; cursor: pointer; }
+.rd-when .active { border-color: var(--primary); background: var(--primary-light); color: var(--primary-dark); }
+.rd-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-radius: 14px; background: #0b1220; color: #fff; margin-bottom: 16px; }
+.rd-banner button { min-height: 38px; padding: 0 14px; border-radius: 10px; border: 0; background: var(--primary); color: #fff; font: 700 0.85rem 'Inter', sans-serif; cursor: pointer; }
+.rd-radar { display: grid; place-items: center; padding: 26px 0 14px; }
+.rd-radar-ring { position: relative; width: 84px; height: 84px; border-radius: 50%; background: var(--primary-light); display: grid; place-items: center; font-size: 2rem; }
+.rd-radar-ring::before, .rd-radar-ring::after { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 2px solid var(--primary); opacity: 0; animation: rd-ping 2.4s ease-out infinite; }
+.rd-radar-ring::after { animation-delay: 1.2s; }
+@keyframes rd-ping { 0% { transform: scale(.7); opacity: .7; } 100% { transform: scale(1.7); opacity: 0; } }
+.rd-bid { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); animation: rd-in .35s var(--ease) both; }
+.rd-bid:first-of-type { border-top: 0; }
+@keyframes rd-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.rd-stars { display: inline-flex; gap: 4px; }
+.rd-stars button { background: none; border: 0; font-size: 2rem; cursor: pointer; color: #cbd5e1; padding: 0; line-height: 1; }
+.rd-stars button.on { color: #f59e0b; }
+.rd-star-mini { color: #f59e0b; font-weight: 700; }
+.rd-stop { display: flex; gap: 12px; align-items: flex-start; padding: 6px 0; }
+.rd-stop b { display: block; font-size: 0.7rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+@media (max-width: 420px) { .rd-vehicle .emoji { font-size: 1.6rem; } .rd-price output { font-size: 1.6rem; min-width: 110px; } }
+@media (prefers-reduced-motion: reduce) { .rd-radar-ring::before, .rd-radar-ring::after, .rd-bid { animation: none; } }
