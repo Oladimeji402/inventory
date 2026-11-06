@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { 
   CheckCircle2, 
   Bike, 
@@ -11,31 +11,15 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }) {
-  const [progressPct, setProgressPct] = useState(25);
-  const [orderStage, setOrderStage] = useState('Store Packaging'); // 'Store Packaging' | 'Courier Dispatched' | 'Arrived'
-  const [eta, setEta] = useState(18);
+export default function StorefrontOrderSuccess({ order, onClose, onBackToStore, onTrackOrder }) {
+  const awaitingTransfer = order.paymentStatus === 'awaiting_transfer';
+  const isDelivery = order.fulfillmentType !== 'pickup';
+  const otp = order.courierInfo?.otp;
+  const eta = order.courierInfo?.etaMinutes;
+  const orderStage = awaitingTransfer ? 'Waiting for the store to confirm your transfer' : 'Order received by the store';
+  const progressPct = awaitingTransfer ? 10 : 25;
 
   const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
-
-  useEffect(() => {
-    const t1 = setTimeout(() => {
-      setProgressPct(65);
-      setOrderStage('Courier In Transit');
-      setEta(11);
-    }, 2000);
-
-    const t2 = setTimeout(() => {
-      setProgressPct(100);
-      setOrderStage('Arrived at Doorstep');
-      setEta(0);
-    }, 4500);
-
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-    };
-  }, []);
 
   return (
     <div className="sf-drawer-overlay">
@@ -58,7 +42,7 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
             <CheckCircle2 size={36} />
           </div>
           <h2 style={{ fontSize: '22px', fontWeight: 800, margin: '0 0 4px', color: '#0a0a0a', letterSpacing: '-0.02em' }}>
-            Order Confirmed!
+            {awaitingTransfer ? 'Order Placed' : 'Order Confirmed!'}
           </h2>
           <span className="font-mono" style={{ fontSize: '13.5px', color: '#737373', fontWeight: 600 }}>
             {order.id} · Total: {formatNaira(order.total)}
@@ -77,7 +61,7 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
             <div style={{ textAlign: 'right' }}>
               <div style={{ fontSize: '11.5px', color: '#737373', fontWeight: 700, textTransform: 'uppercase' }}>Estimated Dropoff</div>
               <span className="font-mono" style={{ fontSize: '14px', fontWeight: 800, color: '#2B7CFF' }}>
-                {eta > 0 ? `~${eta} mins` : 'Arrived!'}
+                {isDelivery && eta ? `~${eta} mins` : '—'}
               </span>
             </div>
           </div>
@@ -87,24 +71,18 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
             <div style={{ width: `${progressPct}%`, height: '100%', background: '#2B7CFF', transition: 'width 0.8s ease' }} />
           </div>
 
-          {/* Assigned Driver Box */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #e5e5e5', fontSize: '12.5px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ width: '28px', height: '28px', borderRadius: '50%', background: '#2B7CFF', color: '#ffffff', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Bike size={14} />
-              </div>
-              <div>
-                <strong style={{ color: '#0a0a0a' }}>Samuel O. (Courier #284)</strong>
-                <div style={{ fontSize: '11px', color: '#737373' }}>Yamaha 125cc · Verified Driver</div>
+          {/* Handover OTP: the real code for this order */}
+          {isDelivery && otp && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: '16px', paddingTop: '14px', borderTop: '1px solid #e5e5e5', fontSize: '12.5px' }}>
+              <span style={{ color: '#525252' }}>
+                A rider will be assigned once the store has packed your order. Give them this code at your door.
+              </span>
+              <div style={{ textAlign: 'right' }}>
+                <span style={{ fontSize: '10.5px', color: '#737373', display: 'block' }}>Handover OTP</span>
+                <strong className="font-mono" style={{ fontSize: '15px', color: '#0a0a0a', letterSpacing: '0.05em' }}>{otp}</strong>
               </div>
             </div>
-
-            {/* Handover OTP Badge */}
-            <div style={{ textAlign: 'right' }}>
-              <span style={{ fontSize: '10.5px', color: '#737373', display: 'block' }}>Handover OTP</span>
-              <strong className="font-mono" style={{ fontSize: '15px', color: '#0a0a0a', letterSpacing: '0.05em' }}>3819</strong>
-            </div>
-          </div>
+          )}
         </div>
 
         {/* Order Details Summary */}
@@ -124,6 +102,17 @@ export default function StorefrontOrderSuccess({ order, onClose, onBackToStore }
             <span>{order.address}</span>
           </div>
         </div>
+
+        {onTrackOrder && (
+          <button
+            className="sf-cart-btn"
+            style={{ width: '100%', justifyContent: 'center', padding: '14px', borderRadius: '12px', fontSize: '14.5px', marginBottom: '10px' }}
+            onClick={onTrackOrder}
+          >
+            <span>Track this order</span>
+            <ArrowRight size={15} />
+          </button>
+        )}
 
         {/* Action Button */}
         <button

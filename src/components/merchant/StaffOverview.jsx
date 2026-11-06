@@ -1,50 +1,31 @@
-import { ShoppingBag, PackageCheck, Bike, CheckCircle2 } from 'lucide-react';
-import KpiTile from '../../shared/ui/KpiTile';
-import { countedOrder, isToday } from '../../lib/formatMoney';
+import { Bike, Banknote, CheckCircle2, PackageCheck, ShoppingBag } from 'lucide-react';
+import { PageHeader, StatCard } from './ui';
+import { isToday } from '../../lib/formatMoney';
 
-export default function StaffOverview({ orders = [], loading = false }) {
-  const liveOrders = orders.filter(countedOrder);
-  const todayOrders = liveOrders.filter((order) => isToday(order.createdAt));
-  const pendingCount = liveOrders.filter((order) => order.status === 'pending').length;
-  const dispatchedToday = todayOrders.filter((order) => order.status === 'dispatched').length;
-  const deliveredToday = todayOrders.filter((order) => order.status === 'delivered').length;
+export default function StaffOverview({ orders = [], loading = false, onOpenOrders }) {
+  const open = orders.filter((o) => o.status !== 'cancelled');
+  const today = open.filter((o) => isToday(o.createdAt));
+  const toPack = open.filter((o) => o.status === 'pending' && o.paymentStatus === 'paid').length;
+  const awaiting = open.filter((o) => o.status === 'pending' && o.paymentStatus !== 'paid').length;
+  const transit = open.filter((o) => o.status === 'dispatched').length;
+  const doneToday = today.filter((o) => o.status === 'delivered').length;
 
   return (
-    <div>
-      <div className="merchant-page-header">
-        <div>
-          <h1>Overview</h1>
-          <p>Today's online orders at a glance.</p>
-        </div>
+    <>
+      <PageHeader
+        title="Overview"
+        subtitle="Orders from your store's website. Figures update every 15 seconds."
+        actions={<button type="button" className="mc-btn mc-btn-primary" onClick={onOpenOrders}>Open orders</button>}
+      />
+      <div className="mc-grid mc-grid-4">
+        <StatCard label="Orders today" icon={ShoppingBag} value={today.length} loading={loading} hint={`${open.length} on record`} />
+        <StatCard label="To pack" icon={PackageCheck} tint="#dbeafe" color="#2563eb" value={toPack} loading={loading} hint="paid, waiting for you" delay={60} />
+        <StatCard label="Awaiting payment" icon={Banknote} tint="#fef3c7" color="#d97706" value={awaiting} loading={loading} hint="the owner confirms these" delay={120} />
+        <StatCard label="Out for delivery" icon={Bike} tint="#ccfbf1" color="#0f766e" value={transit} loading={loading} hint={`${doneToday} completed today`} delay={180} />
       </div>
-
-      <div className="merchant-kpi-grid">
-        <KpiTile
-          icon={ShoppingBag}
-          label="Orders Today"
-          value={loading ? '…' : todayOrders.length}
-          sub={`${liveOrders.length} total open orders`}
-        />
-        <KpiTile
-          icon={PackageCheck}
-          label="Needs Packaging"
-          value={loading ? '…' : pendingCount}
-          sub="Waiting to be packed"
-          tone={pendingCount > 0 ? 'warning' : 'default'}
-        />
-        <KpiTile
-          icon={Bike}
-          label="Packed & Dispatched Today"
-          value={loading ? '…' : dispatchedToday}
-          sub="Handed off for delivery"
-        />
-        <KpiTile
-          icon={CheckCircle2}
-          label="Delivered Today"
-          value={loading ? '…' : deliveredToday}
-          sub="Completed orders"
-        />
-      </div>
-    </div>
+      <p className="mc-note" style={{ marginTop: 16 }}>
+        <CheckCircle2 size={13} style={{ verticalAlign: '-2px' }} /> Only paid orders can be packed. Bank transfers are confirmed by the store owner.
+      </p>
+    </>
   );
 }

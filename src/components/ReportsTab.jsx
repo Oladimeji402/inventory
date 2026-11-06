@@ -15,7 +15,8 @@ export default function ReportsTab({
   onCancelVoid,
   onConfirmVoid
 }) {
-  const revenue = sales.reduce((sum, item) => sum + item.total, 0);
+  const completedSales = sales.filter((item) => item.status !== 'voided');
+  const revenue = completedSales.reduce((sum, item) => sum + item.total, 0);
 
   return (
     <div className="reports-grid">
@@ -31,7 +32,7 @@ export default function ReportsTab({
           </div>
           <div className="stat-card">
             <span>Transactions</span>
-            <strong className="mono">{sales.length}</strong>
+            <strong className="mono">{completedSales.length}</strong>
           </div>
           <div className="stat-card">
             <span>Low stock</span>
@@ -86,14 +87,17 @@ export default function ReportsTab({
             <div key={sale.id} className="activity-item">
               <div className="activity-item-head">
                 <strong className="mono">{sale.id}</strong>
-                <span className="mono">{naira(sale.total)}</span>
+                <span className="mono" style={sale.status === 'voided' ? { textDecoration: 'line-through' } : undefined}>
+                  {naira(sale.total)}
+                </span>
               </div>
               <p>
                 {sale.customerName || 'Walk-in Customer'} · {sale.paymentMethod}
               </p>
               <div className="activity-actions">
                 <span className="mono">{formatTime(sale.time)}</span>
-                {canVoid &&
+                {sale.status === 'voided' && <span className="mono">VOIDED{sale.voidedBy ? ` by ${sale.voidedBy}` : ''}</span>}
+                {canVoid && sale.status !== 'voided' &&
                   (pendingVoidId === sale.id ? (
                     <div className="confirm-inline">
                       <span>Void this sale?</span>

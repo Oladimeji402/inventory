@@ -1,237 +1,198 @@
-import React, { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import './Rider.css';
+import './RiderScreens.css';
+import { History, Inbox, Navigation, ShoppingBag, Sun, User, Wallet } from 'lucide-react';
 import { BRAND } from '../../config/brand';
-import RiderRadar from './RiderRadar';
-import RiderSchoolContracts from './RiderSchoolContracts';
-import RiderActiveTrip from './RiderActiveTrip';
-import RiderWallet from './RiderWallet';
+import { VEHICLE_TYPES } from '../../lib/riderConstants';
+import { acceptDispatch, fetchActiveOrder, fetchActiveRide, setRiderOnline } from '../../services/rider';
+import RiderRequests from './RiderRequests';
+import RiderRides from './RiderRides';
+import RiderRideTrip from './RiderRideTrip';
+import RiderDelivery from './RiderDelivery';
+import RiderHistory from './RiderHistory';
+import RiderEarnings from './RiderEarnings';
 import RiderProfile from './RiderProfile';
-import { 
-  Radar, 
-  Navigation, 
-  Wallet, 
-  User, 
-  GraduationCap,
-  Sun,
-  Moon,
-  Bike,
-  ShieldCheck,
-  Zap,
-  ArrowLeft
-} from 'lucide-react';
-import { acceptDispatch } from '../../services/rider';
 
-export default function RiderApp({ rider, profile, onExitToLanding }) {
-  const [currentTab, setCurrentTab] = useState('radar'); // 'radar' | 'contracts' | 'trip' | 'wallet' | 'profile'
-  const [isOnline, setIsOnline] = useState(true);
-  const [sunlightMode, setSunlightMode] = useState(false);
-  const [activeVehicle, setActiveVehicle] = useState('okada'); // 'okada' | 'maruwa' | 'car'
-  const [activeTrip, setActiveTrip] = useState(null);
-  const [walletBalance, setWalletBalance] = useState(38450);
+const TABS = [
+  { id: 'requests', label: 'Requests', icon: Inbox },
+  { id: 'delivery', label: 'Trip', icon: Navigation },
+  { id: 'history', label: 'History', icon: History },
+  { id: 'earnings', label: 'Earnings', icon: Wallet },
+  { id: 'profile', label: 'Profile', icon: User }
+];
 
-  const formatNaira = (num) => '₦' + Math.round(Number(num) || 0).toLocaleString();
+export default function RiderApp({ rider, profile, onSwitchToShop, onExitToLanding }) {
+  const [tab, setTab] = useState('requests');
+  const [online, setOnline] = useState(Boolean(rider?.is_online));
+  const [sunlight, setSunlight] = useState(false);
+  const [trip, setTrip] = useState(null);
+  const [ride, setRide] = useState(null);
+  const [mode, setMode] = useState('deliveries');
+  const [notice, setNotice] = useState('');
+  const [togglingDuty, setTogglingDuty] = useState(false);
 
-  const handleAcceptTrip = async (trip) => {
+  // Resume a job that is already in progress (page refresh, new device, …).
+  useEffect(() => {
+    let alive = true;
+    fetchActiveOrder()
+      .then((res) => {
+        if (alive && res.data) {
+          setTrip(res.data);
+          setTab('delivery');
+        }
+      })
+      .catch(() => { /* the requests screen reports connection problems itself */ });
+    fetchActiveRide()
+      .then((res) => {
+        if (alive && res.data) {
+          setRide(res.data);
+          setTab('delivery');
+        }
+      })
+      .catch(() => {});
+    return () => { alive = false; };
+  }, []);
+
+  // A passenger can choose this rider at any moment, so look for a new ride while online.
+  useEffect(() => {
+    if (!online || trip || ride) return undefined;
+    let alive = true;
+    const id = setInterval(() => {
+      fetchActiveRide()
+        .then((res) => {
+          if (alive && res.data) {
+            setRide(res.data);
+            setTab('delivery');
+            setNotice('');
+          }
+        })
+        .catch(() => {});
+    }, 6000);
+    return () => { alive = false; clearInterval(id); };
+  }, [online, trip, ride]);
+
+  const changeDuty = useCallback(async (next) => {
+    setNotice('');
+    setTogglingDuty(true);
     try {
-      const res = await acceptDispatch(trip.orderId);
-      setActiveTrip(res?.data || trip);
-    } catch {
-      setActiveTrip(trip);
+      await setRiderOnline(next);
+      setOnline(next);
+    } catch (err) {
+      setNotice(err.message || 'Could not change your status.');
+    } finally {
+      setTogglingDuty(false);
     }
-    setCurrentTab('trip');
+  }, []);
+
+  const accept = async (request) => {
+    const res = await acceptDispatch(request.orderId);
+    setTrip({ ...request, ...res.data, pickedUp: false });
+    setTab('delivery');
   };
 
-  const handleTripCompleted = (trip) => {
-    const tripTotal = (trip.fare || 1850) + (trip.tip || 0);
-    setWalletBalance(prev => prev + tripTotal);
-    setActiveTrip(null);
-    setCurrentTab('wallet');
-  };
-
-  const vehicleEmojis = {
-    okada: '🏍️',
-    maruwa: '🛺',
-    car: '🚗'
-  };
+  const vehicle = VEHICLE_TYPES.find((v) => v.value === rider?.vehicle_type);
+  const firstName = (profile?.full_name || 'Rider').split(' ')[0];
 
   return (
-    <div className={`rider-root ${sunlightMode ? 'sunlight-mode' : ''}`}>
-      {/* Driver Top Status & Duty Header Bar */}
+    <div className={`rider-root ${sunlight ? 'sunlight-mode' : ''}`}>
       <header className="rider-top-bar" role="banner">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {/* Active vehicle badge with switcher */}
-          <button 
-            className="rider-vehicle-badge-btn"
-            onClick={() => {
-              const order = ['okada', 'maruwa', 'car'];
-              const next = order[(order.indexOf(activeVehicle) + 1) % order.length];
-              setActiveVehicle(next);
-            }}
-            title="Switch Operating Fleet (Okada, Maruwa, Taxi)"
-            aria-label={`Current vehicle is ${activeVehicle}. Click to switch vehicle type`}
-          >
-            <span style={{ fontSize: '18px' }}>{vehicleEmojis[activeVehicle]}</span>
-            <span style={{ fontSize: '11.5px', fontWeight: 800, textTransform: 'capitalize' }}>
-              {activeVehicle}
-            </span>
-          </button>
-
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
-              <h1 style={{ fontSize: '14px', fontWeight: 800, margin: 0, color: 'var(--rider-text)' }}>
-                {BRAND.name} Mobility
-              </h1>
-              <ShieldCheck size={14} color="#10B981" />
-            </div>
-            <span className="font-mono" style={{ fontSize: '11px', color: 'var(--rider-text-muted)', display: 'block' }}>
-              Ikeja Node · #RDR-284
-            </span>
-          </div>
+        <div>
+          <h1 style={{ fontSize: 15, fontWeight: 800, margin: 0, color: 'var(--rider-text)' }}>{BRAND.name} Rider</h1>
+          <span style={{ fontSize: 11.5, color: 'var(--rider-text-muted)' }}>
+            {firstName} · {[vehicle?.label, rider?.corridor].filter(Boolean).join(' · ')}
+          </span>
         </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          {/* Sunlight Mode High-Contrast Accessibility Switch */}
-          <button
-            className={`rider-sunlight-toggle ${sunlightMode ? 'active' : ''}`}
-            onClick={() => setSunlightMode(!sunlightMode)}
-            title="Toggle High-Contrast Sunlight Mode for outdoor glare"
-            aria-label="Toggle Sunlight High-Contrast Mode"
-            aria-pressed={sunlightMode}
-          >
-            {sunlightMode ? <Sun size={15} color="#F59E0B" /> : <Sun size={15} color="#737373" />}
-            <span className="sunlight-label">{sunlightMode ? 'Sunlight' : 'Standard'}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button type="button" className="rs-switch" onClick={onSwitchToShop} aria-label="Switch to shopping">
+            <ShoppingBag size={14} /> Shop
           </button>
-
-          {/* Online / Offline Duty Switch */}
           <button
-            className={`rider-duty-toggle ${isOnline ? 'online' : ''}`}
-            onClick={() => setIsOnline(!isOnline)}
-            aria-label={isOnline ? 'Go Offline' : 'Go Online'}
-            aria-pressed={isOnline}
+            type="button"
+            className={`rider-sunlight-toggle ${sunlight ? 'active' : ''}`}
+            onClick={() => setSunlight(!sunlight)}
+            aria-label="Toggle high-contrast sunlight mode"
+            aria-pressed={sunlight}
+          >
+            <Sun size={15} color={sunlight ? '#F59E0B' : '#737373'} />
+          </button>
+          <button
+            type="button"
+            className={`rider-duty-toggle ${online ? 'online' : ''}`}
+            onClick={() => changeDuty(!online)}
+            disabled={togglingDuty}
+            aria-label={online ? 'Go offline' : 'Go online'}
+            aria-pressed={online}
           >
             <span className="rider-duty-dot" />
-            <span style={{ fontSize: '12px', fontWeight: 800, color: isOnline ? '#2B7CFF' : 'var(--rider-text-muted)' }}>
-              {isOnline ? 'ONLINE' : 'OFFLINE'}
+            <span style={{ fontSize: 12, fontWeight: 800, color: online ? '#2B7CFF' : 'var(--rider-text-muted)' }}>
+              {online ? 'ONLINE' : 'OFFLINE'}
             </span>
           </button>
         </div>
       </header>
 
-      {/* Main Tab Screen */}
       <main id="rider-main-content">
-        {currentTab === 'radar' && (
-          <RiderRadar 
-            isOnline={isOnline}
-            onAcceptTrip={handleAcceptTrip}
-            selectedVehicle={activeVehicle}
-          />
-        )}
+        {notice && <div className="rs-page" style={{ paddingBottom: 0 }}><div className="rs-alert rs-alert-bad" role="alert">{notice}</div></div>}
 
-        {currentTab === 'contracts' && (
-          <RiderSchoolContracts 
-            isOnline={isOnline}
-          />
-        )}
-
-        {currentTab === 'trip' && (
-          activeTrip ? (
-            <RiderActiveTrip 
-              trip={activeTrip}
-              onTripCompleted={handleTripCompleted}
-              onCancelTrip={() => { setActiveTrip(null); setCurrentTab('radar'); }}
-            />
-          ) : (
-            <div style={{ textAlign: 'center', padding: '60px 20px', maxWidth: '480px', margin: '0 auto' }}>
-              <div style={{ width: '64px', height: '64px', borderRadius: '50%', background: 'var(--rider-card-inner-bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 16px', color: 'var(--rider-text-muted)' }}>
-                <Navigation size={28} />
+        {tab === 'requests' && (
+          <>
+            <div className="rs-page" style={{ paddingBottom: 0 }}>
+              <div className="rs-stat-grid" style={{ gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 0 }} role="tablist" aria-label="Request type">
+                <button type="button" role="tab" aria-selected={mode === 'deliveries'} className={`rs-btn ${mode === 'deliveries' ? '' : 'rs-btn-ghost'}`} style={{ minHeight: 44 }} onClick={() => setMode('deliveries')}>Deliveries</button>
+                <button type="button" role="tab" aria-selected={mode === 'rides'} className={`rs-btn ${mode === 'rides' ? '' : 'rs-btn-ghost'}`} style={{ minHeight: 44 }} onClick={() => setMode('rides')}>Rides</button>
               </div>
-              <h2 style={{ fontSize: '18px', fontWeight: 800, margin: '0 0 6px', color: 'var(--rider-text)' }}>
-                No Trip Currently Active
-              </h2>
-              <p style={{ fontSize: '13.5px', color: 'var(--rider-text-muted)', margin: '0 0 20px', lineHeight: 1.5 }}>
-                Switch to the Radar tab to accept incoming rides, errands, or morning school run bids.
-              </p>
-              <button
-                onClick={() => setCurrentTab('radar')}
-                className="rider-primary-touch-btn"
-                style={{ height: '52px', maxWidth: '240px', margin: '0 auto' }}
-              >
-                Go to Radar
-              </button>
+            </div>
+            {mode === 'deliveries' ? (
+              <RiderRequests
+                online={online}
+                hasActiveTrip={Boolean(trip || ride)}
+                onGoOnline={() => changeDuty(true)}
+                onAccepted={accept}
+                onOpenDelivery={() => setTab('delivery')}
+              />
+            ) : (
+              <RiderRides
+                online={online}
+                hasActiveJob={Boolean(trip || ride)}
+                onGoOnline={() => changeDuty(true)}
+                onOpenJob={() => setTab('delivery')}
+              />
+            )}
+          </>
+        )}
+
+        {tab === 'delivery' && (
+          ride ? (
+            <RiderRideTrip ride={ride} onUpdated={setRide} onFinished={() => { setRide(null); setMode('rides'); setTab('requests'); }} />
+          ) : trip ? (
+            <RiderDelivery trip={trip} onTripUpdated={setTrip} onFinished={() => { setTrip(null); setTab('requests'); }} />
+          ) : (
+            <div className="rs-page rs-empty">
+              <div className="rs-empty-icon"><Navigation size={28} /></div>
+              <h2>No job in progress</h2>
+              <p>Accept a delivery, or win a passenger ride, and it will appear here with the pickup and drop-off details.</p>
+              <button type="button" className="rs-btn" onClick={() => setTab('requests')}>See requests</button>
             </div>
           )
         )}
 
-        {currentTab === 'wallet' && (
-          <RiderWallet 
-            walletBalance={walletBalance}
-          />
-        )}
-
-        {currentTab === 'profile' && (
-          <RiderProfile 
-            profile={profile}
-            currentVehicle={activeVehicle}
-            onVehicleChange={(veh) => setActiveVehicle(veh)}
-            onExitToLanding={onExitToLanding}
-          />
+        {tab === 'history' && <RiderHistory />}
+        {tab === 'earnings' && <RiderEarnings />}
+        {tab === 'profile' && (
+          <RiderProfile profile={profile} rider={rider} onSwitchToShop={onSwitchToShop} onSignOut={onExitToLanding} />
         )}
       </main>
 
-      {/* Driver Bottom Navigation Bar (5 Touch Tabs) */}
-      <nav className="rider-bottom-nav" role="tablist" aria-label="Driver Navigation">
-        <button
-          role="tab"
-          aria-selected={currentTab === 'radar'}
-          className={`rider-nav-btn ${currentTab === 'radar' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('radar')}
-        >
-          <Radar size={20} />
-          <span>Radar</span>
-        </button>
-
-        <button
-          role="tab"
-          aria-selected={currentTab === 'contracts'}
-          className={`rider-nav-btn ${currentTab === 'contracts' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('contracts')}
-        >
-          <GraduationCap size={20} />
-          <span>Contracts</span>
-        </button>
-
-        <button
-          role="tab"
-          aria-selected={currentTab === 'trip'}
-          className={`rider-nav-btn ${currentTab === 'trip' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('trip')}
-        >
-          <div style={{ position: 'relative' }}>
-            <Navigation size={20} />
-            {activeTrip && <span className="rider-nav-active-pip" />}
-          </div>
-          <span>Active Trip</span>
-        </button>
-
-        <button
-          role="tab"
-          aria-selected={currentTab === 'wallet'}
-          className={`rider-nav-btn ${currentTab === 'wallet' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('wallet')}
-        >
-          <Wallet size={20} />
-          <span>Earnings</span>
-        </button>
-
-        <button
-          role="tab"
-          aria-selected={currentTab === 'profile'}
-          className={`rider-nav-btn ${currentTab === 'profile' ? 'active' : ''}`}
-          onClick={() => setCurrentTab('profile')}
-        >
-          <User size={20} />
-          <span>Profile</span>
-        </button>
+      <nav className="rider-bottom-nav" role="tablist" aria-label="Rider navigation">
+        {TABS.map(({ id, label, icon: Icon }) => (
+          <button key={id} role="tab" aria-selected={tab === id} className={`rider-nav-btn ${tab === id ? 'active' : ''}`} onClick={() => setTab(id)}>
+            <div style={{ position: 'relative' }}>
+              <Icon size={20} />
+              {id === 'delivery' && (trip || ride) && <span className="rider-nav-active-pip" />}
+            </div>
+            <span>{label}</span>
+          </button>
+        ))}
       </nav>
     </div>
   );

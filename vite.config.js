@@ -84,7 +84,14 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
-    setupFiles: './src/test-setup.js'
+    // Full-suite runs render large React trees in parallel; 5s is too tight on slower machines.
+    testTimeout: 20000,
+    setupFiles: './src/test-setup.js',
+    // Tests must never talk to the real Supabase project from .env.
+    env: {
+      VITE_SUPABASE_URL: '',
+      VITE_SUPABASE_ANON_KEY: ''
+    }
   },
   server: {
     host: true,

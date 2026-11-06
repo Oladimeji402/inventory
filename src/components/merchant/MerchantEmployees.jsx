@@ -1,389 +1,254 @@
-import React, { useState } from 'react';
-import { Plus, Users, Check, KeyRound, Ban, CheckCircle2, Trash2 } from 'lucide-react';
-import DataTable from '../../shared/ui/DataTable';
-import Modal from '../../shared/ui/Modal';
-import Badge from '../../shared/ui/Badge';
+import { useState } from 'react';
+import { Ban, CheckCircle2, KeyRound, Plus, Trash2, UserCog } from 'lucide-react';
+import {
+  addEmployee,
+  fetchEmployees,
+  removeEmployee,
+  resetEmployeePin,
+  setEmployeeActive
+} from '../../services/merchant';
 import { EMPLOYEE_TYPES, TILL_ROLES, isValidPin } from '../../lib/employeeConstants';
-import { BRAND } from '../../config/brand';
+import { ActionDialog, Badge, DataTable, Dialog, ErrorBanner, Field, Notice, PageHeader, useAsync } from './ui';
+import { dateOnly, timeAgo } from './format';
 
 const emptyForm = { fullName: '', employeeType: 'counter', tillRole: 'Sales Representative', pin: '', confirmPin: '' };
+const typeLabel = (value) => EMPLOYEE_TYPES.find((t) => t.value === value)?.label || value;
+const digits = (value) => value.replace(/\D/g, '').slice(0, 6);
 
-function typeLabel(value) {
-  return EMPLOYEE_TYPES.find((item) => item.value === value)?.label || value;
+function PinFields({ pin, confirm, onPin, onConfirm }) {
+  return (
+    <div className="mc-form-grid">
+      <Field label="PIN (4–6 digits)" htmlFor="emp-pin">
+        <input id="emp-pin" className="mc-input mc-mono" type="password" inputMode="numeric" required maxLength={6} autoComplete="new-password" value={pin} onChange={(e) => onPin(digits(e.target.value))} />
+      </Field>
+      <Field label="Confirm PIN" htmlFor="emp-pin2">
+        <input id="emp-pin2" className="mc-input mc-mono" type="password" inputMode="numeric" required maxLength={6} autoComplete="new-password" value={confirm} onChange={(e) => onConfirm(digits(e.target.value))} />
+      </Field>
+    </div>
+  );
 }
 
-function formatDate(value) {
-  if (!value) return '—';
-  try {
-    return new Date(value).toLocaleDateString('en-NG', { day: 'numeric', month: 'short', year: 'numeric' });
-  } catch {
-    return '—';
-  }
-}
-
-export default function MerchantEmployees({
-  employees = [],
-  loading = false,
-  canManage = true,
-  onAddEmployee,
-  onResetPin,
-  onSetActive,
-  onRemoveEmployee,
-  storeSlug = ''
-}) {
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [formData, setFormData] = useState(emptyForm);
-  const [saving, setSaving] = useState(false);
+function AddDialog({ slug, onClose, onAdded }) {
+  const [form, setForm] = useState(emptyForm);
+  const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-  const [addedEmployee, setAddedEmployee] = useState(null);
+  const [added, setAdded] = useState(null);
 
-  const [pinTarget, setPinTarget] = useState(null);
-  const [pinForm, setPinForm] = useState({ pin: '', confirmPin: '' });
-  const [pinError, setPinError] = useState('');
-  const [pinSaving, setPinSaving] = useState(false);
-
-  const [busyId, setBusyId] = useState(null);
-
-  const closeAddModal = () => {
-    setIsAddOpen(false);
-    setFormData(emptyForm);
-    setError('');
-    setAddedEmployee(null);
-  };
-
-  const handleAdd = async (event) => {
+  const submit = async (event) => {
     event.preventDefault();
     setError('');
-
-    if (!formData.fullName.trim()) {
-      setError("Enter the employee's full name.");
-      return;
+    if (!form.fullName.trim()) return setError('Enter the employee’s full name.');
+    if (!isValidPin(form.pin)) return setError('PIN must be 4 to 6 digits.');
+    if (form.pin !== form.confirmPin) return setError('PINs do not match.');
+    setBusy(true);
+    try {
+      const created = await addEmployee({
+        fullName: form.fullName,
+        employeeType: form.employeeType,
+        tillRole: form.employeeType === 'counter' ? form.tillRole : undefined,
+        pin: form.pin
+      });
+      setAdded({ name: created?.full_name || form.fullName, type: form.employeeType, pin: form.pin });
+      onAdded();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setBusy(false);
     }
-    if (!isValidPin(formData.pin)) {
-      setError('PIN must be 4 to 6 digits.');
-      return;
-    }
-    if (formData.pin !== formData.confirmPin) {
-      setError('PINs do not match.');
-      return;
-    }
-
-    setSaving(true);
-    const result = await onAddEmployee({
-      fullName: formData.fullName,
-      employeeType: formData.employeeType,
-      tillRole: formData.employeeType === 'counter' ? formData.tillRole : undefined,
-      pin: formData.pin
-    });
-    setSaving(false);
-
-    if (result?.error) {
-      setError(result.error);
-      return;
-    }
-    setAddedEmployee({ ...result.data, pin: formData.pin });
   };
 
-  const closePinModal = () => {
-    setPinTarget(null);
-    setPinForm({ pin: '', confirmPin: '' });
-    setPinError('');
-  };
+  if (added) {
+    return (
+      <Dialog title="Employee added" onClose={onClose}>
+        <p>Share these sign-in details with <b>{added.name}</b>. The PIN is not shown again — you can reset it any time.</p>
+        <div className="mc-card" style={{ padding: 14, display: 'grid', gap: 6 }}>
+          <div><b>Name:</b> {added.name}</div>
+          <div><b>PIN:</b> <span className="mc-mono">{added.pin}</span></div>
+          <div><b>Store:</b> <span className="mc-mono">{slug}</span></div>
+          <div><b>Sign in at:</b> <span className="mc-mono">{window.location.origin}/staff</span></div>
+        </div>
+        {added.type === 'counter' && <p className="mc-note">Counter staff also need to be set up on the till device itself before they can ring up sales there.</p>}
+        <div className="mc-dialog-actions"><button type="button" className="mc-btn mc-btn-primary" onClick={onClose}>Done</button></div>
+      </Dialog>
+    );
+  }
 
-  const handleResetPin = async (event) => {
+  return (
+    <Dialog title="Add employee" onClose={busy ? () => {} : onClose} wide>
+      <form onSubmit={submit}>
+        <div className="mc-stack">
+          <Field label="Full name" htmlFor="emp-name" hint="They sign in with this exact name, so spell it the way they will type it.">
+            <input id="emp-name" className="mc-input" required value={form.fullName} onChange={(e) => setForm({ ...form, fullName: e.target.value })} autoFocus />
+          </Field>
+          <fieldset style={{ border: 0, padding: 0, margin: 0, display: 'grid', gap: 8 }}>
+            <legend className="mc-label" style={{ marginBottom: 6 }}>Role</legend>
+            {EMPLOYEE_TYPES.map((item) => (
+              <label key={item.value} className="mc-card" style={{ padding: '10px 12px', display: 'flex', gap: 10, cursor: 'pointer', borderColor: form.employeeType === item.value ? 'var(--primary)' : undefined }}>
+                <input type="radio" name="employeeType" checked={form.employeeType === item.value} onChange={() => setForm({ ...form, employeeType: item.value })} />
+                <span><b>{item.label}</b><br /><span className="mc-hint">{item.hint}</span></span>
+              </label>
+            ))}
+          </fieldset>
+          {form.employeeType === 'counter' && (
+            <Field label="Till permissions" htmlFor="emp-role">
+              <select id="emp-role" className="mc-select" value={form.tillRole} onChange={(e) => setForm({ ...form, tillRole: e.target.value })}>
+                {TILL_ROLES.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+              </select>
+            </Field>
+          )}
+          <PinFields pin={form.pin} confirm={form.confirmPin} onPin={(pin) => setForm({ ...form, pin })} onConfirm={(confirmPin) => setForm({ ...form, confirmPin })} />
+        </div>
+        {error && <div className="mc-error" role="alert" style={{ margin: '14px 0 0' }}>{error}</div>}
+        <div className="mc-dialog-actions">
+          <button type="button" className="mc-btn" onClick={onClose} disabled={busy}>Cancel</button>
+          <button type="submit" className="mc-btn mc-btn-primary" disabled={busy}>{busy ? 'Adding…' : 'Add employee'}</button>
+        </div>
+      </form>
+    </Dialog>
+  );
+}
+
+function ResetPinDialog({ employee, onClose, notify }) {
+  const [pin, setPin] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState('');
+
+  const submit = async (event) => {
     event.preventDefault();
-    setPinError('');
-    if (!isValidPin(pinForm.pin)) {
-      setPinError('PIN must be 4 to 6 digits.');
-      return;
+    setError('');
+    if (!isValidPin(pin)) return setError('PIN must be 4 to 6 digits.');
+    if (pin !== confirm) return setError('PINs do not match.');
+    setBusy(true);
+    try {
+      await resetEmployeePin(employee.id, pin);
+      notify(`New PIN saved for ${employee.fullName}`);
+      onClose();
+    } catch (err) {
+      setError(err.message);
+      setBusy(false);
     }
-    if (pinForm.pin !== pinForm.confirmPin) {
-      setPinError('PINs do not match.');
-      return;
-    }
-    setPinSaving(true);
-    const result = await onResetPin(pinTarget.id, pinForm.pin);
-    setPinSaving(false);
-    if (result?.error) {
-      setPinError(result.error);
-      return;
-    }
-    closePinModal();
-  };
-
-  const toggleActive = async (employee) => {
-    setBusyId(employee.id);
-    await onSetActive(employee.id, !employee.isActive);
-    setBusyId(null);
-  };
-
-  const handleRemove = async (employee) => {
-    if (!window.confirm(`Remove ${employee.fullName}? They will no longer be able to sign in.`)) return;
-    setBusyId(employee.id);
-    await onRemoveEmployee(employee.id);
-    setBusyId(null);
   };
 
   return (
-    <div>
-      <div className="merchant-page-header">
-        <div>
-          <h1>Employees</h1>
-          <p>Add counter staff who sign in at the till, and online sales reps who manage storefront orders here.</p>
+    <Dialog title={`Reset PIN — ${employee.fullName}`} onClose={busy ? () => {} : onClose}>
+      <form onSubmit={submit}>
+        <PinFields pin={pin} confirm={confirm} onPin={setPin} onConfirm={setConfirm} />
+        <p className="mc-note">Resetting also unlocks the account if it was locked after too many wrong attempts.</p>
+        {error && <div className="mc-error" role="alert" style={{ margin: '12px 0 0' }}>{error}</div>}
+        <div className="mc-dialog-actions">
+          <button type="button" className="mc-btn" onClick={onClose} disabled={busy}>Cancel</button>
+          <button type="submit" className="mc-btn mc-btn-primary" disabled={busy}>{busy ? 'Saving…' : 'Save new PIN'}</button>
         </div>
-        {canManage && (
-          <button className="merchant-btn-primary" onClick={() => setIsAddOpen(true)}>
-            <Plus size={15} />
-            <span>Add Employee</span>
-          </button>
-        )}
-      </div>
+      </form>
+    </Dialog>
+  );
+}
 
-      <div className="mx-card">
+export default function MerchantEmployees({ tenant, canManage, notify }) {
+  const { data, loading, error, reload } = useAsync(fetchEmployees, []);
+  const [adding, setAdding] = useState(false);
+  const [resetting, setResetting] = useState(null);
+  const [removing, setRemoving] = useState(null);
+  const [busyId, setBusyId] = useState(null);
+  const rows = data || [];
+
+  const toggle = async (employee) => {
+    setBusyId(employee.id);
+    try {
+      await setEmployeeActive(employee.id, !employee.isActive);
+      notify(employee.isActive ? `${employee.fullName} can no longer sign in` : `${employee.fullName} can sign in again`);
+      await reload({ silent: true });
+    } catch (err) {
+      notify(err.message, 'bad');
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  if (!canManage) {
+    return (
+      <>
+        <PageHeader title="Staff" />
+        <Notice tone="warn">Only the store owner can manage staff.</Notice>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <PageHeader
+        title="Staff"
+        subtitle="Cashiers sell at your counter and online sales reps handle storefront orders. They sign in with a PIN, not an email, so you stay in control."
+        actions={<button type="button" className="mc-btn mc-btn-primary" onClick={() => setAdding(true)}><Plus size={15} /> Add employee</button>}
+      />
+      <ErrorBanner message={error} onRetry={reload} />
+
+      {(data || loading) && <section className="mc-card">
         <DataTable
-          loading={loading}
-          rows={employees}
+          loading={loading && !data}
+          rows={rows}
           empty={{
-            icon: Users,
+            icon: UserCog,
             title: 'No employees yet',
-            desc: 'Add your first counter cashier or online sales rep to get them signing in.'
+            text: 'Add a counter cashier or an online sales rep so they can work without your password.',
+            action: <button type="button" className="mc-btn mc-btn-primary" onClick={() => setAdding(true)}><Plus size={15} /> Add employee</button>
           }}
           columns={[
             {
               key: 'name',
               header: 'Name',
-              render: (e) => (
-                <div>
-                  <div style={{ fontWeight: 700 }}>{e.fullName}</div>
-                  <div style={{ fontSize: 12, color: 'var(--mx-text-3)' }}>Added {formatDate(e.createdAt)}</div>
-                </div>
-              )
+              render: (e) => <><div className="mc-cell-main">{e.fullName}</div><div className="mc-cell-sub">Added {dateOnly(e.createdAt)}</div></>
             },
             {
-              key: 'type',
+              key: 'role',
               header: 'Role',
               render: (e) => (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 4, alignItems: 'flex-start' }}>
-                  <Badge tone={e.employeeType === 'online_rep' ? 'info' : 'neutral'}>{typeLabel(e.employeeType)}</Badge>
-                  {e.employeeType === 'counter' && e.tillRole && (
-                    <span style={{ fontSize: 11.5, color: 'var(--mx-text-3)', fontWeight: 600 }}>{e.tillRole}</span>
-                  )}
-                </div>
+                <>
+                  <Badge tone={e.employeeType === 'online_rep' ? 'info' : 'idle'}>{typeLabel(e.employeeType)}</Badge>
+                  {e.employeeType === 'counter' && e.tillRole && <div className="mc-cell-sub">{e.tillRole}</div>}
+                </>
               )
             },
             {
               key: 'status',
               header: 'Status',
-              render: (e) => {
-                if (e.lockedUntil && new Date(e.lockedUntil) > new Date()) {
-                  return <Badge tone="warning">PIN locked</Badge>;
-                }
-                return <Badge tone={e.isActive ? 'success' : 'neutral'}>{e.isActive ? 'Active' : 'Deactivated'}</Badge>;
-              }
+              render: (e) => (e.lockedUntil && new Date(e.lockedUntil) > new Date()
+                ? <Badge tone="warn">PIN locked</Badge>
+                : <Badge tone={e.isActive ? 'ok' : 'idle'}>{e.isActive ? 'Active' : 'Deactivated'}</Badge>)
             },
-            ...(canManage ? [{
+            { key: 'last', header: 'Last sign-in', render: (e) => (e.lastSignInAt ? timeAgo(e.lastSignInAt) : 'Never') },
+            {
               key: 'actions',
               header: '',
               align: 'right',
               render: (e) => (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 6 }}>
-                  <button
-                    type="button"
-                    className="merchant-icon-btn"
-                    title="Reset PIN"
-                    onClick={() => setPinTarget(e)}
-                    disabled={busyId === e.id}
-                  >
-                    <KeyRound size={14} />
+                <span className="mc-row" style={{ justifyContent: 'flex-end', gap: 6 }}>
+                  <button type="button" className="mc-btn mc-btn-sm" onClick={() => setResetting(e)} disabled={busyId === e.id} aria-label={`Reset PIN for ${e.fullName}`}><KeyRound size={13} /> PIN</button>
+                  <button type="button" className="mc-btn mc-btn-sm" onClick={() => toggle(e)} disabled={busyId === e.id} aria-label={`${e.isActive ? 'Deactivate' : 'Reactivate'} ${e.fullName}`}>
+                    {e.isActive ? <><Ban size={13} /> Deactivate</> : <><CheckCircle2 size={13} /> Reactivate</>}
                   </button>
-                  <button
-                    type="button"
-                    className="merchant-icon-btn"
-                    title={e.isActive ? 'Deactivate' : 'Reactivate'}
-                    onClick={() => toggleActive(e)}
-                    disabled={busyId === e.id}
-                  >
-                    {e.isActive ? <Ban size={14} /> : <CheckCircle2 size={14} />}
-                  </button>
-                  <button
-                    type="button"
-                    className="merchant-icon-btn"
-                    title="Remove"
-                    onClick={() => handleRemove(e)}
-                    disabled={busyId === e.id}
-                  >
-                    <Trash2 size={14} />
-                  </button>
-                </div>
+                  <button type="button" className="mc-btn mc-btn-sm mc-btn-danger" onClick={() => setRemoving(e)} disabled={busyId === e.id} aria-label={`Remove ${e.fullName}`}><Trash2 size={13} /></button>
+                </span>
               )
-            }] : [])
+            }
           ]}
         />
-      </div>
+      </section>}
+      <p className="mc-note">Staff sign in at <span className="mc-mono">{window.location.origin}/staff</span> with your store URL (<span className="mc-mono">{tenant.slug}</span>), their name and PIN. Five wrong PINs lock the account for 15 minutes.</p>
 
-      <Modal
-        open={isAddOpen}
-        title={addedEmployee ? 'Employee added' : 'Add Employee'}
-        onClose={closeAddModal}
-        footer={
-          addedEmployee ? (
-            <button type="button" className="merchant-btn-primary" onClick={closeAddModal}>Done</button>
-          ) : (
-            <>
-              <button type="button" className="merchant-btn-secondary" onClick={closeAddModal}>Cancel</button>
-              <button type="submit" form="employee-form" className="merchant-btn-primary" disabled={saving}>
-                <Check size={14} />
-                <span>{saving ? 'Adding…' : 'Add Employee'}</span>
-              </button>
-            </>
-          )
-        }
-      >
-        {addedEmployee ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <p style={{ margin: 0, fontSize: 13.5, color: 'var(--mx-text-2)' }}>
-              Share these details with <strong>{addedEmployee.fullName}</strong> so they can sign in.
-              {addedEmployee.employeeType === 'counter'
-                ? ' They will also need this PIN added at the till itself.'
-                : ' They will sign in at your store URL, then /staff.'}
-            </p>
-            <div className="mx-card" style={{ padding: 14, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <div><strong>Name:</strong> {addedEmployee.fullName}</div>
-              <div><strong>PIN:</strong> <span className="font-mono">{addedEmployee.pin}</span></div>
-              {storeSlug && <div><strong>Store URL:</strong> <span className="font-mono">{storeSlug}.{BRAND.domain}</span></div>}
-            </div>
-          </div>
-        ) : (
-          <form id="employee-form" onSubmit={handleAdd} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <div className="merchant-field-group">
-              <label className="merchant-field-label">Full name *</label>
-              <input
-                type="text"
-                required
-                value={formData.fullName}
-                onChange={(event) => setFormData({ ...formData, fullName: event.target.value })}
-                className="merchant-field-input"
-                placeholder="Chidinma Eze"
-              />
-            </div>
-            <div className="merchant-field-group">
-              <span className="merchant-field-label">Role</span>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {EMPLOYEE_TYPES.map((item) => (
-                  <label
-                    key={item.value}
-                    className={`merchant-radio-card${formData.employeeType === item.value ? ' selected' : ''}`}
-                  >
-                    <input
-                      type="radio"
-                      name="employeeType"
-                      value={item.value}
-                      checked={formData.employeeType === item.value}
-                      onChange={() => setFormData({ ...formData, employeeType: item.value })}
-                    />
-                    <span>
-                      <strong style={{ display: 'block', fontSize: 13.5 }}>{item.label}</strong>
-                      <span style={{ fontSize: 12, color: 'var(--mx-text-3)' }}>{item.hint}</span>
-                    </span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            {formData.employeeType === 'counter' && (
-              <div className="merchant-field-group">
-                <label className="merchant-field-label">Till Role / Register Permissions</label>
-                <select
-                  className="merchant-field-input"
-                  value={formData.tillRole}
-                  onChange={(event) => setFormData({ ...formData, tillRole: event.target.value })}
-                >
-                  {TILL_ROLES.map((role) => (
-                    <option key={role.value} value={role.value}>
-                      {role.label}
-                    </option>
-                  ))}
-                </select>
-                <span style={{ fontSize: 11.5, color: 'var(--mx-text-3)', marginTop: 4 }}>
-                  Controls discount limits (5% to 20%), sale void rights, and register management.
-                </span>
-              </div>
-            )}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-              <div className="merchant-field-group">
-                <label className="merchant-field-label">PIN *</label>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  required
-                  maxLength={6}
-                  value={formData.pin}
-                  onChange={(event) => setFormData({ ...formData, pin: event.target.value.replace(/\D/g, '').slice(0, 6) })}
-                  className="merchant-field-input font-mono"
-                  placeholder="4-6 digits"
-                />
-              </div>
-              <div className="merchant-field-group">
-                <label className="merchant-field-label">Confirm PIN *</label>
-                <input
-                  type="password"
-                  inputMode="numeric"
-                  required
-                  maxLength={6}
-                  value={formData.confirmPin}
-                  onChange={(event) => setFormData({ ...formData, confirmPin: event.target.value.replace(/\D/g, '').slice(0, 6) })}
-                  className="merchant-field-input font-mono"
-                />
-              </div>
-            </div>
-            {error && <div className="merchant-form-error">{error}</div>}
-          </form>
-        )}
-      </Modal>
-
-      <Modal
-        open={Boolean(pinTarget)}
-        title={pinTarget ? `Reset PIN — ${pinTarget.fullName}` : ''}
-        onClose={closePinModal}
-        footer={
-          <>
-            <button type="button" className="merchant-btn-secondary" onClick={closePinModal}>Cancel</button>
-            <button type="submit" form="reset-pin-form" className="merchant-btn-primary" disabled={pinSaving}>
-              <KeyRound size={14} />
-              <span>{pinSaving ? 'Saving…' : 'Save new PIN'}</span>
-            </button>
-          </>
-        }
-      >
-        <form id="reset-pin-form" onSubmit={handleResetPin} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="merchant-field-group">
-              <label className="merchant-field-label">New PIN *</label>
-              <input
-                type="password"
-                inputMode="numeric"
-                required
-                maxLength={6}
-                value={pinForm.pin}
-                onChange={(event) => setPinForm({ ...pinForm, pin: event.target.value.replace(/\D/g, '').slice(0, 6) })}
-                className="merchant-field-input font-mono"
-              />
-            </div>
-            <div className="merchant-field-group">
-              <label className="merchant-field-label">Confirm *</label>
-              <input
-                type="password"
-                inputMode="numeric"
-                required
-                maxLength={6}
-                value={pinForm.confirmPin}
-                onChange={(event) => setPinForm({ ...pinForm, confirmPin: event.target.value.replace(/\D/g, '').slice(0, 6) })}
-                className="merchant-field-input font-mono"
-              />
-            </div>
-          </div>
-          {pinError && <div className="merchant-form-error">{pinError}</div>}
-        </form>
-      </Modal>
-    </div>
+      {adding && <AddDialog slug={tenant.slug} onClose={() => setAdding(false)} onAdded={() => reload({ silent: true })} />}
+      {resetting && <ResetPinDialog employee={resetting} notify={notify} onClose={() => { setResetting(null); reload({ silent: true }); }} />}
+      {removing && (
+        <ActionDialog
+          title={`Remove ${removing.fullName}?`}
+          description="They will no longer be able to sign in, and this cannot be undone. Their past sales stay in your records."
+          confirmLabel="Remove employee"
+          tone="danger"
+          onConfirm={() => removeEmployee(removing.id).then(() => { notify(`${removing.fullName} removed`); reload({ silent: true }); })}
+          onClose={() => setRemoving(null)}
+        />
+      )}
+    </>
   );
 }

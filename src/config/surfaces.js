@@ -82,7 +82,7 @@ export function resolveSurface(location) {
   if (sub === 'admin') return 'admin';
 
   const path = pathOf(location);
-  if (MERCHANT_PATHS.has(path)) return 'merchant';
+  if (MERCHANT_PATHS.has(path) || path.startsWith('/dashboard/')) return 'merchant';
   if (path === '/admin' || path.startsWith('/admin/')) return 'admin';
   if (path === '/rider' || path.startsWith('/rider/')) return 'rider';
   if (path === '/shop' || path.startsWith('/shop/')) return 'shop';
@@ -155,6 +155,12 @@ export function surfaceUrl(surface, path = '/', location) {
   }
   if (surface === 'till') {
     return `${surfaceOrigin(surface, location)}${tillFullPath(normalized, location)}`;
+  }
+  // These surfaces own a path prefix wherever they don't have their own subdomain.
+  if (surface === 'shop' || surface === 'rides' || surface === 'admin') {
+    const host = hostOf(location);
+    const prefixed = usesProductSubdomains(host) ? normalized : `/${surface}${normalized === '/' ? '' : normalized}`;
+    return `${surfaceOrigin(surface, location)}${prefixed || `/${surface}`}`;
   }
   return `${surfaceOrigin(surface, location)}${normalized}`;
 }

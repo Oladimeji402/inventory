@@ -1,6 +1,7 @@
 import { useLayoutEffect, useState } from 'react';
 import LoadingScreen from '../../components/LoadingScreen';
 import RiderApp from '../../components/rider/RiderApp';
+import RiderVerification from '../../components/rider/RiderVerification';
 import { useRiderAuth } from '../../hooks/useRiderAuth';
 import { appLinks, riderFullPath, riderLocalPath } from '../../config/surfaces';
 import ForgotPasswordPage from './auth/ForgotPasswordPage';
@@ -87,14 +88,30 @@ export default function RiderRoot() {
     );
   }
 
+  const signOutToLogin = async () => {
+    await auth.signOut();
+    window.location.href = appLinks.riderLogin();
+  };
+
+  // Riders only reach the app once their documents are verified (and while not suspended).
+  if (auth.rider?.kyc_status !== 'verified' || auth.rider?.suspended_at) {
+    return (
+      <RiderVerification
+        userId={auth.user?.id}
+        rider={auth.rider}
+        riderName={auth.profile?.full_name}
+        onRefresh={auth.refreshRider}
+        onSignOut={signOutToLogin}
+      />
+    );
+  }
+
   return (
     <RiderApp
       rider={auth.rider}
       profile={auth.profile}
-      onExitToLanding={async () => {
-        await auth.signOut();
-        window.location.href = appLinks.riderLogin();
-      }}
+      onSwitchToShop={() => { window.location.href = appLinks.shop(); }}
+      onExitToLanding={signOutToLogin}
     />
   );
 }

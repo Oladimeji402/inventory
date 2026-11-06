@@ -1,299 +1,218 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import './Merchant.css';
-import MerchantNav from './MerchantNav';
-import MerchantOverview from './MerchantOverview';
-import MerchantAnalytics from './MerchantAnalytics';
-import MerchantProducts from './MerchantProducts';
-import MerchantOrders from './MerchantOrders';
-import MerchantCustomers from './MerchantCustomers';
-import MerchantEmployees from './MerchantEmployees';
-import MerchantNotifications from './MerchantNotifications';
-import MerchantSettings from './MerchantSettings';
-import { useMerchantStore } from '../../hooks/useMerchantStore';
-import { isActiveOrder } from '../../lib/formatMoney';
-import { BRAND } from '../../config/brand';
-import { ToastProvider } from '../../shared/ui/Toast';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
-  Store,
+  BarChart3,
+  Banknote,
+  ExternalLink,
+  LayoutDashboard,
+  Loader2,
+  LogOut,
   Menu,
-  Bell,
-  ArrowLeft
+  Package,
+  RefreshCw,
+  Settings,
+  ShoppingBag,
+  Store,
+  UserCog,
+  Users
 } from 'lucide-react';
+import { BRAND } from '../../config/brand';
+import { appLinks } from '../../config/surfaces';
+import { fetchOverview, subscribeToOrders } from '../../services/merchant';
+import { useDashRoute } from './router';
+import { Link, ToastProvider, useAsync, useToast } from './ui';
+import { timeAgo } from './format';
+import MerchantOverview from './MerchantOverview';
+import { MerchantOrderDetail, MerchantOrders } from './MerchantOrders';
+import MerchantProducts from './MerchantProducts';
+import MerchantCustomers from './MerchantCustomers';
+import MerchantAnalytics from './MerchantAnalytics';
+import MerchantPayouts from './MerchantPayouts';
+import MerchantEmployees from './MerchantEmployees';
+import MerchantSettings from './MerchantSettings';
+import './Merchant.css';
 
-function buildNotifications(products, orders) {
-  const items = [];
-  orders.filter((order) => order.status === 'pending').forEach((order) => {
-    items.push({
-      id: `order-${order.id}`,
-      type: 'order',
-      title: `New storefront order (${order.customerName})`,
-      desc: `${order.itemsSummary || 'Items pending packaging'} · ₦${Math.round(order.total).toLocaleString()}`,
-      time: order.timeAgo,
-      unread: true,
-      action: 'view_order'
-    });
-  });
-  orders.filter((order) => order.status === 'dispatched').forEach((order) => {
-    items.push({
-      id: `dispatch-${order.id}`,
-      type: 'rider',
-      title: `Order in transit (${order.customerName})`,
-      desc: order.courierInfo?.courierName
-        ? `${order.courierInfo.courierName} is on the way.`
-        : 'Marked for dispatch. A courier will be assigned when the rider network is live.',
-      time: order.timeAgo,
-      unread: false,
-      action: 'view_order'
-    });
-  });
-  products.filter((product) => product.stock <= product.lowStockThreshold).forEach((product) => {
-    items.push({
-      id: `stock-${product.id}`,
-      type: 'stock',
-      title: product.stock === 0 ? `Out of stock: ${product.name}` : `Low stock: ${product.name}`,
-      desc: product.stock === 0
-        ? 'This item will not appear as available on the storefront.'
-        : `Only ${product.stock} unit${product.stock === 1 ? '' : 's'} left.`,
-      time: '',
-      unread: product.stock === 0,
-      action: 'restock'
-    });
-  });
-  return items;
-}
-
-function readNotifStorageKey(tenantId) {
-  return `subtech.merchant.notifs.read.${tenantId}`;
-}
-
-function loadReadIds(tenantId) {
-  if (!tenantId) return new Set();
-  try {
-    const raw = window.localStorage.getItem(readNotifStorageKey(tenantId));
-    return raw ? new Set(JSON.parse(raw)) : new Set();
-  } catch {
-    return new Set();
+const NAV = [
+  { label: null, items: [{ to: '/', text: 'Overview', icon: LayoutDashboard, match: '' }] },
+  {
+    label: 'Sell',
+    items: [
+      { to: '/orders', text: 'Orders', icon: ShoppingBag, match: 'orders', badge: 'orders' },
+      { to: '/products', text: 'Products', icon: Package, match: 'products', badge: 'stock' },
+      { to: '/customers', text: 'Customers', icon: Users, match: 'customers' }
+    ]
+  },
+  {
+    label: 'Grow',
+    items: [{ to: '/analytics', text: 'Analytics', icon: BarChart3, match: 'analytics' }]
+  },
+  {
+    label: 'Store',
+    items: [
+      { to: '/payouts', text: 'Payouts & billing', icon: Banknote, match: 'payouts', managerOnly: true },
+      { to: '/staff', text: 'Staff', icon: UserCog, match: 'staff', managerOnly: true },
+      { to: '/settings', text: 'Settings', icon: Settings, match: 'settings' }
+    ]
   }
-}
+];
 
-function saveReadIds(tenantId, ids) {
-  if (!tenantId) return;
-  try {
-    window.localStorage.setItem(readNotifStorageKey(tenantId), JSON.stringify(Array.from(ids)));
-  } catch {
-    // localStorage unavailable (private mode, etc.) — read state just won't persist
-  }
-}
-
-function MerchantAppInner({
-  tenant,
-  profile,
-  membershipRole,
-  justOnboarded = false,
-  onRefreshTenant,
-  onSignOut,
-  onOpenStorefront,
-  onExitToLanding
-}) {
+function Shell({ tenant, profile, membershipRole, justOnboarded, onRefreshTenant, onSignOut, onOpenStorefront, storefrontUrl }) {
+  const { segments, navigate } = useDashRoute();
+  const notify = useToast();
   const canManage = membershipRole === 'owner' || membershipRole === 'admin';
-  const store = useMerchantStore(tenant, { onTenantUpdated: onRefreshTenant });
-  const [currentTab, setCurrentTab] = useState('overview');
-  const [isAddProductOpen, setIsAddProductOpen] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(justOnboarded);
-  const [readIds, setReadIds] = useState(() => new Set());
-  const [openOrderId, setOpenOrderId] = useState(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [updatedAt, setUpdatedAt] = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [refreshing, setRefreshing] = useState(false);
 
+  const overview = useAsync(async () => {
+    const data = await fetchOverview(30);
+    setUpdatedAt(new Date().toISOString());
+    return data;
+  }, [tenant.id]);
+  const { reload: reloadOverview } = overview;
+
+  const bump = useCallback(() => {
+    reloadOverview({ silent: true });
+    setRefreshKey((k) => k + 1);
+  }, [reloadOverview]);
+
+  // Live updates: a new or changed order refreshes the counts and the open page.
+  const bumpRef = useRef(bump);
+  bumpRef.current = bump;
   useEffect(() => {
-    setReadIds(loadReadIds(tenant?.id));
-  }, [tenant?.id]);
-
-  const notifications = useMemo(() => {
-    return buildNotifications(store.products, store.orders).map((item) => ({
-      ...item,
-      unread: item.unread && !readIds.has(item.id)
-    }));
-  }, [store.products, store.orders, readIds]);
-
-  const markAllNotifsRead = useCallback(() => {
-    setReadIds((current) => {
-      const next = new Set(current);
-      notifications.forEach((item) => next.add(item.id));
-      saveReadIds(tenant?.id, next);
-      return next;
+    let timer;
+    const unsubscribe = subscribeToOrders(tenant.id, () => {
+      clearTimeout(timer);
+      timer = setTimeout(() => bumpRef.current(), 400);
     });
-  }, [notifications, tenant?.id]);
+    return () => {
+      clearTimeout(timer);
+      unsubscribe();
+    };
+  }, [tenant.id]);
 
-  const unreadNotifsCount = notifications.filter((item) => item.unread).length;
-  const pendingOrdersCount = store.orders.filter(isActiveOrder).length;
+  // Fallback for when realtime is unavailable.
+  useEffect(() => {
+    const id = setInterval(() => bumpRef.current(), 60000);
+    return () => clearInterval(id);
+  }, []);
 
-  const goToTab = (tab) => {
-    setCurrentTab(tab);
-    setMobileMenuOpen(false);
+  const refresh = async () => {
+    setRefreshing(true);
+    await reloadOverview({ silent: true });
+    setRefreshKey((k) => k + 1);
+    setRefreshing(false);
+  };
+
+  const attention = overview.data?.attention || {};
+
+  // Tell the owner when a new paid order lands while they have the dashboard open.
+  const lastNew = useRef(null);
+  const newOrders = overview.data ? Number(attention.newOrders) || 0 : null;
+  useEffect(() => {
+    if (newOrders === null) return;
+    if (lastNew.current !== null && newOrders > lastNew.current) {
+      notify(`${newOrders - lastNew.current} new order${newOrders - lastNew.current === 1 ? '' : 's'} to pack`);
+    }
+    lastNew.current = newOrders;
+    document.title = newOrders > 0 ? `(${newOrders}) ${tenant.trading_name || 'Dashboard'}` : tenant.trading_name || 'Dashboard';
+  }, [newOrders, notify, tenant.trading_name]);
+  const badges = {
+    orders: (Number(attention.newOrders) || 0) + (Number(attention.awaitingTransferCount) || 0),
+    stock: (Number(attention.outOfStock) || 0) + (Number(attention.lowStock) || 0)
+  };
+
+  const [section, id] = segments;
+  const ctx = { navigate, notify, refreshKey, canManage, tenant, onChanged: bump };
+
+  let page;
+  switch (section) {
+    case 'orders': page = id ? <MerchantOrderDetail {...ctx} orderId={id} /> : <MerchantOrders {...ctx} />; break;
+    case 'products': page = <MerchantProducts {...ctx} />; break;
+    case 'customers': page = <MerchantCustomers {...ctx} />; break;
+    case 'analytics': page = <MerchantAnalytics {...ctx} />; break;
+    case 'payouts': page = <MerchantPayouts {...ctx} />; break;
+    case 'staff': page = <MerchantEmployees {...ctx} />; break;
+    case 'settings': page = <MerchantSettings {...ctx} onRefreshTenant={onRefreshTenant} />; break;
+    default:
+      page = (
+        <MerchantOverview
+          {...ctx}
+          store={tenant}
+          overview={overview}
+          showWelcome={justOnboarded}
+          storefrontUrl={storefrontUrl}
+          onOpenStorefront={onOpenStorefront}
+        />
+      );
+  }
+
+  const storeHost = (storefrontUrl || BRAND.domain).replace(/^https?:\/\//, '');
+  const goTo = (to) => {
+    setMenuOpen(false);
+    navigate(to);
   };
 
   return (
-    <div className="merchant-root">
-      <MerchantNav
-        currentTab={currentTab}
-        onSelectTab={goToTab}
-        storeProfile={store.storeProfile}
-        orderCount={pendingOrdersCount}
-        unreadNotifsCount={unreadNotifsCount}
-        onExitToLanding={onExitToLanding}
-      />
-
-      <div className="merchant-main">
-        <header className="merchant-header">
-          <div className="merchant-header-left">
-            <button
-              className="merchant-btn-secondary"
-              style={{ padding: '6px 10px', display: 'none' }}
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            >
-              <Menu size={18} />
-            </button>
-
-            <button
-              className="merchant-store-link-pill font-mono"
-              onClick={onOpenStorefront}
-              title="Open public storefront"
-            >
-              <Store size={14} color="#2B7CFF" />
-              <span>
-                {store.storeProfile.slug
-                  ? `https://${store.storeProfile.slug}.${BRAND.domain}`
-                  : BRAND.domain}
-              </span>
-            </button>
+    <div className="mc-root">
+      <aside className={`mc-sidebar ${menuOpen ? 'open' : ''}`} aria-label="Store navigation">
+        <div className="mc-brand">
+          <span className="mc-brand-mark"><Store size={19} /></span>
+          <div>
+            <strong title={tenant.trading_name}>{tenant.trading_name || 'Your store'}</strong>
+            <span className="sub">Merchant dashboard</span>
           </div>
+        </div>
 
-          <div className="merchant-header-right">
-            <button
-              className="merchant-btn-secondary"
-              style={{ padding: '8px', position: 'relative', borderRadius: '8px' }}
-              onClick={() => goToTab('notifications')}
-              title="View notifications"
-            >
-              <Bell size={16} color={currentTab === 'notifications' ? '#2B7CFF' : '#525252'} />
-              {unreadNotifsCount > 0 && <span className="merchant-header-bell-dot" />}
-            </button>
+        {NAV.map((group) => {
+          const items = group.items.filter((item) => canManage || !item.managerOnly);
+          if (!items.length) return null;
+          return (
+            <div className="mc-nav-group" key={group.label || 'top'}>
+              {group.label && <div className="mc-nav-label">{group.label}</div>}
+              {items.map((item) => {
+                const active = (section || '') === item.match;
+                const badge = item.badge ? Number(badges[item.badge]) || 0 : 0;
+                return (
+                  <Link key={item.to} to={item.to} navigate={goTo} className={`mc-nav-link ${active ? 'active' : ''}`} aria-current={active ? 'page' : undefined}>
+                    <item.icon size={17} />
+                    <span>{item.text}</span>
+                    {badge > 0 && <span className="mc-nav-count" aria-label={`${badge} need attention`}>{badge}</span>}
+                  </Link>
+                );
+              })}
+            </div>
+          );
+        })}
 
-            {onSignOut && (
-              <button
-                className="merchant-btn-secondary"
-                onClick={onSignOut}
-                style={{ fontSize: '13px' }}
-                title={profile?.full_name || 'Sign out'}
-              >
-                Sign out
-              </button>
-            )}
-
-            <button className="merchant-btn-secondary" onClick={onExitToLanding} style={{ fontSize: '13px' }}>
-              <ArrowLeft size={14} />
-              <span>Exit</span>
-            </button>
+        <div className="mc-sidebar-foot">
+          <div className="mc-me">
+            <b>{profile?.full_name || 'Signed in'}</b>
+            {membershipRole ? `${membershipRole.charAt(0).toUpperCase()}${membershipRole.slice(1)}` : ''}
           </div>
+          <button type="button" className="mc-btn-ghost-dark" onClick={onOpenStorefront}><ExternalLink size={16} /> View storefront</button>
+          <a className="mc-btn-ghost-dark" href={appLinks.till()} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}><Store size={16} /> Open the till</a>
+          <button type="button" className="mc-btn-ghost-dark danger" onClick={onSignOut}><LogOut size={16} /> Sign out</button>
+        </div>
+      </aside>
+      <div className={`mc-scrim ${menuOpen ? 'open' : ''}`} onClick={() => setMenuOpen(false)} aria-hidden="true" />
+
+      <div className="mc-main">
+        <header className="mc-topbar">
+          <button type="button" className="mc-btn mc-menu-btn" onClick={() => setMenuOpen((o) => !o)} aria-label="Toggle navigation" aria-expanded={menuOpen}><Menu size={17} /></button>
+          <a className="mc-storelink" href={storefrontUrl || '#'} onClick={(e) => { e.preventDefault(); onOpenStorefront(); }} title="Open your public storefront">
+            <Store size={14} />
+            <span>{storeHost}</span>
+          </a>
+          <span className="mc-live" title="Orders update live; counts also refresh every minute">
+            <span className="mc-live-dot" />
+            <span className="txt">{updatedAt ? `Updated ${timeAgo(updatedAt)}` : 'Loading…'}</span>
+          </span>
+          <button type="button" className="mc-btn mc-btn-sm" onClick={refresh} disabled={refreshing}>
+            {refreshing ? <Loader2 size={14} className="mc-spin" /> : <RefreshCw size={14} />} Refresh
+          </button>
         </header>
-
-        <main className="merchant-content">
-          {store.error && <div className="merchant-form-error" style={{ marginBottom: 16 }}>{store.error}</div>}
-
-          {currentTab === 'overview' && (
-            <MerchantOverview
-              storeProfile={store.storeProfile}
-              products={store.products}
-              orders={store.orders}
-              loading={store.loading}
-              onNavigateTab={goToTab}
-              onOpenAddProduct={() => {
-                goToTab('products');
-                setIsAddProductOpen(true);
-              }}
-              onOpenOrder={(orderId) => {
-                setOpenOrderId(orderId);
-                goToTab('orders');
-              }}
-              onOpenStorefront={onOpenStorefront}
-              showWelcome={showWelcome}
-              onDismissWelcome={() => setShowWelcome(false)}
-            />
-          )}
-
-          {currentTab === 'analytics' && (
-            <MerchantAnalytics
-              products={store.products}
-              orders={store.orders}
-              customers={store.customers}
-            />
-          )}
-
-          {currentTab === 'products' && (
-            <MerchantProducts
-              products={store.products}
-              loading={store.loading}
-              canManage={canManage}
-              onSaveProduct={store.saveProduct}
-              onDeleteProduct={store.deleteProduct}
-              onSetProductActive={store.setProductActive}
-              onUploadImage={store.uploadProductImage}
-              isAddModalOpen={isAddProductOpen}
-              onCloseAddModal={() => setIsAddProductOpen(false)}
-              onOpenAddModal={() => setIsAddProductOpen(true)}
-            />
-          )}
-
-          {currentTab === 'orders' && (
-            <MerchantOrders
-              orders={store.orders}
-              loading={store.loading}
-              canManage={canManage}
-              onUpdateOrderStatus={store.updateOrderStatus}
-              openOrderId={openOrderId}
-              onOrderOpened={() => setOpenOrderId(null)}
-            />
-          )}
-
-          {currentTab === 'customers' && (
-            <MerchantCustomers
-              customers={store.customers}
-              orders={store.orders}
-              loading={store.loading}
-              canManage={canManage}
-              onSaveCustomer={store.saveCustomer}
-            />
-          )}
-
-          {currentTab === 'employees' && (
-            <MerchantEmployees
-              employees={store.employees}
-              loading={store.loading}
-              canManage={canManage}
-              onAddEmployee={store.addEmployee}
-              onResetPin={store.resetEmployeePin}
-              onSetActive={store.setEmployeeActive}
-              onRemoveEmployee={store.removeEmployee}
-              storeSlug={store.storeProfile.slug}
-            />
-          )}
-
-          {currentTab === 'notifications' && (
-            <MerchantNotifications
-              notifications={notifications}
-              onMarkAllRead={markAllNotifsRead}
-              onNavigateTab={goToTab}
-            />
-          )}
-
-          {currentTab === 'settings' && (
-            <MerchantSettings
-              storeProfile={store.storeProfile}
-              canManage={canManage}
-              onSaveSettings={store.saveSettings}
-            />
-          )}
-        </main>
+        <main className="mc-content">{page}</main>
       </div>
     </div>
   );
@@ -302,7 +221,7 @@ function MerchantAppInner({
 export default function MerchantApp(props) {
   return (
     <ToastProvider>
-      <MerchantAppInner {...props} />
+      <Shell {...props} />
     </ToastProvider>
   );
 }

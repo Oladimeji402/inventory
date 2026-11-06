@@ -1,42 +1,53 @@
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, afterEach } from 'vitest';
 import { openPaystackPopup } from './paystack';
 
 describe('Paystack Inline Payment Helper', () => {
-  it('triggers onSuccess in simulated mode when user confirms checkout', async () => {
-    // Mock window.confirm to return true
-    vi.spyOn(window, 'confirm').mockImplementation(() => true);
-    const onSuccess = vi.fn();
-    const onClose = vi.fn();
-
-    await openPaystackPopup({
-      email: 'shopper@test.com',
-      amountInNaira: 12500,
-      publicKey: 'pk_test_sample_counterpoint',
-      onSuccess,
-      onClose
-    });
-
-    expect(onSuccess).toHaveBeenCalled();
-    const result = onSuccess.mock.calls[0][0];
-    expect(result.status).toBe('success');
-    expect(result.reference).toBeDefined();
-    expect(onClose).not.toHaveBeenCalled();
+  afterEach(() => {
+    delete window.PaystackPop;
+    vi.restoreAllMocks();
   });
 
-  it('triggers onClose in simulated mode when user cancels card checkout', async () => {
-    vi.spyOn(window, 'confirm').mockImplementation(() => false);
+  it('never reports success when no public key is configured', async () => {
     const onSuccess = vi.fn();
-    const onClose = vi.fn();
+    const onError = vi.fn();
 
-    await openPaystackPopup({
-      email: 'shopper@test.com',
-      amountInNaira: 5000,
-      publicKey: 'pk_test_sample_counterpoint',
-      onSuccess,
-      onClose
-    });
+    await openPaystackPopup({ email: 'a@b.co', amountInNaira: 12500, publicKey: '', onSuccess, onError });
 
     expect(onSuccess).not.toHaveBeenCalled();
-    expect(onClose).toHaveBeenCalled();
+    expect(onError).toHaveBeenCalledWith(expect.stringMatching(/not configured/i));
+  });
+
+  it('never simulates an approval when the Paystack script is unavailable', async () => {
+    const confirm = vi.spyOn(window, 'confirm');
+    const onSuccess = vi.fn();
+    const onError = vi.fn();
+
+    await openPaystackPopup({ email: 'a@b.co', amountInNaira: 5000, publicKey: 'pk_test_x', onSuccess, onError });
+
+    expect(confirm).not.toHaveBeenCalled();
+    expect(onSuccess).not.toHaveBeenCalled();
+    expect(onError).toHaveBeenCalled();
+  });
+
+  it('opens the checkout in kobo with the supplied reference and forwards the callback', async () => {
+    const openIframe = vi.fn();
+    const setup = vi.fn((opts) => {
+      opts.callback({ reference: opts.ref, status: 'success' });
+      return { openIframe };
+    });
+    window.PaystackPop = { setup };
+    const onSuccess = vi.fn();
+
+    await openPaystackPopup({
+      email: 'a@b.co',
+      amountInNaira: 12500,
+      publicKey: 'pk_test_x',
+      reference: 'SF-123',
+      onSuccess
+    });
+
+    expect(setup).toHaveBeenCalledWith(expect.objectContaining({ amount: 1250000, ref: 'SF-123', currency: 'NGN' }));
+    expect(openIframe).toHaveBeenCalled();
+    expect(onSuccess).toHaveBeenCalledWith(expect.objectContaining({ reference: 'SF-123' }));
   });
 });

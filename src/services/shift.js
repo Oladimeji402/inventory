@@ -127,7 +127,10 @@ export async function getCurrentShiftReport(token, localSales = []) {
   const openedAt = current?.openedAt ? new Date(current.openedAt) : new Date(0);
 
   // Compute local sales completed since shift opened
-  const recentSales = (localSales || []).filter(s => new Date(s.timestamp || s.createdAt || 0) >= openedAt);
+  // Till sales carry their time in `time`; voided sales never count toward the drawer.
+  const recentSales = (localSales || []).filter(
+    s => s.status !== 'voided' && new Date(s.time || s.timestamp || s.createdAt || 0) >= openedAt
+  );
   const cashSales = recentSales.filter(s => s.paymentMethod === 'Cash').reduce((sum, s) => sum + (Number(s.total) || 0), 0);
   const cardSales = recentSales.filter(s => s.paymentMethod === 'Card').reduce((sum, s) => sum + (Number(s.total) || 0), 0);
   const transferSales = recentSales.filter(s => s.paymentMethod === 'Bank Transfer' || s.paymentMethod === 'Transfer').reduce((sum, s) => sum + (Number(s.total) || 0), 0);

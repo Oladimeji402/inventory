@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Delete, Check, X, AlertCircle } from 'lucide-react';
 
-export default function RiderOtpKeypad({ expectedOtp = '3819', onVerified, onCancel }) {
+export default function RiderOtpKeypad({ onVerified, onCancel }) {
   const [pin, setPin] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
@@ -23,18 +23,16 @@ export default function RiderOtpKeypad({ expectedOtp = '3819', onVerified, onCan
     setErrorMsg('');
   };
 
-  const verifyPin = (enteredPin) => {
+  const verifyPin = async (enteredPin) => {
     setIsVerifying(true);
-    setTimeout(() => {
+    try {
+      await onVerified(enteredPin);
+    } catch (err) {
+      setErrorMsg(err?.message || 'Could not verify the code. Please try again.');
+      setPin('');
+    } finally {
       setIsVerifying(false);
-      // Accept matching OTP, 1234, or default 3819
-      if (enteredPin === String(expectedOtp) || enteredPin === '1234' || enteredPin === '3819') {
-        onVerified(enteredPin);
-      } else {
-        setErrorMsg('Invalid Security OTP. Please ask the passenger for the 4 digits displayed on their phone screen.');
-        setPin('');
-      }
-    }, 500);
+    }
   };
 
   return (
@@ -114,7 +112,7 @@ export default function RiderOtpKeypad({ expectedOtp = '3819', onVerified, onCan
       </div>
 
       <div style={{ marginTop: '16px', fontSize: '11.5px', color: 'var(--rider-text-muted)' }}>
-        Demo code: <strong>{expectedOtp || '3819'}</strong> (or enter <strong>1234</strong>)
+        Ask the customer for the 4-digit code shown on their order.
       </div>
     </div>
   );

@@ -4,6 +4,9 @@ import AuthLayout from '../../../shared/auth/AuthLayout';
 import SearchableSelect from '../../../shared/ui/SearchableSelect';
 import { useNigeriaLocations } from '../../../hooks/useNigeriaLocations';
 import { MIN_RIDER_AGE, VEHICLE_TYPES, isAtLeastMinAge } from '../../../lib/riderConstants';
+import { licenceLabel } from '../../../lib/riderDocuments';
+import { NIGERIAN_BANKS } from '../../../lib/banks';
+import { CORRIDORS } from '../../../lib/serviceAreas';
 
 /**
  * Deliberately no `max` attribute on the date input: browsers silently block
@@ -17,13 +20,19 @@ const emptyForm = {
   state: 'Lagos',
   city: '',
   baseAddress: '',
+  corridor: '',
   vehicleType: 'motorcycle',
   vehicleMakeModel: '',
   vehiclePlateNumber: '',
   driversLicenseNumber: '',
   driversLicenseExpiry: '',
   nextOfKinName: '',
-  nextOfKinPhone: ''
+  nextOfKinPhone: '',
+  guarantorName: '',
+  guarantorPhone: '',
+  payoutBank: '',
+  payoutAccount: '',
+  payoutAccountName: ''
 };
 
 export default function OnboardingPage({ onComplete, riderName }) {
@@ -42,6 +51,12 @@ export default function OnboardingPage({ onComplete, riderName }) {
     setForm((current) => ({ ...current, [field]: value }));
   };
 
+  // Bicycle riders have no licence, so they skip the licence step.
+  const steps = form.vehicleType === 'bicycle' ? [1, 2, 4, 5] : [1, 2, 3, 4, 5];
+  const position = steps.indexOf(step);
+  const isLastStep = step === 5;
+  const goBack = () => setStep(steps[Math.max(0, position - 1)]);
+
   const goNext = () => {
     setError('');
     if (step === 1) {
@@ -53,6 +68,10 @@ export default function OnboardingPage({ onComplete, riderName }) {
         setError('City and a base address are required so we can route trips to you.');
         return;
       }
+      if (!form.corridor) {
+        setError('Choose the area you will deliver in.');
+        return;
+      }
     }
     if (step === 2 && !form.vehiclePlateNumber.trim() && form.vehicleType !== 'bicycle') {
       setError('Enter the vehicle plate number.');
@@ -62,7 +81,12 @@ export default function OnboardingPage({ onComplete, riderName }) {
       setError('Enter a valid driver\'s / rider\'s licence number.');
       return;
     }
-    setStep((current) => current + 1);
+    if (step === 4) {
+      if (!form.payoutBank) return setError('Choose your bank.');
+      if (!/^\d{10}$/.test(form.payoutAccount.trim())) return setError('Enter your 10-digit account number.');
+      if (form.payoutAccountName.trim().length < 3) return setError('Enter the account name exactly as your bank shows it.');
+    }
+    setStep(steps[position + 1]);
   };
 
   const handleSubmit = async (event) => {
@@ -70,6 +94,10 @@ export default function OnboardingPage({ onComplete, riderName }) {
     setError('');
     if (form.nextOfKinPhone && !/^[+0-9\s-]{7,}$/.test(form.nextOfKinPhone)) {
       setError('Enter a valid next-of-kin phone number, or leave it blank.');
+      return;
+    }
+    if (!form.guarantorName.trim() || !/^[+0-9\s()-]{7,20}$/.test(form.guarantorPhone.trim())) {
+      setError("Enter your guarantor's name and a valid phone number.");
       return;
     }
     setSubmitting(true);
@@ -84,25 +112,26 @@ export default function OnboardingPage({ onComplete, riderName }) {
         step === 1 ? 'About you'
           : step === 2 ? 'Vehicle'
             : step === 3 ? 'Licence'
-              : 'Emergency contact'
+              : step === 4 ? 'Payout account'
+                : 'Safety contacts'
       }
       lead={
         <>
           {riderName ? `Welcome, ${riderName}. ` : ''}
-          Step {step} of 4 — no NIN, BVN, or ID uploads.
+          Step {position + 1} of {steps.length} — you will upload your documents next.
         </>
       }
       visualTitle="Tell us about your ride."
-      visualCaption="You can start picking up trips as soon as this is done."
+      visualCaption="Once your documents are verified you can start picking up trips."
       imageSrc="/images/auth/rider.svg"
     >
       <div className="auth-steps" aria-hidden="true">
-        {[1, 2, 3, 4].map((value) => (
+        {steps.map((value) => (
           <span key={value} className={`auth-step-dot${value <= step ? ' active' : ''}`} />
         ))}
       </div>
 
-      <form className="auth-form" onSubmit={step === 4 ? handleSubmit : (event) => { event.preventDefault(); goNext(); }}>
+      <form className="auth-form" onSubmit={isLastStep ? handleSubmit : (event) => { event.preventDefault(); goNext(); }}>
         {step === 1 && (
           <>
             <div className="auth-field">
@@ -160,6 +189,14 @@ export default function OnboardingPage({ onComplete, riderName }) {
                 placeholder="Where you usually start your day from"
               />
             </div>
+            <div className="auth-field">
+              <label htmlFor="rider-corridor">Area you will deliver in</label>
+              <select id="rider-corridor" value={form.corridor} onChange={(event) => update('corridor', event.target.value)}>
+                <option value="">Choose an area</option>
+                {CORRIDORS.map((name) => <option key={name} value={name}>{name}</option>)}
+              </select>
+              <span className="auth-hint">You get delivery requests from stores in this area.</span>
+            </div>
           </>
         )}
 
@@ -215,11 +252,11 @@ export default function OnboardingPage({ onComplete, riderName }) {
         {step === 3 && (
           <>
             <p className="auth-legal-note">
-              Number only — do not upload a photo of your licence yet. We ask for that later,
-              alongside insurance, only when a licensed payment partner completes payout KYC.
+              Enter your licence number now. On the next screen you will upload photos of the
+              licence and your vehicle papers so we can verify you before your first trip.
             </p>
             <div className="auth-field">
-              <label htmlFor="rider-license-number">Driver&apos;s / rider&apos;s licence number</label>
+              <label htmlFor="rider-license-number">{licenceLabel(form.vehicleType)} number</label>
               <input
                 id="rider-license-number"
                 required
@@ -243,9 +280,56 @@ export default function OnboardingPage({ onComplete, riderName }) {
         {step === 4 && (
           <>
             <p className="auth-legal-note">
-              Optional, but recommended for road safety — we will only contact this person if we
-              cannot reach you during an active trip. We will not store BVN or NIN in this app.
+              This is where your earnings are paid. The account name must match the name on your bank
+              account. You can change it later from your wallet.
             </p>
+            <div className="auth-field">
+              <label htmlFor="rider-bank">Bank</label>
+              <select id="rider-bank" value={form.payoutBank} onChange={(event) => update('payoutBank', event.target.value)}>
+                <option value="">Choose your bank</option>
+                {NIGERIAN_BANKS.map((name) => <option key={name} value={name}>{name}</option>)}
+              </select>
+            </div>
+            <div className="auth-field">
+              <label htmlFor="rider-account-number">Account number</label>
+              <input
+                id="rider-account-number"
+                inputMode="numeric"
+                maxLength={10}
+                value={form.payoutAccount}
+                onChange={(event) => update('payoutAccount', event.target.value.replace(/\D/g, ''))}
+                placeholder="10-digit NUBAN"
+              />
+            </div>
+            <div className="auth-field">
+              <label htmlFor="rider-account-name">Account name</label>
+              <input
+                id="rider-account-name"
+                value={form.payoutAccountName}
+                onChange={(event) => update('payoutAccountName', event.target.value)}
+                placeholder="As shown by your bank"
+              />
+            </div>
+          </>
+        )}
+
+        {step === 5 && (
+          <>
+            <p className="auth-legal-note">
+              Your guarantor vouches for you and is required. Next of kin is optional but
+              recommended — we only call them if we cannot reach you during a trip. We do not
+              collect your BVN or NIN.
+            </p>
+            <div className="auth-grid-2">
+              <div className="auth-field">
+                <label htmlFor="rider-guarantor-name">Guarantor name</label>
+                <input id="rider-guarantor-name" value={form.guarantorName} onChange={(event) => update('guarantorName', event.target.value)} placeholder="Full name" />
+              </div>
+              <div className="auth-field">
+                <label htmlFor="rider-guarantor-phone">Guarantor phone</label>
+                <input id="rider-guarantor-phone" type="tel" value={form.guarantorPhone} onChange={(event) => update('guarantorPhone', event.target.value)} placeholder="+234 800 000 0000" />
+              </div>
+            </div>
             <div className="auth-field">
               <label htmlFor="rider-nok-name">Next of kin name</label>
               <input
@@ -277,12 +361,12 @@ export default function OnboardingPage({ onComplete, riderName }) {
 
         <div className="auth-back-row">
           {step > 1 && (
-            <button type="button" className="auth-secondary" onClick={() => setStep((current) => current - 1)}>
+            <button type="button" className="auth-secondary" onClick={goBack}>
               Back
             </button>
           )}
           <button type="submit" className="auth-submit" disabled={submitting}>
-            <span>{step === 4 ? (submitting ? 'Setting up…' : 'Finish setup') : 'Continue'}</span>
+            <span>{isLastStep ? (submitting ? 'Setting up…' : 'Finish & upload documents') : 'Continue'}</span>
             <ArrowRight size={16} />
           </button>
         </div>

@@ -5,7 +5,7 @@
 
 const PAYSTACK_SCRIPT_URL = 'https://js.paystack.co/v1/inline.js';
 
-export function loadPaystackScript(timeoutMs = 1200) {
+export function loadPaystackScript(timeoutMs = 8000) {
   return new Promise((resolve) => {
     if (typeof window === 'undefined' || typeof document === 'undefined') {
       resolve(false);
@@ -43,63 +43,53 @@ export function loadPaystackScript(timeoutMs = 1200) {
     };
     script.onerror = () => {
       clearTimeout(timer);
-      console.warn('Failed to load Paystack script; fallback simulation will be used.');
+      console.warn('Failed to load Paystack script.');
       resolve(false);
     };
     document.body.appendChild(script);
   });
 }
 
+/**
+ * Opens the real Paystack checkout. There is deliberately no simulated approval:
+ * if Paystack cannot be opened, `onError` is called and no payment is reported.
+ * Even on `onSuccess` the caller must verify the reference server-side.
+ */
 export async function openPaystackPopup({
   email,
   amountInNaira,
-  publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || 'pk_test_sample_counterpoint',
+  publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY,
   reference = 'PAY-' + Date.now(),
   metadata = {},
   onSuccess,
-  onClose
+  onClose,
+  onError
 }) {
-  const isLoaded = await loadPaystackScript();
-
-  // If Paystack script loaded and key is present
-  if (isLoaded && window.PaystackPop && publicKey && !publicKey.includes('sample')) {
-    try {
-      const handler = window.PaystackPop.setup({
-        key: publicKey,
-        email: email || 'customer@example.com',
-        amount: Math.round(Number(amountInNaira) * 100), // convert to kobo
-        currency: 'NGN',
-        ref: reference,
-        metadata,
-        callback: function (response) {
-          if (onSuccess) onSuccess(response);
-        },
-        onClose: function () {
-          if (onClose) onClose();
-        }
-      });
-      handler.openIframe();
-      return;
-    } catch (err) {
-      console.warn('Paystack setup error, falling back to instant demo authorization:', err);
-    }
+  if (!publicKey) {
+    onError?.('Card payments are not configured for this store yet.');
+    return;
   }
 
-  // Graceful simulated payment authorization for development & demo testing
-  const confirmed = window.confirm(
-    `[Paystack Card Gateway Simulation]\n\nAuthorize card payment of ₦${Math.round(amountInNaira).toLocaleString()} for ${email || 'Shopper'}?`
-  );
+  const isLoaded = await loadPaystackScript(8000);
+  if (!isLoaded || !window.PaystackPop) {
+    onError?.('Could not load the payment window. Check your connection and try again.');
+    return;
+  }
 
-  if (confirmed) {
-    if (onSuccess) {
-      onSuccess({
-        reference,
-        status: 'success',
-        trans: 'sim_' + Date.now(),
-        message: 'Approved'
-      });
-    }
-  } else {
-    if (onClose) onClose();
+  try {
+    const handler = window.PaystackPop.setup({
+      key: publicKey,
+      email,
+      amount: Math.round(Number(amountInNaira) * 100), // kobo
+      currency: 'NGN',
+      ref: reference,
+      metadata,
+      callback: (response) => onSuccess?.(response),
+      onClose: () => onClose?.()
+    });
+    handler.openIframe();
+  } catch (err) {
+    console.warn('Paystack setup error:', err);
+    onError?.('Could not start the payment. Please try again.');
   }
 }

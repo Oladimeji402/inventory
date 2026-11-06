@@ -1,197 +1,82 @@
-import React, { useMemo, useState } from 'react';
-import { Plus, Search, Users, Check } from 'lucide-react';
-import { formatNaira, countedOrder } from '../../lib/formatMoney';
-import DataTable from '../../shared/ui/DataTable';
-import Modal from '../../shared/ui/Modal';
+import { useEffect, useRef, useState } from 'react';
+import { Repeat, ShoppingBag, UserRound, Users } from 'lucide-react';
+import { fetchCustomers } from '../../services/merchant';
+import { Badge, DataTable, ErrorBanner, Notice, PageHeader, Pagination, SearchBox, StatCard, useAsync, useDebounced } from './ui';
+import { DASH, money, timeAgo } from './format';
 
-const emptyForm = { fullName: '', phone: '', email: '', address: '', notes: '' };
+const PAGE_SIZE = 25;
 
-export default function MerchantCustomers({
-  customers = [],
-  orders = [],
-  loading = false,
-  canManage = true,
-  onSaveCustomer
-}) {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [editingCustomer, setEditingCustomer] = useState(null);
-  const [isAddOpen, setIsAddOpen] = useState(false);
-  const [formData, setFormData] = useState(emptyForm);
-  const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
+export default function MerchantCustomers({ navigate, refreshKey }) {
+  const [search, setSearch] = useState('');
+  const [page, setPage] = useState(0);
+  const debounced = useDebounced(search);
+  const seen = useRef(false);
 
-  const rows = useMemo(() => {
-    const liveOrders = orders.filter(countedOrder);
-    return customers.map((customer) => {
-      const customerOrders = liveOrders.filter((order) => order.customerId === customer.id);
-      const lifetimeSpend = customerOrders.reduce((sum, order) => sum + order.total, 0);
-      const lastOrder = customerOrders[0]; // orders arrive newest-first
-      return { ...customer, orderCount: customerOrders.length, lifetimeSpend, lastOrderAgo: lastOrder?.timeAgo || '—' };
-    });
-  }, [customers, orders]);
+  const { data, loading, error, reload } = useAsync(
+    () => fetchCustomers({ search: debounced, limit: PAGE_SIZE, offset: page * PAGE_SIZE }),
+    [debounced, page]
+  );
 
-  const filteredRows = useMemo(() => {
-    const query = searchTerm.toLowerCase().trim();
-    if (!query) return rows;
-    return rows.filter((c) =>
-      c.fullName.toLowerCase().includes(query) || (c.phone || '').includes(query)
-    );
-  }, [rows, searchTerm]);
+  useEffect(() => {
+    if (!seen.current) { seen.current = true; return; }
+    reload({ silent: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [refreshKey]);
 
-  const closeModal = () => {
-    setEditingCustomer(null);
-    setIsAddOpen(false);
-    setFormData(emptyForm);
-    setError('');
-  };
-
-  const openEdit = (customer) => {
-    setEditingCustomer(customer);
-    setFormData({
-      fullName: customer.fullName,
-      phone: customer.phone,
-      email: customer.email,
-      address: customer.address,
-      notes: customer.notes
-    });
-  };
-
-  const handleSave = async (event) => {
-    event.preventDefault();
-    setError('');
-    setSaving(true);
-    const result = await onSaveCustomer({ id: editingCustomer?.id, ...formData });
-    setSaving(false);
-    if (result?.error) {
-      setError(result.error);
-      return;
-    }
-    closeModal();
-  };
-
-  const isModalVisible = isAddOpen || editingCustomer !== null;
+  const rows = data?.rows || [];
+  const repeatOnPage = rows.filter((c) => Number(c.orders) > 1).length;
 
   return (
-    <div>
-      <div className="merchant-page-header">
-        <h1>Customers</h1>
-        <div className="merchant-page-header-actions">
-          <div className="merchant-search-wrap" style={{ width: 240 }}>
-            <Search size={16} color="var(--mx-text-3)" />
-            <input
-              type="text"
-              className="merchant-search-input"
-              placeholder="Search name or phone…"
-              value={searchTerm}
-              onChange={(event) => setSearchTerm(event.target.value)}
-            />
-          </div>
-          {canManage && (
-            <button className="merchant-btn-primary" onClick={() => setIsAddOpen(true)}>
-              <Plus size={15} />
-              <span>Add Customer</span>
-            </button>
-          )}
-        </div>
+    <>
+      <PageHeader
+        title="Customers"
+        subtitle="Built automatically from your order history. A customer is a phone number (or shopper account) that has ordered from you."
+      />
+      <ErrorBanner message={error} onRetry={reload} />
+
+      <div className="mc-grid mc-grid-3" style={{ marginBottom: 16 }}>
+        <StatCard label="Customers" icon={Users} value={data?.total} loading={loading && !data} hint={debounced ? 'matching your search' : 'with a phone number or account'} />
+        <StatCard label="Repeat buyers on this page" icon={Repeat} tint="#dcfce7" color="#16a34a" value={data ? repeatOnPage : undefined} loading={loading && !data} hint="ordered more than once" delay={60} />
+        <StatCard label="Walk-in orders" icon={UserRound} tint="#f1f5f9" color="#475569" value={data?.walkInOrders} loading={loading && !data} hint="counter sales with no phone number" delay={120} />
       </div>
 
-      <div className="mx-card">
+      <div className="mc-toolbar">
+        <SearchBox value={search} onChange={(v) => { setSearch(v); setPage(0); }} placeholder="Search name or phone" />
+      </div>
+
+      {(data || loading) && <section className="mc-card">
         <DataTable
-          loading={loading}
-          rows={filteredRows}
-          onRowClick={canManage ? openEdit : undefined}
+          loading={loading && !data}
+          rows={rows}
+          rowKey={(c) => c.key}
+          onRowClick={(c) => navigate(`/orders?q=${encodeURIComponent(c.phone || c.name || '')}`)}
           empty={{
-            icon: Users,
-            title: customers.length === 0 ? 'No customers yet' : 'No matching customers',
-            desc: customers.length === 0
-              ? 'Customers you add, or who check out on your storefront, will show up here with their order history.'
-              : 'Try a different search.'
+            icon: ShoppingBag,
+            title: debounced ? 'No customers match your search' : 'No customers yet',
+            text: debounced ? 'Try a name or phone number from an order.' : 'Customers appear here after their first order. Walk-in counter sales without a phone number are not counted as customers.'
           }}
           columns={[
             {
               key: 'name',
               header: 'Customer',
               render: (c) => (
-                <div>
-                  <div style={{ fontWeight: 700 }}>{c.fullName}</div>
-                  <div style={{ fontSize: 12, color: 'var(--mx-text-3)' }}>{c.phone || 'No phone on file'}</div>
-                </div>
+                <>
+                  <div className="mc-cell-main">{c.name || DASH}</div>
+                  <div className="mc-cell-sub mc-mono">{c.phone || 'No phone on file'}</div>
+                </>
               )
             },
-            { key: 'orders', header: 'Orders', render: (c) => <span className="font-mono">{c.orderCount}</span> },
-            { key: 'spend', header: 'Lifetime spend', render: (c) => <span className="font-mono" style={{ fontWeight: 700 }}>{formatNaira(c.lifetimeSpend)}</span> },
-            { key: 'last', header: 'Last order', render: (c) => c.lastOrderAgo }
+            { key: 'orders', header: 'Orders', align: 'right', render: (c) => <span className="mc-row" style={{ justifyContent: 'flex-end', gap: 8 }}>{Number(c.orders) > 1 && <Badge tone="ok">Repeat</Badge>}<b className="mc-mono">{c.orders}</b></span> },
+            { key: 'spend', header: 'Paid spend', align: 'right', render: (c) => <b className="mc-mono">{money(c.spend)}</b> },
+            { key: 'channel', header: 'Bought', render: (c) => <span className="mc-cell-sub" style={{ margin: 0 }}>{[Number(c.onlineOrders) ? `${c.onlineOrders} online` : '', Number(c.counterOrders) ? `${c.counterOrders} at counter` : ''].filter(Boolean).join(' · ')}</span> },
+            { key: 'last', header: 'Last order', render: (c) => <span title={c.lastOrderAt}>{timeAgo(c.lastOrderAt)}</span> }
           ]}
         />
+        <Pagination page={page} pageSize={PAGE_SIZE} total={data?.total || 0} onChange={setPage} />
+      </section>}
+      <div style={{ marginTop: 14 }}>
+        <Notice>Spend counts paid orders only, without delivery fees. Click a customer to see their orders.</Notice>
       </div>
-
-      <Modal
-        open={isModalVisible}
-        title={editingCustomer ? 'Edit Customer' : 'Add Customer'}
-        onClose={closeModal}
-        footer={
-          <>
-            <button type="button" className="merchant-btn-secondary" onClick={closeModal}>Cancel</button>
-            <button type="submit" form="customer-form" className="merchant-btn-primary" disabled={saving}>
-              <Check size={14} />
-              <span>{saving ? 'Saving…' : 'Save Customer'}</span>
-            </button>
-          </>
-        }
-      >
-        <form id="customer-form" onSubmit={handleSave} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-          <div className="merchant-field-group">
-            <label className="merchant-field-label">Full name *</label>
-            <input
-              type="text"
-              required
-              value={formData.fullName}
-              onChange={(event) => setFormData({ ...formData, fullName: event.target.value })}
-              className="merchant-field-input"
-            />
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
-            <div className="merchant-field-group">
-              <label className="merchant-field-label">Phone</label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(event) => setFormData({ ...formData, phone: event.target.value })}
-                className="merchant-field-input font-mono"
-                placeholder="+234…"
-              />
-            </div>
-            <div className="merchant-field-group">
-              <label className="merchant-field-label">Email</label>
-              <input
-                type="email"
-                value={formData.email}
-                onChange={(event) => setFormData({ ...formData, email: event.target.value })}
-                className="merchant-field-input"
-              />
-            </div>
-          </div>
-          <div className="merchant-field-group">
-            <label className="merchant-field-label">Address</label>
-            <input
-              type="text"
-              value={formData.address}
-              onChange={(event) => setFormData({ ...formData, address: event.target.value })}
-              className="merchant-field-input"
-            />
-          </div>
-          <div className="merchant-field-group">
-            <label className="merchant-field-label">Notes</label>
-            <textarea
-              value={formData.notes}
-              onChange={(event) => setFormData({ ...formData, notes: event.target.value })}
-              className="merchant-field-textarea"
-              rows={3}
-            />
-          </div>
-          {error && <div className="merchant-form-error">{error}</div>}
-        </form>
-      </Modal>
-    </div>
+    </>
   );
 }

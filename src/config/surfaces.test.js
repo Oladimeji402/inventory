@@ -47,6 +47,17 @@ describe('surface URLs', () => {
     expect(resolveSurface({ ...location, pathname: '/rider/onboarding' })).toBe('rider');
   });
 
+  it('puts shop, rides and admin under their path prefix on platform hosts', () => {
+    const location = loc({ hostname: 'inventory-grab.vercel.app', protocol: 'https:', port: '', pathname: '/' });
+    expect(surfaceUrl('shop', '/', location)).toBe('https://inventory-grab.vercel.app/shop');
+    expect(surfaceUrl('shop', '/orders', location)).toBe('https://inventory-grab.vercel.app/shop/orders');
+    expect(surfaceUrl('admin', '/', location)).toBe('https://inventory-grab.vercel.app/admin');
+    expect(resolveSurface({ ...location, pathname: '/shop/orders' })).toBe('shop');
+    // real subdomains keep clean paths
+    const local = loc({ hostname: 'localhost' });
+    expect(surfaceUrl('shop', '/orders', local)).toBe('http://shop.localhost:5173/orders');
+  });
+
   it('uses product subdomains on the brand domain', () => {
     const location = loc({ hostname: 'stv.com', protocol: 'https:', port: '' });
     expect(surfaceUrl('merchant', '/login', location)).toBe('https://merchant.stv.com/login');

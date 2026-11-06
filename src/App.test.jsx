@@ -56,6 +56,28 @@ describe('Counterpoint POS', () => {
     expect(screen.queryByRole('button', { name: /^Admin$/i })).not.toBeInTheDocument();
   });
 
+  it('keeps a voided sale in reports (marked voided) instead of deleting it', async () => {
+    renderApp();
+
+    fireEvent.change(await screen.findByLabelText(/^Name$/i), { target: { value: 'Grace Nwosu' } });
+    fireEvent.change(screen.getByLabelText(/^PIN$/i), { target: { value: '9999' } });
+    fireEvent.click(screen.getByRole('button', { name: /Clock in/i }));
+
+    fireEvent.click(await screen.findByRole('button', { name: /Peak Milk Tin \(Large\)/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Confirm Order/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /^Pay ₦/i }));
+    fireEvent.click(await screen.findByRole('button', { name: /Start new sale/i }));
+
+    fireEvent.click(screen.getByRole('button', { name: /Reports/i }));
+    // Sales persist on the device between tests; the newest sale is listed first.
+    const salesBefore = screen.getAllByRole('button', { name: /Void sale/i }).length;
+    fireEvent.click(screen.getAllByRole('button', { name: /Void sale/i })[0]);
+    fireEvent.click(screen.getByRole('button', { name: /Confirm void/i }));
+
+    expect(await screen.findByText(/VOIDED by Grace Nwosu/i)).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: /Void sale/i })).toHaveLength(salesBefore - 1);
+  });
+
   it('has no admin/staff-management tab — that now lives in the store dashboard', async () => {
     renderApp();
 
