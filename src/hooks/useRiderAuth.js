@@ -158,7 +158,13 @@ export function useRiderAuth() {
       p_city: payload.city,
       p_base_address: payload.baseAddress,
       p_next_of_kin_name: payload.nextOfKinName,
-      p_next_of_kin_phone: payload.nextOfKinPhone
+      p_next_of_kin_phone: payload.nextOfKinPhone,
+      p_corridor: payload.corridor,
+      p_guarantor_name: payload.guarantorName,
+      p_guarantor_phone: payload.guarantorPhone,
+      p_payout_bank: payload.payoutBank,
+      p_payout_account: payload.payoutAccount,
+      p_payout_account_name: payload.payoutAccountName
     });
 
     if (rpcError) return { error: rpcError.message };

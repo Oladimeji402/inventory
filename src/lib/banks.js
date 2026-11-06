@@ -1,0 +1,28 @@
+/** Banks riders can be paid into (Nigeria). */
+export const NIGERIAN_BANKS = [
+  'Access Bank',
+  'Citibank Nigeria',
+  'Ecobank Nigeria',
+  'Fidelity Bank',
+  'First Bank of Nigeria',
+  'First City Monument Bank (FCMB)',
+  'Globus Bank',
+  'Guaranty Trust Bank (GTBank)',
+  'Heritage Bank',
+  'Keystone Bank',
+  'Kuda Microfinance Bank',
+  'Moniepoint Microfinance Bank',
+  'OPay Digital Services',
+  'PalmPay',
+  'Polaris Bank',
+  'Providus Bank',
+  'Stanbic IBTC Bank',
+  'Standard Chartered Bank',
+  'Sterling Bank',
+  'Suntrust Bank',
+  'Union Bank of Nigeria',
+  'United Bank for Africa (UBA)',
+  'Unity Bank',
+  'Wema Bank',
+  'Zenith Bank'
+];

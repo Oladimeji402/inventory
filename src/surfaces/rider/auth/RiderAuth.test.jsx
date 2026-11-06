@@ -90,3 +90,52 @@ describe('Rider auth pages', () => {
     expect(await screen.findByRole('option', { name: 'Ikeja' })).toBeInTheDocument();
   });
 });
+
+describe('Rider onboarding: payout account and guarantor', () => {
+  it('walks every step, skips the licence for bicycles, and submits everything needed', async () => {
+    const onComplete = vi.fn(async () => ({ data: {} }));
+    render(<OnboardingPage onComplete={onComplete} riderName="Tunde" />);
+
+    // 1 · about you
+    fireEvent.change(screen.getByLabelText(/Date of birth/i), { target: { value: '1995-04-02' } });
+    const cityInput = screen.getByRole('combobox', { name: /City \/ LGA/i });
+    await waitFor(() => expect(cityInput).not.toBeDisabled());
+    fireEvent.focus(cityInput);
+    fireEvent.mouseDown(await screen.findByRole('option', { name: 'Ikeja' }));
+    fireEvent.change(screen.getByLabelText(/Base address/i), { target: { value: 'Allen Avenue' } });
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
+    expect(await screen.findByText(/Choose the area you will deliver in/i)).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/Area you will deliver in/i), { target: { value: 'Ikeja GRA & Maryland' } });
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
+
+    // 2 · vehicle (bicycle needs no licence step)
+    fireEvent.click(await screen.findByRole('radio', { name: /Bicycle/i }));
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
+
+    // 4 · payout account (step 3, licence, was skipped)
+    expect(await screen.findByLabelText(/Account number/i)).toBeInTheDocument();
+    expect(screen.queryByLabelText(/licence number/i)).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
+    expect(await screen.findByText(/Choose your bank/i, { selector: '.auth-error span' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/^Bank$/i), { target: { value: 'Zenith Bank' } });
+    fireEvent.change(screen.getByLabelText(/Account number/i), { target: { value: '12345' } });
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
+    expect(await screen.findByText(/10-digit account number/i, { selector: '.auth-error span' })).toBeInTheDocument();
+    fireEvent.change(screen.getByLabelText(/Account number/i), { target: { value: '0123456789' } });
+    fireEvent.change(screen.getByLabelText(/Account name/i), { target: { value: 'Tunde Bakare' } });
+    fireEvent.click(screen.getByRole('button', { name: /Continue/i }));
+
+    // 5 · guarantor is required
+    fireEvent.click(await screen.findByRole('button', { name: /Finish & upload documents/i }));
+    expect(await screen.findByText(/guarantor.s name and a valid phone/i)).toBeInTheDocument();
+    expect(onComplete).not.toHaveBeenCalled();
+    fireEvent.change(screen.getByLabelText(/Guarantor name/i), { target: { value: 'Bisi Bakare' } });
+    fireEvent.change(screen.getByLabelText(/Guarantor phone/i), { target: { value: '0803 222 3333' } });
+    fireEvent.click(screen.getByRole('button', { name: /Finish & upload documents/i }));
+
+    await waitFor(() => expect(onComplete).toHaveBeenCalledWith(expect.objectContaining({
+      vehicleType: 'bicycle', corridor: 'Ikeja GRA & Maryland', payoutBank: 'Zenith Bank', payoutAccount: '0123456789',
+      payoutAccountName: 'Tunde Bakare', guarantorName: 'Bisi Bakare', guarantorPhone: '0803 222 3333'
+    })));
+  });
+});
