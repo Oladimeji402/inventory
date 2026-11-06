@@ -105,6 +105,7 @@ export function useMerchantAuth() {
     setProfile(data.profile);
     setTenant(data.tenant);
     setMembershipRole(data.membershipRole);
+    setError(null);
   }, [session]);
 
   const signUp = useCallback(async ({ fullName, email, phone, password, intendedSlug }) => {
@@ -202,9 +203,11 @@ export function useMerchantAuth() {
     loading,
     error,
     membershipReady,
+    // A failed lookup must never look like "no store yet" and send an owner to onboarding.
     needsOnboarding: Boolean(
-      session && membershipReady && (!tenant || tenant.onboarding_status !== 'complete')
+      session && membershipReady && !error && (!tenant || tenant.onboarding_status !== 'complete')
     ),
+    reload: () => hydrate(session),
     signUp,
     signIn,
     requestPasswordReset,

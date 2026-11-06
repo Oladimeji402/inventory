@@ -13,10 +13,21 @@ import LoginPage from './auth/LoginPage';
 import OnboardingPage from './auth/OnboardingPage';
 import SignupPage from './auth/SignupPage';
 import StaffLoginPage from './auth/StaffLoginPage';
+import AccountLoadError from './AccountLoadError';
 
 function currentPath() {
   if (typeof window === 'undefined') return '/login';
   return window.location.pathname.replace(/\/+$/, '') || '/';
+}
+
+function isDashboardPath(path) {
+  return path === '/dashboard' || path.startsWith('/dashboard/');
+}
+
+/** The store's real public page. Subdomain routing for stores is not live yet, so link the path form. */
+export function storefrontUrl(slug) {
+  if (!slug) return '';
+  return `${appLinks.marketing().replace(/\/+$/, '')}/store/${slug}`;
 }
 
 function authPage(path) {
@@ -53,7 +64,7 @@ export default function MerchantRoot() {
     if (auth.loading || (auth.session && !auth.membershipReady)) return;
 
     if (!auth.session) {
-      if (path === '/dashboard' || path === '/onboarding' || path === '/') {
+      if (isDashboardPath(path) || path === '/onboarding' || path === '/') {
         replacePath('/login');
         setPath('/login');
       }
@@ -68,7 +79,7 @@ export default function MerchantRoot() {
       return;
     }
 
-    if (path !== '/dashboard') {
+    if (!isDashboardPath(path)) {
       replacePath('/dashboard');
       setPath('/dashboard');
     }
@@ -108,6 +119,10 @@ export default function MerchantRoot() {
     return <LoginPage onSubmit={auth.signIn} initialError={configError} />;
   }
 
+  if (auth.error && !auth.tenant) {
+    return <AccountLoadError message={auth.error} onRetry={auth.reload} onSignOut={auth.signOut} />;
+  }
+
   if (auth.needsOnboarding) {
     return (
       <OnboardingPage
@@ -136,8 +151,10 @@ export default function MerchantRoot() {
       justOnboarded={justOnboarded}
       onRefreshTenant={auth.refreshTenant}
       onSignOut={auth.signOut}
+      storefrontUrl={storefrontUrl(auth.tenant?.slug)}
       onOpenStorefront={() => {
-        window.location.href = appLinks.shop();
+        const url = storefrontUrl(auth.tenant?.slug);
+        if (url) window.open(url, '_blank', 'noopener');
       }}
       onExitToLanding={() => {
         window.location.href = appLinks.marketing();

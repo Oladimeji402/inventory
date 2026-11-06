@@ -2,6 +2,10 @@ import { useCallback, useEffect, useState } from 'react';
 import { isSupabaseConfigured, supabase } from '../lib/supabase';
 import { mapOrder } from './useMerchantStore';
 
+/**
+ * Orders for a signed-in PIN employee. Every call goes through a token-checked
+ * database function; failures are surfaced, never swallowed.
+ */
 export function useStaffOrders(token) {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(Boolean(token));
@@ -13,43 +17,50 @@ export function useStaffOrders(token) {
       setLoading(false);
       return;
     }
-    if (!silent) setLoading(true);
-    setError('');
+    if (!silent) {
+      setLoading(true);
+      setError('');
+    }
     const { data, error: rpcError } = await supabase.rpc('staff_online_orders', { p_token: token });
     if (rpcError) {
-      if (!silent) setError(rpcError.message);
-      if (!silent) setLoading(false);
+      // A failed background refresh keeps the last good list but still tells the person.
+      setError(rpcError.message);
+      setLoading(false);
       return;
     }
+    setError('');
     setOrders((data || []).map(mapOrder));
-    if (!silent) setLoading(false);
+    setLoading(false);
   }, [token]);
 
   useEffect(() => {
     load();
   }, [load]);
 
-  // No live push channel for anon staff sessions (Realtime enforces the same
-  // RLS as a query, and there's no auth.uid() to pass it) — poll instead so
-  // new orders still show up without a manual refresh.
+  // Realtime enforces the same RLS as a query and anon staff sessions have no
+  // auth.uid(), so there is no push channel for them: poll instead.
   useEffect(() => {
     if (!isSupabaseConfigured || !token) return undefined;
     const id = window.setInterval(() => load(true), 15000);
     return () => window.clearInterval(id);
   }, [token, load]);
 
-  const updateOrderStatus = useCallback(async (orderId, status) => {
+  const call = useCallback(async (name, args) => {
     if (!isSupabaseConfigured || !token) return { error: 'Not signed in.' };
-    const { data, error: rpcError } = await supabase.rpc('staff_update_order_status', {
-      p_token: token,
-      p_order_id: orderId,
-      p_status: status
-    });
+    const { data, error: rpcError } = await supabase.rpc(name, { p_token: token, ...args });
     if (rpcError) return { error: rpcError.message };
-    const mapped = mapOrder(data);
-    setOrders((current) => current.map((item) => (item.id === orderId ? mapped : item)));
-    return { data: mapped };
-  }, [token]);
+    await load(true);
+    return { data };
+  }, [token, load]);
 
-  return { orders, loading, error, reload: load, updateOrderStatus };
+  const updateOrderStatus = useCallback(
+    (orderId, status) => call('staff_update_order_status', { p_order_id: orderId, p_status: status }),
+    [call]
+  );
+  const markReady = useCallback(
+    (orderId, ready = true) => call('staff_mark_order_ready', { p_order_id: orderId, p_ready: ready }),
+    [call]
+  );
+
+  return { orders, loading, error, reload: load, updateOrderStatus, markReady };
 }
