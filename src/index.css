@@ -120,78 +120,66 @@ a { color: inherit; }
   font-weight: 600;
   line-height: 1.35;
 }
-.install-overlay { z-index: 80; }
-.install-modal {
-  width: min(92vw, 380px);
-  background: var(--surface);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
-  padding: 28px 24px 22px;
-  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.22);
-  position: relative;
+/* ---------- Install-as-app banner (small, bottom of the screen) ---------- */
+.install-banner {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + var(--install-offset, 0px) + 12px);
+  transform: translateX(-50%);
+  width: min(calc(100vw - 24px), 440px);
+  z-index: 90;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  text-align: left;
-}
-.install-modal-icon {
-  width: 56px;
-  height: 56px;
-  border-radius: 16px;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 10px 10px 12px;
   background: var(--ink);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 4px;
+  color: #fff;
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.28);
+  font-family: 'Inter', system-ui, sans-serif;
+  animation: install-banner-in 0.35s var(--ease) both;
 }
-.install-modal h2 {
-  margin: 0;
-  font-family: var(--font-display);
-  font-size: 1.35rem;
-  font-weight: 700;
-  color: var(--text);
-  letter-spacing: -0.02em;
-}
-.install-modal > p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.92rem;
-  line-height: 1.45;
-}
-.install-modal-benefits {
-  list-style: none;
-  margin: 4px 0 8px;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-.install-modal-benefits li {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--text);
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-.install-modal-benefits li svg {
-  color: var(--primary);
+.install-banner-icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  background: var(--primary);
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
 }
-.install-modal-actions {
+.install-banner-text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1px; line-height: 1.3; }
+.install-banner-text strong { font-size: 0.86rem; font-weight: 700; }
+.install-banner-text span { font-size: 0.76rem; color: #cbd5e1; }
+.install-banner-text b { color: #fff; font-weight: 700; }
+.install-banner-inline { vertical-align: -2px; }
+.install-banner-btn {
+  min-height: 34px;
+  padding: 0 14px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--primary);
+  color: #fff;
+  font: 700 0.82rem 'Inter', sans-serif;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.install-banner-btn:disabled { opacity: 0.65; cursor: progress; }
+.install-banner-close {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #94a3b8;
   display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 10px;
-  margin-top: 6px;
+  place-items: center;
+  cursor: pointer;
+  flex-shrink: 0;
 }
-.install-modal-actions .primary-btn,
-.install-modal-actions .secondary-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  min-height: 42px;
-}
+.install-banner-close:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+@keyframes install-banner-in { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (prefers-reduced-motion: reduce) { .install-banner { animation: none; } }
 .tab-badge { display: inline-flex; align-items: center; justify-content: center; min-width: 18px; height: 18px; padding: 0 5px; border-radius: 999px; background: var(--danger); color: white; font-size: 0.7rem; font-weight: 700; font-family: var(--font-mono); }
 
 /* ---------- Till navbar (logo, nav tabs, date/time, cashier profile) ---------- */
