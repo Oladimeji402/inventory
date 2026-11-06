@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import LandingPage from '../components/landing/LandingPage';
+import { lazy, Suspense, useState, useEffect } from 'react';
 import ShopRoot from './shop/ShopRoot';
 import StorefrontApp from '../components/storefront/StorefrontApp';
 import TillApp from '../App';
@@ -9,6 +8,9 @@ import MerchantRoot from './merchant/MerchantRoot';
 import RiderRoot from './rider/RiderRoot';
 import AdminRoot from './admin/AdminRoot';
 import RidesRoot from './rides/RidesRoot';
+
+// The marketing site is the only surface that needs the animation libraries, so load it on demand.
+const HomePage = lazy(() => import('./home/HomePage'));
 
 function currentPath() {
   if (typeof window === 'undefined') return '/';
@@ -88,6 +90,10 @@ export default function Root() {
     return null;
   }
 
-  return <LandingPage />;
+  return (
+    <Suspense fallback={<div style={{ minHeight: '100vh', background: '#050b1c' }} aria-busy="true" />}>
+      <HomePage />
+    </Suspense>
+  );
 }
 
